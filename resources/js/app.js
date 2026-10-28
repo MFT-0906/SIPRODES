@@ -105,6 +105,40 @@ Alpine.data('toastRegion', (initialMessage = null, initialTone = 'sukses') => ({
     },
 }));
 
+/**
+ * Navigasi bagian halaman: menandai bagian yang sedang terlihat (scrollspy) lewat aria-current.
+ */
+Alpine.data('sectionNav', (ids = []) => ({
+    active: ids[0] ?? null,
+
+    init() {
+        if (!('IntersectionObserver' in window)) {
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visible = entries
+                    .filter((entry) => entry.isIntersecting)
+                    .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+
+                if (visible) {
+                    this.active = visible.target.id;
+                }
+            },
+            { rootMargin: '-10% 0px -70% 0px' },
+        );
+
+        ids.forEach((id) => {
+            const section = document.getElementById(id);
+
+            if (section) {
+                observer.observe(section);
+            }
+        });
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();
 
