@@ -5,6 +5,7 @@
     'selected' => null,
     'placeholder' => 'Pilih salah satu',
     'required' => false,
+    'penanda' => true, // false menyembunyikan teks Wajib/Opsional (mis. pemilih tahun)
     'help' => null,
     'error' => null,
     'id' => null,
@@ -20,7 +21,9 @@
 <div class="flex flex-col gap-1.5">
     <label for="{{ $id }}" class="flex items-baseline gap-1.5">
         <span class="type-label text-text">{{ $label }}</span>
-        <span class="type-label-sm {{ $required ? 'text-danger' : 'text-muted' }}">{{ $required ? 'Wajib' : 'Opsional' }}</span>
+        @if ($penanda)
+            <span class="type-label-sm {{ $required ? 'text-danger' : 'text-muted' }}">{{ $required ? 'Wajib' : 'Opsional' }}</span>
+        @endif
     </label>
 
     <div class="relative">
@@ -36,7 +39,9 @@
                 'border-border focus:border-primary focus:shadow-[0_0_0_1px_var(--color-primary),0_0_0_4px_rgb(27_94_32/0.18)]' => ! $error,
             ]) }}
         >
-            <option value="">{{ $placeholder }}</option>
+            @if ($placeholder !== null)
+                <option value="">{{ $placeholder }}</option>
+            @endif
             @foreach ($options as $value => $text)
                 <option value="{{ $value }}" @selected((string) $selected === (string) $value) class="text-text">{{ $text }}</option>
             @endforeach

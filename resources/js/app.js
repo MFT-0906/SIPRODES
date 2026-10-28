@@ -139,6 +139,66 @@ Alpine.data('sectionNav', (ids = []) => ({
     },
 }));
 
+/**
+ * Katalog Potensi Desa: tab Pertanian/UMKM (pola tablist ARIA, dapat dioperasikan dengan panah/Home/End)
+ * dan pencarian langsung pada kartu yang sedang dimuat. Item pencarian bertanda data-cari.
+ * TODO(backend): pencarian lintas halaman perlu dilakukan di server (parameter ?q=).
+ */
+Alpine.data('katalog', (awal = 'pertanian', daftarTab = ['pertanian', 'umkm']) => ({
+    tab: awal,
+    q: '',
+    kosong: {},
+
+    init() {
+        const dariHash = window.location.hash.replace('#', '');
+
+        if (daftarTab.includes(dariHash)) {
+            this.tab = dariHash;
+        }
+
+        this.$watch('q', () => this.$nextTick(() => this.hitung()));
+        this.$watch('tab', () => this.$nextTick(() => this.hitung()));
+    },
+
+    pilih(nama, fokus = false) {
+        this.tab = nama;
+        history.replaceState(null, '', '#' + nama);
+
+        if (fokus) {
+            this.$nextTick(() => document.getElementById('tab-' + nama)?.focus());
+        }
+    },
+
+    tombol(event) {
+        const i = daftarTab.indexOf(this.tab);
+        const peta = {
+            ArrowRight: (i + 1) % daftarTab.length,
+            ArrowLeft: (i - 1 + daftarTab.length) % daftarTab.length,
+            Home: 0,
+            End: daftarTab.length - 1,
+        };
+
+        if (event.key in peta) {
+            event.preventDefault();
+            this.pilih(daftarTab[peta[event.key]], true);
+        }
+    },
+
+    cocok(teks) {
+        const kata = this.q.trim().toLowerCase();
+
+        return kata === '' || (teks ?? '').includes(kata);
+    },
+
+    hitung() {
+        daftarTab.forEach((nama) => {
+            const item = [...document.querySelectorAll(`#panel-${nama} [data-cari]`)];
+
+            this.kosong[nama] = item.length > 0 && item.every((el) => getComputedStyle(el).display === 'none');
+        });
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();
 

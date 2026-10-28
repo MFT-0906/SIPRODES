@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 // Halaman publik. Isinya masih kerangka berjudul; dikerjakan pada fase 4–6 (docs/planFE.md).
 Route::get('/', [PublicPageController::class, 'home'])->name('home');
 Route::get('/profil-desa', [PublicPageController::class, 'profil'])->name('profil');
-Route::view('/transparansi-apbdes', 'pages.public.stub', ['title' => 'Transparansi APBDes'])->name('apbdes');
-Route::view('/potensi-desa', 'pages.public.stub', ['title' => 'Potensi Desa'])->name('potensi');
+Route::get('/transparansi-apbdes', [PublicPageController::class, 'apbdes'])->name('apbdes');
+Route::get('/potensi-desa', [PublicPageController::class, 'potensi'])->name('potensi');
 Route::view('/berita', 'pages.public.stub', ['title' => 'Berita & Agenda'])->name('berita.index');
 Route::view('/berita/{slug}', 'pages.public.stub', ['title' => 'Detail Berita'])->name('berita.show');
 Route::view('/ruang-aspirasi', 'pages.public.stub', ['title' => 'Ruang Aspirasi'])->name('aspirasi.create');

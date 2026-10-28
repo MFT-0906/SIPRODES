@@ -145,6 +145,86 @@ class DemoContent
     }
 
     /**
+     * Ringkasan APBDes per tahun. Semua angka masih kosong (null) karena nilai resmi belum diinput;
+     * nama dokumen hanyalah contoh dari desain dan belum memiliki berkas.
+     *
+     * @return array<string, mixed>
+     */
+    public static function apbdes(): array
+    {
+        $pendapatan = ['Pendapatan Asli Desa', 'Dana Desa', 'Alokasi Dana Desa', 'Bagi Hasil Pajak & Retribusi', 'Bantuan Keuangan', 'Lain-lain Pendapatan yang Sah'];
+        $belanja = ['Penyelenggaraan Pemerintahan Desa', 'Pelaksanaan Pembangunan Desa', 'Pembinaan Kemasyarakatan', 'Pemberdayaan Masyarakat', 'Penanggulangan Bencana, Darurat & Mendesak'];
+
+        $tahun = fn (int $tahun, array $dokumen = []) => [
+            'periode' => "1 Januari – 31 Desember {$tahun}",
+            // false = angka dan dokumen masih contoh/kosong dan harus diberi penanda di halaman.
+            'resmi' => false,
+            'ringkasan' => ['pendapatan' => null, 'belanja' => null, 'pembiayaan' => null],
+            'pendapatan' => ['rows' => array_map(fn ($uraian) => ['uraian' => $uraian, 'anggaran' => null], $pendapatan), 'total' => null],
+            'belanja' => ['rows' => array_map(fn ($uraian) => ['uraian' => $uraian, 'anggaran' => null], $belanja), 'total' => null],
+            'dokumen' => $dokumen,
+        ];
+
+        return [
+            'pengantar' => 'Ringkasan Anggaran Pendapatan dan Belanja Desa (APBDes) Marga Agung beserta dokumen resminya. Seluruh angka bersumber dari dokumen APBDes yang telah ditetapkan.',
+            'tahun_default' => 2026,
+            'tahun' => [
+                2026 => $tahun(2026, [
+                    ['judul' => 'Peraturan Desa tentang APBDes Tahun 2026', 'periode' => 'Jan–Des 2026', 'url' => null, 'ukuran' => null, 'diunggah' => null],
+                    ['judul' => 'Laporan Realisasi APBDes Semester I 2026', 'periode' => 'Jan–Jun 2026', 'url' => null, 'ukuran' => null, 'diunggah' => null],
+                ]),
+                2025 => $tahun(2025),
+                2024 => $tahun(2024),
+            ],
+        ];
+    }
+
+    /**
+     * Katalog Potensi Desa. Komoditas Jagung berasal dari proposal; nama kelompok tani dan usaha
+     * adalah contoh dari desain dan menunggu data resmi serta persetujuan publikasi.
+     *
+     * @return array<string, mixed>
+     */
+    public static function potensi(): array
+    {
+        return [
+            'pengantar' => 'Katalog hasil pertanian, kelompok tani, dan UMKM Desa Marga Agung. Kontak hanya ditampilkan bila telah disetujui pemiliknya.',
+            'komoditas' => [
+                [
+                    'nama' => 'Jagung',
+                    'unggulan' => true,
+                    'deskripsi' => 'Komoditas utama dan produk unggulan Desa Marga Agung. Jagung dapat menjadi bahan pangan dan bahan baku usaha rumahan dengan nilai tambah.',
+                    'musim_panen' => null,
+                    'foto_keterangan' => 'Foto jagung',
+                    'peluang' => ['Pengolahan menjadi camilan jagung', 'Pengemasan produk hasil kebun', 'Kerja sama pemasaran antarusaha'],
+                ],
+            ],
+            'kelompok_tani' => [
+                'resmi' => false,
+                'daftar' => [
+                    ['nama' => 'Kelompok Tani 1', 'komoditas' => 'Jagung', 'dusun' => null, 'kontak' => null, 'kontak_disetujui' => false],
+                    ['nama' => 'Kelompok Tani 2', 'komoditas' => 'Jagung', 'dusun' => null, 'kontak' => null, 'kontak_disetujui' => false],
+                ],
+            ],
+            'umkm' => [
+                'resmi' => false,
+                'per_halaman' => 4,
+                // Nomor WhatsApp baru boleh tampil setelah pemiliknya menyetujui (whatsappApproved).
+                'daftar' => [
+                    ['name' => 'Dapur Jagung Bersama', 'products' => 'Keripik jagung renyah', 'description' => 'Camilan olahan jagung untuk teman minum teh dan bingkisan keluarga.', 'whatsapp' => null, 'whatsappApproved' => false],
+                    ['name' => 'Anyaman Sahabat Desa', 'products' => 'Keranjang & wadah anyaman', 'description' => 'Kerajinan anyaman untuk kebutuhan rumah dan kemasan hadiah.', 'whatsapp' => null, 'whatsappApproved' => false],
+                    ['name' => 'Usaha warga 3', 'products' => 'kerajinan', 'description' => 'Deskripsi singkat usaha dan produknya.', 'whatsapp' => null, 'whatsappApproved' => false],
+                    ['name' => 'Usaha warga 4', 'products' => 'hasil ternak', 'description' => 'Deskripsi singkat usaha dan produknya.', 'whatsapp' => null, 'whatsappApproved' => false],
+                ],
+            ],
+            'ajakan' => [
+                'judul' => 'Ingin usaha Anda tercantum di sini?',
+                'deskripsi' => 'Pelaku usaha di Desa Marga Agung dapat mendaftarkan usahanya melalui kantor desa atau Ruang Aspirasi.',
+            ],
+        ];
+    }
+
+    /**
      * Contoh isi untuk katalog komponen (/_komponen). Teks mengikuti contoh di Figma.
      *
      * @return array<string, mixed>
