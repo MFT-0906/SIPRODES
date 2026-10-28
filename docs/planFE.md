@@ -26,7 +26,7 @@ Jika hasil fase belum sesuai, tulis koreksinya, lalu minta: `Perbaiki fase N ses
 | 0 | Persiapan proyek & aturan | Selesai |
 | 1 | Design token & gaya dasar | Selesai |
 | 2 | Komponen dasar (UI kit) | Selesai |
-| 3 | Layout publik & navigasi | Belum |
+| 3 | Layout publik & navigasi | Selesai |
 | 4 | Halaman publik A: Beranda, Profil | Belum |
 | 5 | Halaman publik B: APBDes, Potensi | Belum |
 | 6 | Halaman publik C: Berita, Detail, Aspirasi, Kontak | Belum |
@@ -204,12 +204,12 @@ Contoh: node `8:75` → `?node-id=8-75`.
 
 **Sumber Figma:** `6:93`, `6:132`, `15:304`, `2006:239`, `2006:272`, `6:147`.
 
-- [ ] `layouts/public.blade.php`: skip link "Lewati ke konten", header, strip wilayah, `<main>`, footer.
-- [ ] Header desktop (≥ 1024 px): logo (varian gelap), menu Beranda · Profil Desa · APBDes · Potensi Desa · Berita & Agenda · Kontak, tombol aksen "Ruang Aspirasi". Menu aktif ditandai garis kuning + `aria-current="page"`.
-- [ ] Header HP: logo + tombol menu 44 px; menu layar penuh sesuai `15:304`, bisa ditutup dengan tombol × dan Esc, fokus kembali ke tombol menu.
-- [ ] Footer: identitas, kontak resmi (tampil hanya jika data kontak `verified`), tautan penting, hak cipta.
-- [ ] Rute publik bernama: `home`, `profil`, `apbdes`, `potensi`, `berita.index`, `berita.show`, `aspirasi.create`, `kontak`. Isi sementara: halaman kosong dengan judul.
-- [ ] APBDes dan Berita harus bisa dicapai maksimal dua klik dari Beranda.
+- [x] `layouts/public.blade.php`: skip link "Lewati ke konten", header, strip wilayah, `<main>`, footer.
+- [x] Header desktop (≥ 1024 px): logo (varian gelap), menu Beranda · Profil Desa · APBDes · Potensi Desa · Berita & Agenda · Kontak, tombol aksen "Ruang Aspirasi". Menu aktif ditandai garis kuning + `aria-current="page"`.
+- [x] Header HP: logo + tombol menu 44 px; menu layar penuh sesuai `15:304`, bisa ditutup dengan tombol × dan Esc, fokus kembali ke tombol menu.
+- [x] Footer: identitas, kontak resmi (tampil hanya jika data kontak `verified`), tautan penting, hak cipta.
+- [x] Rute publik bernama: `home`, `profil`, `apbdes`, `potensi`, `berita.index`, `berita.show`, `aspirasi.create`, `kontak`. Isi sementara: halaman kosong dengan judul.
+- [x] APBDes dan Berita harus bisa dicapai maksimal dua klik dari Beranda.
 
 **Checkpoint:** navigasi berfungsi di 390 px, 768 px, dan 1440 px; menu HP bisa dipakai dengan keyboard.
 
@@ -327,4 +327,5 @@ Contoh: node `8:75` → `?node-id=8-75`.
 |---|---|---|---|
 | 2026-10-28 | 0 | Stack: PHP 8.3 (Composer)/8.5 (CLI), Laravel 13.38, Vite 8, Tailwind 4 (tanpa Bootstrap). Font Plus Jakarta Sans + Inter di-host lokal lewat plugin fonts Vite (`display: swap`, variabel `--font-heading`/`--font-body`). Struktur folder, `DemoContent.php`, aturan di `CLAUDE.md`. Figma MCP terverifikasi (node `20:2850`, token cocok). Catatan: Figma memberi letter-spacing −0.4 px pada Display/H1/H2 (dipakai di fase 1); `DESIGN.md` memakai palet lama, ikuti token Figma. | `4e862ed` |
 | 2026-10-28 | 1 | Token warna, radius, dan tipografi di `@theme` + `@utility type-*` (`resources/css/app.css`); palet bawaan Tailwind dikosongkan. Gaya dasar, cincin fokus (kuning di `.on-dark`), reduced-motion, `container-page`. Halaman uji lokal `/_tokens`; nilai komputasi font/ukuran/bobot/line-height/letter-spacing cocok dengan Figma `20:2850` di 1280 px dan 390 px. Catatan: `accent-dark` dan `danger-dark` hanya dari plan (bukan variabel Figma di node itu). | `5682d4f` |
-| 2026-10-28 | 2 | 26 komponen `x-ui.*` di `resources/views/components/ui/` (button, icon, badge, field, select, checkbox, radio, toggle, uploader, breadcrumb, pagination, search, filter-dropdown, chip, 6 kartu, empty-state, skeleton-card, alert, toast, modal, image-placeholder). Ikon: 37 SVG Figma dirakit ke kanvas 24 px (`resources/svg/icons`, `currentColor`). Alpine.js + plugin focus untuk modal/toast/dropdown/uploader (`resources/js/app.js`). Katalog lokal `/_komponen`; diuji di 1280/390/360 px (tanpa gulir horizontal): dialog (fokus terkunci, Esc, fokus kembali), toast, filter, uploader, kunci tombol kirim. Catatan: prop varian tombol bernama `variant` (bukan `type`, bentrok dengan atribut HTML); `<select>` memakai elemen asli sehingga daftar opsinya mengikuti gaya peramban; tombol ukuran S setinggi 36 px sesuai Figma dengan area sentuh 44 px; batas ukuran unggahan belum ditetapkan desa (`TODO(backend)`). | — |
+| 2026-10-28 | 2 | 26 komponen `x-ui.*` di `resources/views/components/ui/` (button, icon, badge, field, select, checkbox, radio, toggle, uploader, breadcrumb, pagination, search, filter-dropdown, chip, 6 kartu, empty-state, skeleton-card, alert, toast, modal, image-placeholder). Ikon: 37 SVG Figma dirakit ke kanvas 24 px (`resources/svg/icons`, `currentColor`). Alpine.js + plugin focus untuk modal/toast/dropdown/uploader (`resources/js/app.js`). Katalog lokal `/_komponen`; diuji di 1280/390/360 px (tanpa gulir horizontal): dialog (fokus terkunci, Esc, fokus kembali), toast, filter, uploader, kunci tombol kirim. Catatan: prop varian tombol bernama `variant` (bukan `type`, bentrok dengan atribut HTML); `<select>` memakai elemen asli sehingga daftar opsinya mengikuti gaya peramban; tombol ukuran S setinggi 36 px sesuai Figma dengan area sentuh 44 px; batas ukuran unggahan belum ditetapkan desa (`TODO(backend)`). | `46e87cd` |
+| 2026-10-28 | 3 | `layouts/public.blade.php` (skip link, header, strip wilayah, `<main id="konten">`, footer, toast) dan `x-public.{logo,header,region-strip,footer}`. Header desktop ≥1024 px (menu aktif: garis kuning + `aria-current`, CTA aksen); HP/tablet: tombol menu 44 px + menu layar penuh (fokus terkunci, Esc/× menutup, fokus kembali). Footer: kontak resmi hanya tampil bila `verified` (saat ini semua belum, jadi kolom Kontak Resmi disembunyikan, berbeda dari Figma yang memuat placeholder). 8 rute bernama (`home`, `profil`, `apbdes`, `potensi`, `berita.index`, `berita.show`, `aspirasi.create`, `kontak`) berisi halaman kerangka berjudul. `welcome.blade.php` bawaan dihapus. Diuji 1440/1024/768/390 px: tanpa gulir horizontal, APBDes dan Berita 1 klik dari Beranda. Catatan: penanda aktif menu desktop diposisikan absolut sehingga teks semua menu sejajar (di Figma teks menu aktif sedikit lebih tinggi); catatan "Menu dapat ditutup dengan tombol ×…" di Figma dianggap catatan desain dan tidak ditampilkan. | — |

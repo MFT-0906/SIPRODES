@@ -13,6 +13,29 @@ class DemoContent
     // TODO(backend): ganti dengan data dari database
 
     /**
+     * Identitas dan kontak desa untuk header, footer, dan halaman kontak.
+     * Nama dan wilayah mengikuti desain Figma; kontak resmi belum diverifikasi sehingga tidak ditampilkan.
+     *
+     * @return array<string, mixed>
+     */
+    public static function identitas(): array
+    {
+        return [
+            'sebutan' => 'Pemerintah Desa',
+            'nama' => 'Marga Agung',
+            'wilayah' => 'Kecamatan Jati Agung, Kabupaten Lampung Selatan, Provinsi Lampung.',
+            'wilayah_strip' => 'Kecamatan Jati Agung · Kabupaten Lampung Selatan · Provinsi Lampung',
+            'wilayah_strip_pendek' => 'Kec. Jati Agung · Kab. Lampung Selatan · Lampung',
+            // Isi `value` dan ubah `verified` menjadi true hanya setelah pemerintah desa memverifikasi.
+            'kontak' => [
+                'alamat' => ['verified' => false, 'value' => null],
+                'telepon' => ['verified' => false, 'value' => null],
+                'email' => ['verified' => false, 'value' => null],
+            ],
+        ];
+    }
+
+    /**
      * Contoh isi untuk katalog komponen (/_komponen). Teks mengikuti contoh di Figma.
      *
      * @return array<string, mixed>
