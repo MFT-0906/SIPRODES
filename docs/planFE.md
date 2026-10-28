@@ -25,7 +25,7 @@ Jika hasil fase belum sesuai, tulis koreksinya, lalu minta: `Perbaiki fase N ses
 |---|---|---|
 | 0 | Persiapan proyek & aturan | Selesai |
 | 1 | Design token & gaya dasar | Selesai |
-| 2 | Komponen dasar (UI kit) | Belum |
+| 2 | Komponen dasar (UI kit) | Selesai |
 | 3 | Layout publik & navigasi | Belum |
 | 4 | Halaman publik A: Beranda, Profil | Belum |
 | 5 | Halaman publik B: APBDes, Potensi | Belum |
@@ -186,15 +186,15 @@ Contoh: node `8:75` → `?node-id=8-75`.
 
 **Sumber Figma:** tabel Design System di atas. Ambil konteks tiap komponen dari node-nya.
 
-- [ ] `x-ui.button` — type: `primary | accent | secondary | ghost | danger`; size: `m | s`; state: disabled & loading (spinner + `aria-busy`, cegah klik ganda); ikon opsional. Bisa berupa `<button>` atau `<a>`.
-- [ ] `x-ui.icon` — set ikon garis 24 px (Lucide atau SVG dari Figma `5:2`), warna mengikuti `currentColor`.
-- [ ] `x-ui.badge` — nada: `sukses | netral | info | peringatan | bahaya | utama | aksen`; selalu berteks.
-- [ ] Form: `x-ui.field` (input/textarea dengan label, penanda Wajib/Opsional, teks bantuan, pesan error + `aria-describedby`), `x-ui.select`, `x-ui.checkbox`, `x-ui.radio`, `x-ui.toggle`, `x-ui.uploader` (kosong, mengunggah, berhasil, ditolak).
-- [ ] Navigasi & daftar: `x-ui.breadcrumb`, `x-ui.pagination`, `x-ui.search`, `x-ui.filter-dropdown`, `x-ui.chip`.
-- [ ] Kartu: `x-ui.card-news`, `x-ui.card-umkm` (tombol WhatsApp hanya jika `whatsappApproved`), `x-ui.card-agenda` (lokasi opsional), `x-ui.card-quick`, `x-ui.card-stat` (wajib ada sumber), `x-ui.card-official`.
-- [ ] Status: `x-ui.empty-state`, `x-ui.skeleton-card`, `x-ui.alert` (info/sukses/peringatan/bahaya), `x-ui.toast`, `x-ui.modal` (fokus terkunci di dalam, tutup dengan Esc).
-- [ ] `x-ui.image-placeholder` — kotak foto + ikon + keterangan singkat.
-- [ ] Halaman katalog `/_komponen` (hanya aktif di `APP_ENV=local`) yang menampilkan semua komponen dan variannya.
+- [x] `x-ui.button` — type: `primary | accent | secondary | ghost | danger`; size: `m | s`; state: disabled & loading (spinner + `aria-busy`, cegah klik ganda); ikon opsional. Bisa berupa `<button>` atau `<a>`.
+- [x] `x-ui.icon` — set ikon garis 24 px (Lucide atau SVG dari Figma `5:2`), warna mengikuti `currentColor`.
+- [x] `x-ui.badge` — nada: `sukses | netral | info | peringatan | bahaya | utama | aksen`; selalu berteks.
+- [x] Form: `x-ui.field` (input/textarea dengan label, penanda Wajib/Opsional, teks bantuan, pesan error + `aria-describedby`), `x-ui.select`, `x-ui.checkbox`, `x-ui.radio`, `x-ui.toggle`, `x-ui.uploader` (kosong, mengunggah, berhasil, ditolak).
+- [x] Navigasi & daftar: `x-ui.breadcrumb`, `x-ui.pagination`, `x-ui.search`, `x-ui.filter-dropdown`, `x-ui.chip`.
+- [x] Kartu: `x-ui.card-news`, `x-ui.card-umkm` (tombol WhatsApp hanya jika `whatsappApproved`), `x-ui.card-agenda` (lokasi opsional), `x-ui.card-quick`, `x-ui.card-stat` (wajib ada sumber), `x-ui.card-official`.
+- [x] Status: `x-ui.empty-state`, `x-ui.skeleton-card`, `x-ui.alert` (info/sukses/peringatan/bahaya), `x-ui.toast`, `x-ui.modal` (fokus terkunci di dalam, tutup dengan Esc).
+- [x] `x-ui.image-placeholder` — kotak foto + ikon + keterangan singkat.
+- [x] Halaman katalog `/_komponen` (hanya aktif di `APP_ENV=local`) yang menampilkan semua komponen dan variannya.
 
 **Checkpoint:** katalog `/_komponen` tampil; setiap komponen bisa dioperasikan dengan keyboard; bandingkan dengan halaman Design System Figma.
 
@@ -326,4 +326,5 @@ Contoh: node `8:75` → `?node-id=8-75`.
 | Tanggal | Fase | Ringkasan | Commit |
 |---|---|---|---|
 | 2026-10-28 | 0 | Stack: PHP 8.3 (Composer)/8.5 (CLI), Laravel 13.38, Vite 8, Tailwind 4 (tanpa Bootstrap). Font Plus Jakarta Sans + Inter di-host lokal lewat plugin fonts Vite (`display: swap`, variabel `--font-heading`/`--font-body`). Struktur folder, `DemoContent.php`, aturan di `CLAUDE.md`. Figma MCP terverifikasi (node `20:2850`, token cocok). Catatan: Figma memberi letter-spacing −0.4 px pada Display/H1/H2 (dipakai di fase 1); `DESIGN.md` memakai palet lama, ikuti token Figma. | `4e862ed` |
-| 2026-10-28 | 1 | Token warna, radius, dan tipografi di `@theme` + `@utility type-*` (`resources/css/app.css`); palet bawaan Tailwind dikosongkan. Gaya dasar, cincin fokus (kuning di `.on-dark`), reduced-motion, `container-page`. Halaman uji lokal `/_tokens`; nilai komputasi font/ukuran/bobot/line-height/letter-spacing cocok dengan Figma `20:2850` di 1280 px dan 390 px. Catatan: `accent-dark` dan `danger-dark` hanya dari plan (bukan variabel Figma di node itu). | — |
+| 2026-10-28 | 1 | Token warna, radius, dan tipografi di `@theme` + `@utility type-*` (`resources/css/app.css`); palet bawaan Tailwind dikosongkan. Gaya dasar, cincin fokus (kuning di `.on-dark`), reduced-motion, `container-page`. Halaman uji lokal `/_tokens`; nilai komputasi font/ukuran/bobot/line-height/letter-spacing cocok dengan Figma `20:2850` di 1280 px dan 390 px. Catatan: `accent-dark` dan `danger-dark` hanya dari plan (bukan variabel Figma di node itu). | `5682d4f` |
+| 2026-10-28 | 2 | 26 komponen `x-ui.*` di `resources/views/components/ui/` (button, icon, badge, field, select, checkbox, radio, toggle, uploader, breadcrumb, pagination, search, filter-dropdown, chip, 6 kartu, empty-state, skeleton-card, alert, toast, modal, image-placeholder). Ikon: 37 SVG Figma dirakit ke kanvas 24 px (`resources/svg/icons`, `currentColor`). Alpine.js + plugin focus untuk modal/toast/dropdown/uploader (`resources/js/app.js`). Katalog lokal `/_komponen`; diuji di 1280/390/360 px (tanpa gulir horizontal): dialog (fokus terkunci, Esc, fokus kembali), toast, filter, uploader, kunci tombol kirim. Catatan: prop varian tombol bernama `variant` (bukan `type`, bentrok dengan atribut HTML); `<select>` memakai elemen asli sehingga daftar opsinya mengikuti gaya peramban; tombol ukuran S setinggi 36 px sesuai Figma dengan area sentuh 44 px; batas ukuran unggahan belum ditetapkan desa (`TODO(backend)`). | — |

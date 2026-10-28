@@ -9,4 +9,5 @@ Route::get('/', function () {
 // Halaman uji internal, hanya untuk lingkungan lokal.
 if (app()->environment('local')) {
     Route::view('/_tokens', 'dev.tokens');
+    Route::view('/_komponen', 'dev.komponen');
 }

@@ -171,3 +171,8 @@
         }
     }
 }
+
+/* Elemen Alpine yang belum diinisialisasi tidak boleh berkedip. */
+[x-cloak] {
+    display: none !important;
+}
