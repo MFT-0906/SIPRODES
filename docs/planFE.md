@@ -24,7 +24,7 @@ Jika hasil fase belum sesuai, tulis koreksinya, lalu minta: `Perbaiki fase N ses
 | Fase | Nama | Status |
 |---|---|---|
 | 0 | Persiapan proyek & aturan | Selesai |
-| 1 | Design token & gaya dasar | Belum |
+| 1 | Design token & gaya dasar | Selesai |
 | 2 | Komponen dasar (UI kit) | Belum |
 | 3 | Layout publik & navigasi | Belum |
 | 4 | Halaman publik A: Beranda, Profil | Belum |
@@ -145,7 +145,7 @@ Contoh: node `8:75` → `?node-id=8-75`.
 
 **Sumber Figma:** `20:2850` (fondasi), variabel lokal file V2.
 
-- [ ] Petakan token ke tema Tailwind (pakai `@theme` di CSS bila Tailwind v4, atau `tailwind.config.js` bila v3). Nama mengikuti token Figma, mis. `bg-primary`, `text-muted`, `border-border`.
+- [x] Petakan token ke tema Tailwind (pakai `@theme` di CSS bila Tailwind v4, atau `tailwind.config.js` bila v3). Nama mengikuti token Figma, mis. `bg-primary`, `text-muted`, `border-border`.
 
 | Token | Nilai | Token | Nilai |
 |---|---|---|---|
@@ -161,7 +161,7 @@ Contoh: node `8:75` → `?node-id=8-75`.
 | info | `#2D5BA8` | info-soft | `#EAF0FA` |
 
 - Radius: input/tombol `8px`, kartu `16px`, pill `999px`. Jarak: kelipatan 4 (4, 8, 12, 16, 24, 32, 48, 64).
-- [ ] Buat kelas tipografi (atau komponen teks) sesuai gaya teks Figma:
+- [x] Buat kelas tipografi (atau komponen teks) sesuai gaya teks Figma:
 
 | Gaya | Font | Ukuran / tinggi baris |
 |---|---|---|
@@ -175,8 +175,8 @@ Contoh: node `8:75` → `?node-id=8-75`.
 | Label | Inter 600 | 14 / 1.4 |
 | Label Small | Inter 500 | 12 / 1.4 |
 
-- [ ] Gaya dasar: latar halaman `background`, teks `text`, cincin fokus global (`outline` 3px warna primary dengan offset), hormati `prefers-reduced-motion`.
-- [ ] Wadah konten: maks. 1200 px, padding samping 16 px (HP) dan 24 px (≥ 1024 px).
+- [x] Gaya dasar: latar halaman `background`, teks `text`, cincin fokus global (`outline` 3px warna primary dengan offset), hormati `prefers-reduced-motion`.
+- [x] Wadah konten: maks. 1200 px, padding samping 16 px (HP) dan 24 px (≥ 1024 px).
 
 **Checkpoint:** halaman uji sederhana menampilkan semua warna dan gaya teks; cocokkan dengan node `20:2850`.
 
@@ -325,4 +325,5 @@ Contoh: node `8:75` → `?node-id=8-75`.
 
 | Tanggal | Fase | Ringkasan | Commit |
 |---|---|---|---|
-| 2026-10-28 | 0 | Stack: PHP 8.3 (Composer)/8.5 (CLI), Laravel 13.38, Vite 8, Tailwind 4 (tanpa Bootstrap). Font Plus Jakarta Sans + Inter di-host lokal lewat plugin fonts Vite (`display: swap`, variabel `--font-heading`/`--font-body`). Struktur folder, `DemoContent.php`, aturan di `CLAUDE.md`. Figma MCP terverifikasi (node `20:2850`, token cocok). Catatan: Figma memberi letter-spacing −0.4 px pada Display/H1/H2 (dipakai di fase 1); `DESIGN.md` memakai palet lama, ikuti token Figma. | — (belum di-commit) |
+| 2026-10-28 | 0 | Stack: PHP 8.3 (Composer)/8.5 (CLI), Laravel 13.38, Vite 8, Tailwind 4 (tanpa Bootstrap). Font Plus Jakarta Sans + Inter di-host lokal lewat plugin fonts Vite (`display: swap`, variabel `--font-heading`/`--font-body`). Struktur folder, `DemoContent.php`, aturan di `CLAUDE.md`. Figma MCP terverifikasi (node `20:2850`, token cocok). Catatan: Figma memberi letter-spacing −0.4 px pada Display/H1/H2 (dipakai di fase 1); `DESIGN.md` memakai palet lama, ikuti token Figma. | `4e862ed` |
+| 2026-10-28 | 1 | Token warna, radius, dan tipografi di `@theme` + `@utility type-*` (`resources/css/app.css`); palet bawaan Tailwind dikosongkan. Gaya dasar, cincin fokus (kuning di `.on-dark`), reduced-motion, `container-page`. Halaman uji lokal `/_tokens`; nilai komputasi font/ukuran/bobot/line-height/letter-spacing cocok dengan Figma `20:2850` di 1280 px dan 390 px. Catatan: `accent-dark` dan `danger-dark` hanya dari plan (bukan variabel Figma di node itu). | — |

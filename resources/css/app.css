@@ -3,8 +3,171 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/*
+ * Design token — mengikuti file Figma "Website Desa Marga Agung — UI Design V2"
+ * (halaman Design System, node 20:2850). accent-dark dan danger-dark berasal dari docs/planFE.md.
+ * Palet bawaan Tailwind dikosongkan agar hanya token desa yang bisa dipakai.
+ */
 @theme {
+    --color-*: initial;
+
+    --color-primary: #1b5e20;
+    --color-primary-dark: #14491a;
+    --color-primary-soft: #edf3e6;
+    --color-accent: #f9a825;
+    --color-accent-dark: #e0941a;
+    --color-accent-soft: #fdf3dc;
+    --color-text: #212121;
+    --color-muted: #53594f;
+    --color-border: #d5dbd1;
+    --color-surface: #ffffff;
+    --color-background: #faf7ee;
+    --color-success: #2e7d32;
+    --color-success-soft: #e8f5ee;
+    --color-warning: #8a5a12;
+    --color-warning-soft: #fdf4e3;
+    --color-danger: #c62828;
+    --color-danger-dark: #9f1f1f;
+    --color-danger-soft: #fdecea;
+    --color-info: #2d5ba8;
+    --color-info-soft: #eaf0fa;
+
     --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+
+    --radius-control: 8px;
+    --radius-card: 16px;
+    --radius-pill: 999px;
+}
+
+/* Gaya teks. Display/H1 memakai ukuran HP lebih dulu, lalu membesar di layar lebar. */
+@utility type-display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.25;
+    letter-spacing: -0.4px;
+
+    @media (width >= 64rem) {
+        font-size: 36px;
+        line-height: 1.2;
+    }
+}
+
+@utility type-h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.25;
+    letter-spacing: -0.4px;
+
+    @media (width >= 40rem) {
+        font-size: 32px;
+    }
+}
+
+@utility type-h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+}
+
+@utility type-h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+@utility type-body-lg {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+@utility type-body {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+@utility type-body-sm {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@utility type-label {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+@utility type-label-sm {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+}
+
+/* Wadah konten: maks. 1200 px, padding samping 16 px (HP) dan 24 px (>= 1024 px). */
+@utility container-page {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 16px;
+
+    @media (width >= 64rem) {
+        padding-inline: 24px;
+    }
+}
+
+@layer base {
+    html {
+        background-color: var(--color-background);
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        background-color: var(--color-background);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Cincin fokus global; di latar gelap (mis. header hijau) berganti ke aksen agar tetap terlihat. */
+    :focus-visible {
+        outline: 3px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+
+    .on-dark :focus-visible {
+        outline-color: var(--color-accent);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        ::before,
+        ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
 }
