@@ -199,6 +199,74 @@ Alpine.data('katalog', (awal = 'pertanian', daftarTab = ['pertanian', 'umkm']) =
     },
 }));
 
+/**
+ * Formulir Ruang Aspirasi: validasi di sisi klien hanya untuk kenyamanan (aturan sama dengan server).
+ * Server tetap memvalidasi ulang di AspirasiController.
+ */
+Alpine.data('formAspirasi', () => ({
+    err: {},
+    ringkasan: '',
+
+    periksa(event) {
+        const form = event.target;
+        const nilai = (nama) => (form.elements[nama]?.value ?? '').trim();
+        const err = {};
+
+        if (nilai('nama') === '') {
+            err.nama = 'Nama wajib diisi.';
+        } else if (nilai('nama').length > 100) {
+            err.nama = 'Nama paling banyak 100 karakter.';
+        }
+
+        if (nilai('nik') !== '' && !/^\d{16}$/.test(nilai('nik'))) {
+            err.nik = 'NIK harus terdiri dari 16 digit angka. Kosongkan jika tidak diperlukan.';
+        }
+
+        if (nilai('pesan') === '') {
+            err.pesan = 'Isi pesan wajib diisi.';
+        } else if (nilai('pesan').length < 20) {
+            err.pesan = `Pesan terlalu pendek. Tulis minimal 20 karakter (saat ini ${nilai('pesan').length}).`;
+        }
+
+        this.err = err;
+        const jumlah = Object.keys(err).length;
+        this.ringkasan = jumlah ? `Ada ${jumlah} isian yang perlu diperbaiki sebelum pesan dapat dikirim.` : '';
+
+        if (jumlah) {
+            event.preventDefault();
+            form.elements[Object.keys(err)[0]].focus();
+        }
+    },
+}));
+
+/**
+ * Tombol "Bagikan tautan": memakai lembar bagikan perangkat bila ada, jika tidak menyalin tautan ke papan klip.
+ */
+Alpine.data('bagikan', (judul = '') => ({
+    async kirim() {
+        const tautan = window.location.href;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: judul, url: tautan });
+
+                return;
+            } catch (galat) {
+                if (galat.name === 'AbortError') {
+                    return;
+                }
+            }
+        }
+
+        try {
+            await navigator.clipboard.writeText(tautan);
+            window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Tautan disalin ke papan klip.', tone: 'sukses' } }));
+        } catch {
+            window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Tautan tidak dapat disalin. Salin dari bilah alamat peramban.', tone: 'bahaya' } }));
+        }
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();
 

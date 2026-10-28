@@ -8,7 +8,7 @@ class PublicPagesTest extends TestCase
 {
     public function test_semua_halaman_publik_dapat_dibuka(): void
     {
-        foreach (['/', '/profil-desa', '/transparansi-apbdes', '/potensi-desa', '/berita', '/berita/contoh', '/ruang-aspirasi', '/kontak-lokasi'] as $url) {
+        foreach (['/', '/profil-desa', '/transparansi-apbdes', '/potensi-desa', '/berita', '/berita/gotong-royong-lingkungan-bersih', '/ruang-aspirasi', '/kontak-lokasi'] as $url) {
             $this->get($url)->assertOk();
         }
     }

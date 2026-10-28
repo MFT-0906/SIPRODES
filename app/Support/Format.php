@@ -38,6 +38,27 @@ class Format
         return Carbon::parse($tanggal)->locale('id')->translatedFormat($panjang ? 'j F Y' : 'j M Y');
     }
 
+    public static function tanggalLengkap(CarbonInterface|string|null $tanggal): string
+    {
+        if ($tanggal === null || $tanggal === '') {
+            return '—';
+        }
+
+        return Carbon::parse($tanggal)->locale('id')->translatedFormat('l, j F Y');
+    }
+
+    /**
+     * Tanggal agenda untuk lencana kartu, mis. ['05', 'NOV'].
+     *
+     * @return array{0: string, 1: string}
+     */
+    public static function hariBulan(CarbonInterface|string $tanggal): array
+    {
+        $tanggal = Carbon::parse($tanggal)->locale('id');
+
+        return [$tanggal->format('d'), mb_strtoupper($tanggal->translatedFormat('M'))];
+    }
+
     public static function ukuranBerkas(?int $bytes): string
     {
         if ($bytes === null) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\DemoContent;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -64,5 +65,79 @@ class PublicPageController extends Controller
             'content' => $content,
             'umkm' => $paginator,
         ]);
+    }
+
+    public function berita(Request $request): View
+    {
+        // Hanya berita berstatus terbit yang boleh tampil di situs publik.
+        $terbit = $this->beritaTerbit();
+        $kategori = $terbit->pluck('category')->unique()->sort()->values();
+
+        $aktif = $request->query('kategori');
+        if (! $kategori->contains($aktif)) {
+            $aktif = null;
+        }
+        $kata = trim((string) $request->query('q', ''));
+
+        $hasil = $terbit
+            ->when($aktif, fn ($c) => $c->where('category', $aktif))
+            ->when($kata !== '', fn ($c) => $c->filter(
+                fn (array $b) => str_contains(mb_strtolower($b['title'].' '.$b['excerpt']), mb_strtolower($kata))
+            ))
+            ->values();
+
+        $perHalaman = 4;
+        $halaman = max(1, (int) $request->query('page', 1));
+        $berita = new LengthAwarePaginator(
+            $hasil->forPage($halaman, $perHalaman)->values(),
+            $hasil->count(),
+            $perHalaman,
+            $halaman,
+            ['path' => $request->url(), 'query' => $request->except('page')],
+        );
+
+        $hariIni = Carbon::today();
+        $agenda = collect(DemoContent::agenda());
+
+        return view('pages.public.berita', [
+            'berita' => $berita,
+            'kategori' => $kategori,
+            'aktif' => $aktif,
+            'kata' => $kata,
+            'adaBerita' => $terbit->isNotEmpty(),
+            'agendaMendatang' => $agenda->filter(fn ($a) => Carbon::parse($a['tanggal'])->gte($hariIni))->sortBy('tanggal')->values()->all(),
+            'agendaLewat' => $agenda->filter(fn ($a) => Carbon::parse($a['tanggal'])->lt($hariIni))->sortByDesc('tanggal')->values()->all(),
+        ]);
+    }
+
+    public function beritaShow(string $slug): View
+    {
+        $terbit = $this->beritaTerbit();
+        $artikel = $terbit->firstWhere('slug', $slug);
+
+        // Draf atau slug yang tidak ada tidak boleh dapat dibuka publik.
+        abort_if($artikel === null, 404);
+
+        $kata = str_word_count(strip_tags(collect($artikel['isi'])->pluck(1)->implode(' ')));
+
+        return view('pages.public.berita-detail', [
+            'artikel' => $artikel,
+            'menitBaca' => max(1, (int) ceil($kata / 200)),
+            'lainnya' => $terbit->where('slug', '!=', $slug)->take(3)->values()->all(),
+        ]);
+    }
+
+    public function kontak(): View
+    {
+        return view('pages.public.kontak', [
+            'identitas' => DemoContent::identitas(),
+            'statistik' => collect(DemoContent::statistik())->keyBy('label'),
+        ]);
+    }
+
+    /** @return \Illuminate\Support\Collection<int, array<string, mixed>> */
+    private function beritaTerbit(): \Illuminate\Support\Collection
+    {
+        return collect(DemoContent::berita())->where('status', 'terbit')->sortByDesc('tanggal')->values();
     }
 }
