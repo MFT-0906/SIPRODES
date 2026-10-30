@@ -10,9 +10,9 @@
     $alat = [
         ['B', 'Tebal', 'bungkus', '**', '**', 'teks tebal'],
         ['I', 'Miring', 'bungkus', '_', '_', 'teks miring'],
-        ['H2', 'Subjudul', 'awalan', '## ', '', 'Subjudul'],
+        ['H2', 'H2, subjudul', 'awalan', '## ', '', 'Subjudul'],
         ['• Daftar', 'Daftar berpoin', 'awalan', '- ', '', 'butir daftar'],
-        ['1. Daftar', 'Daftar bernomor', 'awalan', '1. ', '', 'butir daftar'],
+        ['1. Daftar', '1. Daftar, bernomor', 'awalan', '1. ', '', 'butir daftar'],
         ['Tautan', 'Tautan', 'bungkus', '[', '](https://)', 'teks tautan'],
     ];
 @endphp

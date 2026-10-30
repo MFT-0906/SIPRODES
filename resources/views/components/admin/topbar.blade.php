@@ -1,7 +1,7 @@
 @props(['judul', 'pengguna', 'breadcrumb' => null])
 
 {{-- Topbar admin (Figma 17:188). Di HP dilengkapi tombol pembuka menu samping (lingkup Alpine `open` dari layout). --}}
-<div class="flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3 lg:px-8 lg:py-4">
+<header class="flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3 lg:px-8 lg:py-4">
     <div class="flex min-w-0 items-center gap-3">
         <button
             type="button" x-ref="pemicu" x-on:click="open = true"
@@ -50,4 +50,4 @@
             </div>
         </div>
     </div>
-</div>
+</header>

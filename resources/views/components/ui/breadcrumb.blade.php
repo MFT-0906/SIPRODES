@@ -7,7 +7,7 @@
                 @if ($loop->last)
                     <span aria-current="page" class="text-text">{{ $item['label'] }}</span>
                 @else
-                    <a href="{{ $item['href'] }}" class="py-1 text-primary hover:underline">{{ $item['label'] }}</a>
+                    <a href="{{ $item['href'] }}" class="relative py-1 text-primary hover:underline after:absolute after:-inset-x-1 after:-inset-y-2">{{ $item['label'] }}</a>
                     <span class="text-muted" aria-hidden="true">/</span>
                 @endif
             </li>

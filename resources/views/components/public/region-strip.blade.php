@@ -2,7 +2,7 @@
     $identitas = \App\Support\DemoContent::identitas();
 @endphp
 
-<div class="border-b border-border bg-background">
+<div role="region" aria-label="Wilayah administrasi" class="border-b border-border bg-background">
     <div class="container-page flex min-h-10 items-center gap-2 py-2.5">
         <x-ui.icon name="map-pin" class="size-4 text-primary" />
         <p class="type-label-sm text-text">

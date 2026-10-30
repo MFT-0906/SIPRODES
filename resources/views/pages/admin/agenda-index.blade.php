@@ -12,7 +12,7 @@
     $statusAwal = old('status', $item['status'] ?? 'draf');
     $opsiWaktu = ['mendatang' => 'Mendatang', 'lewat' => 'Sudah lewat', 'semua' => 'Semua'];
     $opsiStatus = ['semua' => 'Semua', 'terbit' => 'Terbit', 'draf' => 'Draf'];
-    $grid = 'lg:grid lg:grid-cols-[minmax(0,1fr)_200px_200px_110px_136px] lg:items-center lg:gap-4';
+    $grid = 'lg:grid lg:grid-cols-[minmax(0,1fr)_150px_150px_100px_130px] lg:items-center lg:gap-4';
 @endphp
 
 @section('content')
@@ -39,7 +39,7 @@
                 <table class="block w-full">
                     <caption class="sr-only">Daftar agenda beserta tanggal, lokasi, status, dan aksi</caption>
                     <thead class="block">
-                        <tr class="hidden border-t border-border bg-background px-5 py-3 type-label-sm text-muted lg:grid lg:grid-cols-[minmax(0,1fr)_200px_200px_110px_136px] lg:gap-4">
+                        <tr class="hidden border-t border-border bg-background px-5 py-3 type-label-sm text-muted lg:grid lg:grid-cols-[minmax(0,1fr)_150px_150px_100px_130px] lg:gap-4">
                             <th scope="col" class="text-left font-[inherit]">JUDUL AGENDA</th>
                             <th scope="col" class="text-left font-[inherit]">TANGGAL &amp; WAKTU</th>
                             <th scope="col" class="text-left font-[inherit]">LOKASI</th>

@@ -67,7 +67,7 @@
                 </div>
                 <div class="grid gap-6 lg:grid-cols-2">
                     <div class="flex flex-col gap-3 rounded-card bg-primary p-6 lg:p-8">
-                        <p class="type-label-sm text-accent">VISI</p>
+                        <p class="type-label-sm text-accent-soft">VISI</p>
                         <p class="type-h2 text-surface">{{ $content['visi_misi']['visi'] }}</p>
                     </div>
                     <div class="flex flex-col gap-4 rounded-[14px] border border-border bg-surface p-6 lg:p-8">

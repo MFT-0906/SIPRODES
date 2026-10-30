@@ -22,6 +22,8 @@
 
 @section('content')
     <div class="flex flex-col gap-4 lg:gap-6">
+        <h1 class="sr-only">Aspirasi Warga</h1>
+
         {{-- Filter status --}}
         <nav aria-label="Filter status aspirasi" class="-mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0">
             <x-ui.chip :href="$chip('semua')" :active="$filter === 'semua'" class="shrink-0 {{ $dipilih ? 'max-lg:hidden' : '' }}">Semua</x-ui.chip>
