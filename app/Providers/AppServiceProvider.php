@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('layouts.admin', function ($view) {
+        View::composer(['layouts.admin', 'pages.admin.dashboard'], function ($view) {
             // TODO(backend): $pengguna dan $aspirasiBaru berasal dari pengguna yang masuk dan database.
             $demo = DemoContent::admin();
             $pengguna = $demo['pengguna'];

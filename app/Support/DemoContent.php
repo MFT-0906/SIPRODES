@@ -106,6 +106,7 @@ class DemoContent
                 ->values()
                 ->all(),
             'agenda' => collect(self::agenda())
+                ->where('status', 'terbit')
                 ->filter(fn (array $a) => Carbon::parse($a['tanggal'])->gte(Carbon::today()))
                 ->sortBy('tanggal')
                 ->take(3)
@@ -240,16 +241,18 @@ class DemoContent
     /**
      * Agenda contoh dari desain. Lokasi `null` berarti belum terverifikasi dan tidak ditampilkan.
      *
-     * @return list<array{tanggal: string, title: string, time: string|null, location: string|null}>
+     * @return list<array{id: string, tanggal: string, title: string, waktu: string|null, time: string, location: string|null, status: string, deskripsi: string|null, diubah: string}>
      */
     public static function agenda(): array
     {
         return [
-            ['tanggal' => '2026-11-05', 'title' => 'Musyawarah Desa', 'time' => '09.00 WIB', 'location' => 'Lokasi kegiatan'],
-            ['tanggal' => '2026-11-12', 'title' => 'Posyandu', 'time' => '08.00 WIB', 'location' => 'Lokasi kegiatan'],
-            ['tanggal' => '2026-11-20', 'title' => 'Kerja bakti', 'time' => 'Waktu menyusul', 'location' => null],
-            ['tanggal' => '2026-12-02', 'title' => 'Penyuluhan pertanian', 'time' => '13.00 WIB', 'location' => 'Lokasi kegiatan'],
-            ['tanggal' => '2026-10-15', 'title' => 'Posyandu', 'time' => '08.00 WIB', 'location' => 'Lokasi kegiatan'],
+            ['id' => 'agenda-1', 'tanggal' => '2026-11-05', 'title' => 'Musyawarah Desa', 'waktu' => '09:00', 'time' => '09.00 WIB', 'location' => 'Lokasi kegiatan', 'status' => 'terbit', 'deskripsi' => null, 'diubah' => '2026-10-08'],
+            ['id' => 'agenda-2', 'tanggal' => '2026-11-12', 'title' => 'Posyandu', 'waktu' => '08:00', 'time' => '08.00 WIB', 'location' => 'Lokasi kegiatan', 'status' => 'terbit', 'deskripsi' => null, 'diubah' => '2026-10-08'],
+            ['id' => 'agenda-3', 'tanggal' => '2026-11-20', 'title' => 'Kerja bakti', 'waktu' => null, 'time' => 'Waktu menyusul', 'location' => null, 'status' => 'terbit', 'deskripsi' => null, 'diubah' => '2026-10-08'],
+            ['id' => 'agenda-4', 'tanggal' => '2026-12-02', 'title' => 'Penyuluhan pertanian', 'waktu' => '13:00', 'time' => '13.00 WIB', 'location' => 'Lokasi kegiatan', 'status' => 'terbit', 'deskripsi' => null, 'diubah' => '2026-10-08'],
+            ['id' => 'agenda-5', 'tanggal' => '2026-10-15', 'title' => 'Posyandu', 'waktu' => '08:00', 'time' => '08.00 WIB', 'location' => 'Lokasi kegiatan', 'status' => 'terbit', 'deskripsi' => null, 'diubah' => '2026-10-08'],
+            // Contoh agenda berstatus draf: tidak boleh tampil di situs publik.
+            ['id' => 'agenda-6', 'tanggal' => '2026-11-28', 'title' => 'Agenda draf contoh', 'waktu' => null, 'time' => 'Waktu menyusul', 'location' => null, 'status' => 'draf', 'deskripsi' => null, 'diubah' => '2026-10-08'],
         ];
     }
 
@@ -398,14 +401,20 @@ class DemoContent
      * Pengguna admin dan angka ringkas untuk layout dashboard.
      * Nama dan jumlah aspirasi mengikuti contoh di Figma; bukan data sungguhan.
      *
-     * @return array{pengguna: array{name: string, role: string}, aspirasi_baru: int}
+     * @return array{pengguna: array{name: string, role: string}, aspirasi_baru: int, aspirasi_terbaru: list<array{pengirim: string, cuplikan: string, status: string, waktu: string}>}
      */
     public static function admin(): array
     {
-        // TODO(backend): ganti dengan pengguna yang sedang masuk dan jumlah aspirasi berstatus Baru dari database
+        // TODO(backend): ganti dengan pengguna yang sedang masuk, jumlah aspirasi berstatus Baru, dan aspirasi terbaru dari database
         return [
             'pengguna' => ['name' => 'Nama Admin', 'role' => 'staf'],
             'aspirasi_baru' => 3,
+            // Cuplikan dari contoh di Figma; pengirim disamarkan dan NIK tidak pernah ditampilkan.
+            'aspirasi_terbaru' => [
+                ['pengirim' => 'Pengirim A', 'cuplikan' => 'Mohon informasi tentang perbaikan jalan dusun…', 'status' => 'baru', 'waktu' => '2 jam lalu'],
+                ['pengirim' => 'Pengirim B', 'cuplikan' => 'Mohon informasi tentang jadwal posyandu…', 'status' => 'baru', 'waktu' => 'Kemarin'],
+                ['pengirim' => 'Pengirim C', 'cuplikan' => 'Mohon informasi tentang bantuan bibit…', 'status' => 'dibaca', 'waktu' => '2 hari lalu'],
+            ],
         ];
     }
 }

@@ -103,7 +103,8 @@ class PublicPageController extends Controller
         );
 
         $hariIni = Carbon::today();
-        $agenda = collect(DemoContent::agenda());
+        // Agenda draf tidak boleh tampil di situs publik.
+        $agenda = collect(DemoContent::agenda())->where('status', 'terbit');
 
         return view('pages.public.berita', [
             'berita' => $berita,

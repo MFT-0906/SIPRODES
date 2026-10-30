@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminAgendaController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminBeritaController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\PublicPageController;
@@ -34,15 +36,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/lupa-kata-sandi', [AdminAuthController::class, 'kirimTautan'])->middleware('throttle:5,1')->name('password.email');
     Route::post('/keluar', [AdminAuthController::class, 'keluar'])->name('logout');
 
-    Route::get('/', [AdminController::class, 'halaman'])->name('dashboard');
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/profil', [AdminController::class, 'halaman'])->name('profil');
     Route::get('/struktur-perangkat', [AdminController::class, 'halaman'])->name('struktur');
     Route::get('/apbdes', [AdminController::class, 'halaman'])->name('apbdes');
     Route::get('/potensi-pertanian', [AdminController::class, 'halaman'])->name('pertanian');
     Route::get('/kelompok-tani', [AdminController::class, 'halaman'])->name('kelompok-tani');
     Route::get('/umkm', [AdminController::class, 'halaman'])->name('umkm');
-    Route::get('/berita', [AdminController::class, 'halaman'])->name('berita.index');
-    Route::get('/agenda', [AdminController::class, 'halaman'])->name('agenda.index');
+    Route::get('/berita', [AdminBeritaController::class, 'index'])->name('berita.index');
+    Route::get('/berita/tambah', [AdminBeritaController::class, 'create'])->name('berita.create');
+    Route::post('/berita', [AdminBeritaController::class, 'store'])->name('berita.store');
+    Route::get('/berita/{slug}/ubah', [AdminBeritaController::class, 'edit'])->name('berita.edit');
+    Route::put('/berita/{slug}', [AdminBeritaController::class, 'update'])->name('berita.update');
+    Route::delete('/berita/{slug}', [AdminBeritaController::class, 'destroy'])->name('berita.destroy');
+
+    Route::get('/agenda', [AdminAgendaController::class, 'index'])->name('agenda.index');
+    Route::post('/agenda', [AdminAgendaController::class, 'store'])->name('agenda.store');
+    Route::put('/agenda/{id}', [AdminAgendaController::class, 'update'])->name('agenda.update');
+    Route::delete('/agenda/{id}', [AdminAgendaController::class, 'destroy'])->name('agenda.destroy');
     Route::get('/aspirasi', [AdminController::class, 'halaman'])->name('aspirasi.index');
     Route::get('/akun', [AdminController::class, 'halaman'])->name('akun.index');
 });

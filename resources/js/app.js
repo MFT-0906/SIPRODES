@@ -106,6 +106,32 @@ Alpine.data('toastRegion', (initialMessage = null, initialTone = 'sukses') => ({
 }));
 
 /**
+ * Editor isi sederhana: tombol format menyisipkan penanda teks ringan pada textarea.
+ * Hanya kenyamanan penulis; isi tetap harus dibersihkan di server.
+ */
+Alpine.data('editorIsi', () => ({
+    terapkan(jenis, awal, akhir, contoh) {
+        const area = this.$refs.isi;
+        const mulai = area.selectionStart;
+        const selesai = area.selectionEnd;
+        const terpilih = area.value.slice(mulai, selesai) || contoh;
+        let sisip;
+
+        if (jenis === 'awalan') {
+            // Penanda di awal baris: mulai di baris baru bila kursor tidak berada di awal baris.
+            const awalBaris = mulai === 0 || area.value[mulai - 1] === '\n';
+            sisip = (awalBaris ? '' : '\n') + awal + terpilih;
+        } else {
+            sisip = awal + terpilih + akhir;
+        }
+
+        area.setRangeText(sisip, mulai, selesai, 'select');
+        area.focus();
+        area.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+}));
+
+/**
  * Navigasi bagian halaman: menandai bagian yang sedang terlihat (scrollspy) lewat aria-current.
  */
 Alpine.data('sectionNav', (ids = []) => ({
