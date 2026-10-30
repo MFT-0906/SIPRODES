@@ -398,23 +398,33 @@ class DemoContent
     }
 
     /**
-     * Pengguna admin dan angka ringkas untuk layout dashboard.
-     * Nama dan jumlah aspirasi mengikuti contoh di Figma; bukan data sungguhan.
+     * Pengguna admin untuk layout dashboard. Nama mengikuti contoh di Figma; bukan data sungguhan.
      *
-     * @return array{pengguna: array{name: string, role: string}, aspirasi_baru: int, aspirasi_terbaru: list<array{pengirim: string, cuplikan: string, status: string, waktu: string}>}
+     * @return array{pengguna: array{name: string, role: string}}
      */
     public static function admin(): array
     {
-        // TODO(backend): ganti dengan pengguna yang sedang masuk, jumlah aspirasi berstatus Baru, dan aspirasi terbaru dari database
+        // TODO(backend): ganti dengan pengguna yang sedang masuk
         return [
             'pengguna' => ['name' => 'Nama Admin', 'role' => 'staf'],
-            'aspirasi_baru' => 3,
-            // Cuplikan dari contoh di Figma; pengirim disamarkan dan NIK tidak pernah ditampilkan.
-            'aspirasi_terbaru' => [
-                ['pengirim' => 'Pengirim A', 'cuplikan' => 'Mohon informasi tentang perbaikan jalan dusun…', 'status' => 'baru', 'waktu' => '2 jam lalu'],
-                ['pengirim' => 'Pengirim B', 'cuplikan' => 'Mohon informasi tentang jadwal posyandu…', 'status' => 'baru', 'waktu' => 'Kemarin'],
-                ['pengirim' => 'Pengirim C', 'cuplikan' => 'Mohon informasi tentang bantuan bibit…', 'status' => 'dibaca', 'waktu' => '2 hari lalu'],
-            ],
+        ];
+    }
+    /**
+     * Matriks izin per peran (DRAF, perlu konfirmasi desa). Menyembunyikan menu di UI tidak menggantikan
+     * pemeriksaan izin di backend. Nilai: ya | tidak | penugasan.
+     *
+     * @return list<array{modul: string, super_admin: string, staf: string}>
+     */
+    public static function izin(): array
+    {
+        // TODO(backend): ganti dengan kebijakan izin yang dikonfirmasi desa.
+        return [
+            ['modul' => 'Berita & Agenda', 'super_admin' => 'ya', 'staf' => 'ya'],
+            ['modul' => 'Potensi (Pertanian, Kelompok Tani, UMKM)', 'super_admin' => 'ya', 'staf' => 'ya'],
+            ['modul' => 'Profil & Struktur Perangkat', 'super_admin' => 'ya', 'staf' => 'penugasan'],
+            ['modul' => 'APBDes (ringkasan & PDF)', 'super_admin' => 'ya', 'staf' => 'penugasan'],
+            ['modul' => 'Aspirasi Warga', 'super_admin' => 'ya', 'staf' => 'ya'],
+            ['modul' => 'Akun & Hak Akses', 'super_admin' => 'ya', 'staf' => 'tidak'],
         ];
     }
 }

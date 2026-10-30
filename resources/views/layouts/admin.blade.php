@@ -42,7 +42,7 @@
         </div>
 
         <div class="flex min-h-screen flex-col lg:pl-[264px]">
-            <x-admin.topbar :judul="trim($__env->yieldContent('judul'))" :breadcrumb="trim($__env->yieldContent('breadcrumb')) ?: null" :pengguna="$pengguna" />
+            <x-admin.topbar :judul="html_entity_decode(trim($__env->yieldContent('judul')))" :breadcrumb="html_entity_decode(trim($__env->yieldContent('breadcrumb'))) ?: null" :pengguna="$pengguna" />
             <main id="konten" tabindex="-1" class="flex-1 p-4 focus:outline-none lg:p-8">
                 @yield('content')
             </main>

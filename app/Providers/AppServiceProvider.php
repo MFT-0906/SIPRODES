@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Support\DemoContent;
+use App\Support\DemoStore;
 use App\Support\Navigation;
+use App\Support\Peran;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,17 +26,8 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer(['layouts.admin', 'pages.admin.dashboard'], function ($view) {
             // TODO(backend): $pengguna dan $aspirasiBaru berasal dari pengguna yang masuk dan database.
-            $demo = DemoContent::admin();
-            $pengguna = $demo['pengguna'];
-
-            // Hanya di lokal: ?peran=super_admin|staf untuk meninjau menu tiap peran (tersimpan di sesi).
-            if (app()->environment('local')) {
-                $peran = request()->query('peran');
-                if (in_array($peran, ['super_admin', 'staf'], true)) {
-                    session(['demo_peran' => $peran]);
-                }
-                $pengguna['role'] = session('demo_peran', $pengguna['role']);
-            }
+            $pengguna = DemoContent::admin()['pengguna'];
+            $pengguna['role'] = Peran::saatIni();
 
             // Hanya penyaring tampilan; izin sebenarnya ditegakkan backend.
             $superAdmin = $pengguna['role'] === 'super_admin';
@@ -47,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
                 'pengguna' => $pengguna,
                 'peranLabel' => $superAdmin ? 'Super Admin' : 'Staf',
                 'menuAdmin' => $menu,
-                'aspirasiBaru' => $demo['aspirasi_baru'],
+                'aspirasiBaru' => collect(DemoStore::daftar('aspirasi'))->where('status', 'baru')->count(),
             ]);
         });
     }

@@ -1,4 +1,4 @@
-@props(['name', 'title', 'description' => null, 'size' => 'md']) {{-- slot `footer` opsional; buka dengan $dispatch('open-modal', 'nama'), tutup dengan $dispatch('close-modal', 'nama') --}}
+@props(['name', 'title', 'description' => null, 'size' => 'md', 'open' => false]) {{-- slot `footer` opsional; buka dengan $dispatch('open-modal', 'nama'), tutup dengan $dispatch('close-modal', 'nama') --}}
 
 @php
     $sizes = ['sm' => 'max-w-sm', 'md' => 'max-w-md', 'lg' => 'max-w-xl'];
@@ -6,7 +6,7 @@
 @endphp
 
 <div
-    x-data="{ open: false }"
+    x-data="{ open: {{ $open ? 'true' : 'false' }} }"
     x-on:open-modal.window="if ($event.detail === {{ Js::from($name) }}) open = true"
     x-on:close-modal.window="if ($event.detail === {{ Js::from($name) }}) open = false"
     x-on:keydown.escape.window="open = false"

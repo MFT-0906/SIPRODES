@@ -71,4 +71,17 @@ class Format
 
         return number_format(max(1, (int) round($bytes / 1024)), 0, ',', '.').' KB';
     }
+    /**
+     * NIK disamarkan: hanya 4 digit terakhir yang terlihat. Aspirasi tidak pernah menampilkan NIK utuh.
+     */
+    public static function nikSamar(?string $nik): ?string
+    {
+        $digit = preg_replace('/\D/', '', (string) $nik);
+
+        if ($digit === '') {
+            return null;
+        }
+
+        return implode(' ', mb_str_split(str_repeat('•', max(0, strlen($digit) - 4)).substr($digit, -4), 4));
+    }
 }

@@ -45,7 +45,7 @@ class Fase8AdminTest extends TestCase
 
     public function test_semua_menu_admin_membuka_halaman(): void
     {
-        foreach (['dashboard', 'profil', 'struktur', 'apbdes', 'pertanian', 'kelompok-tani', 'umkm', 'berita.index', 'agenda.index', 'aspirasi.index', 'akun.index'] as $nama) {
+        foreach (['dashboard', 'profil', 'struktur', 'apbdes', 'pertanian', 'kelompok-tani', 'umkm', 'berita.index', 'agenda.index', 'aspirasi.index'] as $nama) {
             $this->get(route('admin.'.$nama))->assertOk()->assertSee('Dashboard Admin');
         }
     }

@@ -132,6 +132,45 @@ Alpine.data('editorIsi', () => ({
 }));
 
 /**
+ * Daftar butir yang bisa ditambah, dihapus, dan diurutkan dengan tombol (mis. misi desa).
+ * Urutan dikirim sebagai larik field berurutan; validasi tetap di server.
+ */
+Alpine.data('daftarButir', (awal = []) => ({
+    butir: [],
+    nomor: 0,
+
+    init() {
+        this.butir = awal.map((teks) => ({ id: ++this.nomor, teks }));
+
+        if (!this.butir.length) {
+            this.tambah(false);
+        }
+    },
+
+    tambah(fokus = true) {
+        this.butir.push({ id: ++this.nomor, teks: '' });
+
+        if (fokus) {
+            this.$nextTick(() => this.$refs.daftar.querySelector('li:last-child input')?.focus());
+        }
+    },
+
+    hapus(i) {
+        this.butir.splice(i, 1);
+    },
+
+    geser(i, arah) {
+        const j = i + arah;
+
+        if (j < 0 || j >= this.butir.length) {
+            return;
+        }
+
+        [this.butir[i], this.butir[j]] = [this.butir[j], this.butir[i]];
+    },
+}));
+
+/**
  * Navigasi bagian halaman: menandai bagian yang sedang terlihat (scrollspy) lewat aria-current.
  */
 Alpine.data('sectionNav', (ids = []) => ({

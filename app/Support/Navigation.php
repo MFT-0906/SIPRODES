@@ -51,14 +51,14 @@ class Navigation
                 ['label' => 'Ringkasan', 'route' => 'admin.dashboard', 'match' => ['admin.dashboard'], 'icon' => 'dashboard'],
             ]],
             ['label' => 'Konten Desa', 'items' => [
-                ['label' => 'Profil Desa', 'route' => 'admin.profil', 'match' => ['admin.profil'], 'icon' => 'building'],
-                ['label' => 'Struktur Perangkat', 'route' => 'admin.struktur', 'match' => ['admin.struktur'], 'icon' => 'users'],
-                ['label' => 'APBDes', 'route' => 'admin.apbdes', 'match' => ['admin.apbdes'], 'icon' => 'wallet'],
+                ['label' => 'Profil Desa', 'route' => 'admin.profil', 'match' => ['admin.profil*'], 'icon' => 'building'],
+                ['label' => 'Struktur Perangkat', 'route' => 'admin.struktur', 'match' => ['admin.struktur*'], 'icon' => 'users'],
+                ['label' => 'APBDes', 'route' => 'admin.apbdes', 'match' => ['admin.apbdes*'], 'icon' => 'wallet'],
             ]],
             ['label' => 'Potensi', 'items' => [
-                ['label' => 'Potensi Pertanian', 'route' => 'admin.pertanian', 'match' => ['admin.pertanian'], 'icon' => 'sprout'],
-                ['label' => 'Kelompok Tani', 'route' => 'admin.kelompok-tani', 'match' => ['admin.kelompok-tani'], 'icon' => 'users'],
-                ['label' => 'UMKM', 'route' => 'admin.umkm', 'match' => ['admin.umkm'], 'icon' => 'store'],
+                ['label' => 'Potensi Pertanian', 'route' => 'admin.pertanian', 'match' => ['admin.pertanian*'], 'icon' => 'sprout'],
+                ['label' => 'Kelompok Tani', 'route' => 'admin.kelompok-tani', 'match' => ['admin.kelompok-tani*'], 'icon' => 'users'],
+                ['label' => 'UMKM', 'route' => 'admin.umkm', 'match' => ['admin.umkm*'], 'icon' => 'store'],
             ]],
             ['label' => 'Publikasi', 'items' => [
                 ['label' => 'Berita', 'route' => 'admin.berita.index', 'match' => ['admin.berita.*'], 'icon' => 'newspaper'],

@@ -1,6 +1,12 @@
 <?php
 
 use App\Http\Controllers\AdminAgendaController;
+use App\Http\Controllers\AdminApbdesController;
+use App\Http\Controllers\AdminAspirasiController;
+use App\Http\Controllers\AdminAkunController;
+use App\Http\Controllers\AdminPotensiController;
+use App\Http\Controllers\AdminProfilController;
+use App\Http\Controllers\AdminStrukturController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminBeritaController;
 use App\Http\Controllers\AdminController;
@@ -36,13 +42,44 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/lupa-kata-sandi', [AdminAuthController::class, 'kirimTautan'])->middleware('throttle:5,1')->name('password.email');
     Route::post('/keluar', [AdminAuthController::class, 'keluar'])->name('logout');
 
+    Route::get('/profil', [AdminProfilController::class, 'show'])->name('profil');
+    Route::put('/profil/{tab}', [AdminProfilController::class, 'simpan'])->name('profil.simpan');
+
+    Route::get('/struktur-perangkat', [AdminStrukturController::class, 'index'])->name('struktur');
+    Route::post('/struktur-perangkat', [AdminStrukturController::class, 'store'])->name('struktur.store');
+    Route::put('/struktur-perangkat/{id}', [AdminStrukturController::class, 'update'])->name('struktur.update');
+    Route::delete('/struktur-perangkat/{id}', [AdminStrukturController::class, 'destroy'])->name('struktur.destroy');
+    Route::post('/struktur-perangkat/{id}/geser', [AdminStrukturController::class, 'geser'])->name('struktur.geser');
+
+    Route::get('/apbdes', [AdminApbdesController::class, 'index'])->name('apbdes');
+    Route::post('/apbdes', [AdminApbdesController::class, 'simpan'])->name('apbdes.store');
+    Route::put('/apbdes/{id}', [AdminApbdesController::class, 'simpan'])->name('apbdes.update');
+    Route::delete('/apbdes/{id}', [AdminApbdesController::class, 'destroy'])->name('apbdes.destroy');
+
+    Route::get('/potensi-pertanian', [AdminPotensiController::class, 'pertanian'])->name('pertanian');
+    Route::post('/potensi-pertanian', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.store');
+    Route::put('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.update');
+    Route::delete('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasHapus'])->name('pertanian.destroy');
+
+    Route::get('/kelompok-tani', [AdminPotensiController::class, 'kelompok'])->name('kelompok-tani');
+    Route::post('/kelompok-tani', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.store');
+    Route::put('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.update');
+    Route::delete('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokHapus'])->name('kelompok-tani.destroy');
+
+    Route::get('/umkm', [AdminPotensiController::class, 'umkm'])->name('umkm');
+    Route::post('/umkm', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.store');
+    Route::put('/umkm/{id}', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.update');
+    Route::delete('/umkm/{id}', [AdminPotensiController::class, 'umkmHapus'])->name('umkm.destroy');
+
+    Route::get('/aspirasi', [AdminAspirasiController::class, 'index'])->name('aspirasi.index');
+    Route::put('/aspirasi/{id}', [AdminAspirasiController::class, 'status'])->name('aspirasi.status');
+
+    Route::get('/akun', [AdminAkunController::class, 'index'])->name('akun.index');
+    Route::post('/akun', [AdminAkunController::class, 'store'])->name('akun.store');
+    Route::put('/akun/{id}', [AdminAkunController::class, 'update'])->name('akun.update');
+    Route::post('/akun/{id}/atur-ulang', [AdminAkunController::class, 'reset'])->name('akun.reset');
+
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/profil', [AdminController::class, 'halaman'])->name('profil');
-    Route::get('/struktur-perangkat', [AdminController::class, 'halaman'])->name('struktur');
-    Route::get('/apbdes', [AdminController::class, 'halaman'])->name('apbdes');
-    Route::get('/potensi-pertanian', [AdminController::class, 'halaman'])->name('pertanian');
-    Route::get('/kelompok-tani', [AdminController::class, 'halaman'])->name('kelompok-tani');
-    Route::get('/umkm', [AdminController::class, 'halaman'])->name('umkm');
     Route::get('/berita', [AdminBeritaController::class, 'index'])->name('berita.index');
     Route::get('/berita/tambah', [AdminBeritaController::class, 'create'])->name('berita.create');
     Route::post('/berita', [AdminBeritaController::class, 'store'])->name('berita.store');
@@ -54,6 +91,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/agenda', [AdminAgendaController::class, 'store'])->name('agenda.store');
     Route::put('/agenda/{id}', [AdminAgendaController::class, 'update'])->name('agenda.update');
     Route::delete('/agenda/{id}', [AdminAgendaController::class, 'destroy'])->name('agenda.destroy');
-    Route::get('/aspirasi', [AdminController::class, 'halaman'])->name('aspirasi.index');
-    Route::get('/akun', [AdminController::class, 'halaman'])->name('akun.index');
 });
