@@ -393,4 +393,19 @@ class DemoContent
             ],
         ];
     }
+
+    /**
+     * Pengguna admin dan angka ringkas untuk layout dashboard.
+     * Nama dan jumlah aspirasi mengikuti contoh di Figma; bukan data sungguhan.
+     *
+     * @return array{pengguna: array{name: string, role: string}, aspirasi_baru: int}
+     */
+    public static function admin(): array
+    {
+        // TODO(backend): ganti dengan pengguna yang sedang masuk dan jumlah aspirasi berstatus Baru dari database
+        return [
+            'pengguna' => ['name' => 'Nama Admin', 'role' => 'staf'],
+            'aspirasi_baru' => 3,
+        ];
+    }
 }
