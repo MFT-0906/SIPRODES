@@ -31,6 +31,11 @@ class PublicPageController extends Controller
 
     public function apbdes(Request $request): View
     {
+        // Contoh keadaan gagal memuat, hanya di lokal: /transparansi-apbdes?demo=gagal
+        if ($this->demo($request) === 'gagal') {
+            return view('pages.public.apbdes-gagal');
+        }
+
         $content = DemoContent::apbdes();
         $tersedia = array_keys($content['tahun']);
 
@@ -70,7 +75,8 @@ class PublicPageController extends Controller
     public function berita(Request $request): View
     {
         // Hanya berita berstatus terbit yang boleh tampil di situs publik.
-        $terbit = $this->beritaTerbit();
+        $demo = $this->demo($request);
+        $terbit = $demo === 'kosong' ? collect() : $this->beritaTerbit();
         $kategori = $terbit->pluck('category')->unique()->sort()->values();
 
         $aktif = $request->query('kategori');
@@ -105,6 +111,7 @@ class PublicPageController extends Controller
             'aktif' => $aktif,
             'kata' => $kata,
             'adaBerita' => $terbit->isNotEmpty(),
+            'memuat' => $demo === 'memuat',
             'agendaMendatang' => $agenda->filter(fn ($a) => Carbon::parse($a['tanggal'])->gte($hariIni))->sortBy('tanggal')->values()->all(),
             'agendaLewat' => $agenda->filter(fn ($a) => Carbon::parse($a['tanggal'])->lt($hariIni))->sortByDesc('tanggal')->values()->all(),
         ]);
@@ -133,6 +140,16 @@ class PublicPageController extends Controller
             'identitas' => DemoContent::identitas(),
             'statistik' => collect(DemoContent::statistik())->keyBy('label'),
         ]);
+    }
+
+    /**
+     * Keadaan contoh (?demo=kosong|memuat|gagal) untuk meninjau tampilan; hanya aktif di lingkungan lokal.
+     */
+    private function demo(Request $request): ?string
+    {
+        $demo = $request->query('demo');
+
+        return app()->environment('local') && in_array($demo, ['kosong', 'memuat', 'gagal'], true) ? $demo : null;
     }
 
     /** @return \Illuminate\Support\Collection<int, array<string, mixed>> */

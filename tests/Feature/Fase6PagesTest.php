@@ -37,7 +37,7 @@ class Fase6PagesTest extends TestCase
 
         $this->get('/berita?q=tidakadakatakunciini')
             ->assertOk()
-            ->assertSee('Berita tidak ditemukan');
+            ->assertSee('Tidak ada berita yang cocok');
     }
 
     public function test_formulir_aspirasi_menolak_isian_tidak_valid(): void

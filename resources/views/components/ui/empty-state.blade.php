@@ -1,7 +1,19 @@
-@props(['title', 'description', 'icon' => 'newspaper', 'heading' => 'h2']) {{-- slot `action` opsional: tautan/tombol langkah berikutnya --}}
+@props(['title', 'description', 'icon' => 'newspaper', 'heading' => 'h2', 'tone' => 'netral']) {{-- slot `action` opsional: tautan/tombol langkah berikutnya; tone: netral | bahaya --}}
 
-<div {{ $attributes->class(['flex flex-col items-center gap-2.5 rounded-[14px] border-[1.5px] border-dashed border-border bg-surface px-8 py-10 text-center']) }}>
-    <span class="flex size-14 items-center justify-center rounded-full bg-primary-soft text-primary">
+@php
+    $bahaya = $tone === 'bahaya';
+@endphp
+
+<div {{ $attributes->class([
+    'flex flex-col items-center gap-2.5 rounded-[14px] border-[1.5px] border-dashed px-8 py-10 text-center',
+    'border-border bg-surface' => ! $bahaya,
+    'border-danger bg-danger-soft' => $bahaya,
+]) }} @if ($bahaya) role="alert" @endif>
+    <span @class([
+        'flex size-14 items-center justify-center rounded-full',
+        'bg-primary-soft text-primary' => ! $bahaya,
+        'bg-surface text-danger' => $bahaya,
+    ])>
         <x-ui.icon :name="$icon" class="size-[26px]" />
     </span>
     <{{ $heading }} class="type-h3 text-text">{{ $title }}</{{ $heading }}>

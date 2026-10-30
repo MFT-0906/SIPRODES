@@ -43,7 +43,17 @@
                 <section aria-labelledby="daftar-berita-judul" class="flex flex-col gap-6">
                     <h2 id="daftar-berita-judul" class="sr-only">Daftar berita</h2>
 
-                    @if ($berita->count())
+                    @if ($memuat)
+                        {{-- Keadaan memuat: kerangka kartu (animasi mati bila reduced-motion). --}}
+                        <div role="status" aria-busy="true" class="flex flex-col gap-6">
+                            <p class="type-body-sm text-muted">Memuat berita…</p>
+                            <div class="grid gap-4 md:grid-cols-2 md:gap-6">
+                                @for ($i = 0; $i < 6; $i++)
+                                    <x-ui.skeleton-card />
+                                @endfor
+                            </div>
+                        </div>
+                    @elseif ($berita->count())
                         <div class="grid gap-4 md:grid-cols-2 md:gap-6">
                             @foreach ($berita as $item)
                                 <x-ui.card-news
@@ -54,15 +64,15 @@
                         </div>
                         <x-ui.pagination :paginator="$berita" class="lg:self-start" />
                     @elseif (! $adaBerita)
-                        <x-ui.empty-state title="Belum ada berita yang dipublikasikan" description="Berita akan tampil di sini setelah dipublikasikan oleh perangkat desa.">
+                        <x-ui.empty-state title="Belum ada berita yang dipublikasikan" description="Berita akan tampil di sini setelah dipublikasikan oleh perangkat desa. Sementara itu, Anda dapat melihat agenda atau profil desa.">
                             <x-slot:action>
-                                <x-ui.button :href="route('home')" variant="secondary">Kembali ke Beranda</x-ui.button>
+                                <x-ui.button :href="route('profil')" variant="secondary">Lihat Profil Desa</x-ui.button>
                             </x-slot:action>
                         </x-ui.empty-state>
                     @else
-                        <x-ui.empty-state icon="search" title="Berita tidak ditemukan" description="Tidak ada berita yang cocok dengan pencarian atau kategori yang dipilih. Coba kata kunci lain.">
+                        <x-ui.empty-state icon="search" title="Tidak ada berita yang cocok" description="Coba kata kunci lain atau hapus filter kategori.">
                             <x-slot:action>
-                                <x-ui.button :href="route('berita.index')" variant="secondary">Lihat semua berita</x-ui.button>
+                                <x-ui.button :href="route('berita.index')" variant="secondary">Hapus filter</x-ui.button>
                             </x-slot:action>
                         </x-ui.empty-state>
                     @endif
