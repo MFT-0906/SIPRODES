@@ -6,7 +6,6 @@
     $value = old($name, $value);
     $describedBy = trim(($error ? $id.'-error ' : '').$id.'-help');
     // Teks biasa dengan penanda ringan (**tebal**, _miring_, ## subjudul, daftar, [tautan](alamat)).
-    // TODO(backend): bersihkan dan render isi di sisi server; jangan menaruh HTML mentah dari pengguna.
     $alat = [
         ['B', 'Tebal', 'bungkus', '**', '**', 'teks tebal'],
         ['I', 'Miring', 'bungkus', '_', '_', 'teks miring'],

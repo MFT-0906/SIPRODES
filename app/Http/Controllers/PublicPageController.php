@@ -120,7 +120,7 @@ class PublicPageController extends Controller
         // Draf atau slug yang tidak ada tidak boleh dapat dibuka publik (404).
         $artikel = KontenPublik::berita(Berita::query()->terbit()->where('slug', $slug)->firstOrFail());
 
-        $kata = str_word_count(strip_tags(collect($artikel['isi'])->pluck(1)->implode(' ')));
+        $kata = count(preg_split('/\s+/u', $artikel['isi_polos'], -1, PREG_SPLIT_NO_EMPTY));
 
         return view('pages.public.berita-detail', [
             'artikel' => $artikel,

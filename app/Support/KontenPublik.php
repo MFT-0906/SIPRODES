@@ -308,42 +308,25 @@ class KontenPublik
     }
 
     /**
-     * Bentuk berita untuk template; `isi` dipecah menjadi blok p/h2/kutipan dari teks penanda ringan.
+     * Bentuk berita untuk template. `isi_html` dirender di server dari teks penanda ringan
+     * (HTML mentah dibuang, tautan berbahaya tidak dirender).
      *
      * @return array<string, mixed>
      */
     public static function berita(Berita $b): array
     {
         return [
+            'gambar' => UnggahBerkas::urlGambar($b->gambar_path),
+            'gambar_alt' => $b->gambar_alt,
             'slug' => $b->slug,
             'title' => $b->judul,
             'excerpt' => $b->ringkasan ?? '',
             'category' => $b->kategori,
             'tanggal' => $b->tanggal->toDateString(),
             'penulis' => 'Admin desa',
-            'isi' => self::blokIsi($b->isi),
+            'isi_html' => TeksRingan::html($b->isi),
+            'isi_polos' => TeksRingan::polos($b->isi),
         ];
-    }
-
-    /**
-     * @return list<array{0: string, 1: string}>
-     */
-    public static function blokIsi(string $isi): array
-    {
-        $blok = [];
-        foreach (preg_split('/\R{2,}/', trim($isi)) as $teks) {
-            $teks = trim($teks);
-            if ($teks === '') {
-                continue;
-            }
-            $blok[] = match (true) {
-                str_starts_with($teks, '## ') => ['h2', trim(substr($teks, 3))],
-                str_starts_with($teks, '> ') => ['kutipan', trim(substr($teks, 2))],
-                default => ['p', $teks],
-            };
-        }
-
-        return $blok;
     }
 
     /**

@@ -113,8 +113,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('/agenda', [AdminAgendaController::class, 'index'])->name('agenda.index');
             Route::post('/agenda', [AdminAgendaController::class, 'store'])->name('agenda.store');
-            Route::put('/agenda/{id}', [AdminAgendaController::class, 'update'])->name('agenda.update');
-            Route::delete('/agenda/{id}', [AdminAgendaController::class, 'destroy'])->name('agenda.destroy');
+            Route::put('/agenda/{id}', [AdminAgendaController::class, 'update'])->whereNumber('id')->name('agenda.update');
+            Route::delete('/agenda/{id}', [AdminAgendaController::class, 'destroy'])->whereNumber('id')->name('agenda.destroy');
         });
     });
 });

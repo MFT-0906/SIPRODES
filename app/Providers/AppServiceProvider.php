@@ -3,8 +3,9 @@
 namespace App\Providers;
 
 use App\Enums\Modul;
+use App\Enums\StatusAspirasi;
+use App\Models\Aspirasi;
 use App\Models\User;
-use App\Support\DemoStore;
 use App\Support\KontenPublik;
 use App\Support\Navigation;
 use App\Support\Peran;
@@ -52,7 +53,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer(['layouts.admin', 'pages.admin.dashboard'], function ($view) {
-            // TODO(backend): $aspirasiBaru dari database (Fase 9).
             $pengguna = ['name' => auth()->user()?->name ?? '', 'role' => Peran::saatIni()];
             $superAdmin = $pengguna['role'] === 'super_admin';
 
@@ -74,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
                 'pengguna' => $pengguna,
                 'peranLabel' => $superAdmin ? 'Super Admin' : 'Staf',
                 'menuAdmin' => $menu,
-                'aspirasiBaru' => collect(DemoStore::daftar('aspirasi'))->where('status', 'baru')->count(),
+                'aspirasiBaru' => Gate::allows('akses-modul', Modul::Aspirasi) ? Aspirasi::query()->where('status', StatusAspirasi::Baru)->count() : 0,
             ]);
         });
     }

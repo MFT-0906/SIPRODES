@@ -59,3 +59,17 @@
 - [ ] Matikan MySQL sebentar lalu buka `/transparansi-apbdes`: tampil “Data APBDes gagal dimuat” (bukan halaman galat teknis); halaman lain menampilkan halaman 500 desa tanpa detail teknis (`APP_DEBUG=false`).
 - [ ] Ukur waktu muat Beranda/Berita di MySQL dengan data lebih banyak (≥ 100 berita): masih cepat (< 3 dtk, NFR-01).
 - [ ] Nilai teks bawaan di Beranda/Profil/Potensi (hero, pengantar, ajakan) sudah disetujui desa — teks ini masih tertulis di `KontenPublik`, belum bisa diubah dari admin.
+
+## Fase 5 — Admin A: Berita, Agenda, Ringkasan
+
+- [ ] Jalankan `php artisan storage:link` (Fase 8 mendokumentasikannya) agar gambar berita tampil di browser; tanpa itu gambar hanya tersimpan.
+- [ ] Tambah berita dengan editor (tebal, miring, subjudul, daftar, tautan, kutipan) lalu **Simpan & Terbitkan**: berita muncul di Beranda, daftar, dan detailnya di situs publik; tampilannya (spasi, subjudul, kutipan, daftar, tautan) rapi di desktop dan HP.
+- [ ] Simpan sebagai Draf lalu ubah menjadi Terbit, dan sebaliknya: tampil/hilang di situs publik segera.
+- [ ] Unggah gambar utama JPG/PNG/WebP asli (< 2 MB): tampil di detail berita dengan alt yang benar. Coba file > 2 MB, file PDF yang diganti ekstensi menjadi `.jpg`, dan gambar sangat lebar: ditolak dengan pesan galat Bahasa Indonesia.
+- [ ] Ganti lalu hapus gambar; periksa folder `storage/app/public/berita` — berkas lama ikut terhapus.
+- [ ] Coba menempel `<script>`, HTML, dan tautan `javascript:` ke editor lalu terbitkan: tidak berjalan dan tidak tampil sebagai HTML di situs publik.
+- [ ] Judul berita yang sama dua kali menghasilkan dua tautan berbeda; tautan lama tetap berfungsi setelah judul diubah.
+- [ ] Agenda: tambah dengan/ tanpa waktu dan lokasi, ubah, hapus, dan filter mendatang/lewat; di situs publik hanya agenda terbit yang mendatang tampil.
+- [ ] Ringkasan: angka berita terbit/draf, UMKM, pertanian, dan aspirasi baru cocok dengan isi database; masuk sebagai Staf yang hanya memegang modul Berita: kartu dan daftar Aspirasi serta UMKM tidak tampil.
+- [ ] Tampilan HP 390 px untuk daftar berita, form berita (editor, uploader), tabel agenda, dan Ringkasan tidak terpotong.
+- [ ] Catatan: perubahan status di halaman Aspirasi admin belum mengubah angka Ringkasan sampai Fase 9.

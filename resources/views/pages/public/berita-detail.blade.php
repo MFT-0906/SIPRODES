@@ -27,24 +27,14 @@
 
                 <h1 id="judul-artikel" class="type-h1 text-text">{{ $artikel['title'] }}</h1>
 
-                {{-- TODO: ganti dengan gambar utama asli; isi alt deskriptif saat memakai <img>. --}}
-                <x-ui.image-placeholder caption="Foto berita" class="h-[220px] rounded-card md:h-[420px]" />
+                @if ($artikel['gambar'])
+                    <img src="{{ $artikel['gambar'] }}" alt="{{ $artikel['gambar_alt'] }}" loading="lazy" class="h-[220px] w-full rounded-card object-cover md:h-[420px]">
+                @else
+                    <x-ui.image-placeholder caption="Foto berita" class="h-[220px] rounded-card md:h-[420px]" />
+                @endif
 
-                {{-- Isi artikel: lebar baca dibatasi agar nyaman dibaca. --}}
-                <div class="flex max-w-[70ch] flex-col gap-5">
-                    @foreach ($artikel['isi'] as [$jenis, $teks])
-                        @if ($jenis === 'h2')
-                            <h2 class="type-h2 mt-2 text-text">{{ $teks }}</h2>
-                        @elseif ($jenis === 'kutipan')
-                            <blockquote class="flex gap-4 py-2">
-                                <span class="w-1 shrink-0 self-stretch rounded-[2px] bg-accent" aria-hidden="true"></span>
-                                <p class="type-h3 text-primary">{{ $teks }}</p>
-                            </blockquote>
-                        @else
-                            <p class="type-body-lg text-text">{{ $teks }}</p>
-                        @endif
-                    @endforeach
-                </div>
+                {{-- Isi artikel: lebar baca dibatasi agar nyaman dibaca. HTML sudah dibersihkan di server (TeksRingan). --}}
+                <div class="isi-berita max-w-[70ch]">{!! $artikel['isi_html'] !!}</div>
 
                 <div class="mt-2 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
                     <x-ui.button :href="route('berita.index')" variant="ghost">‹ Kembali ke daftar berita</x-ui.button>

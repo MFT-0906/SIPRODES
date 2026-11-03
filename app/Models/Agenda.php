@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatusTerbit;
+use App\Models\Concerns\DapatDicari;
 use App\Models\Concerns\MemilikiStatusTerbit;
 use Database\Factories\AgendaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 class Agenda extends Model
 {
     /** @use HasFactory<AgendaFactory> */
-    use HasFactory, MemilikiStatusTerbit;
+    use DapatDicari, HasFactory, MemilikiStatusTerbit;
 
     protected $table = 'agenda';
 

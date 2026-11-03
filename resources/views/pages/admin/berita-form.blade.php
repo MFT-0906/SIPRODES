@@ -1,8 +1,6 @@
 @extends('layouts.admin')
 
 @php
-    use App\Support\DemoStore;
-
     $ubah = ! is_null($item);
     $judulHalaman = $ubah ? 'Ubah Berita' : 'Tambah Berita';
     $statusAwal = old('status', $item['status'] ?? 'draf');
@@ -45,7 +43,7 @@
             <div class="flex flex-col gap-5 rounded-[14px] border border-border bg-surface p-5 lg:p-6">
                 <x-ui.field name="title" label="Judul berita" required :value="$item['title'] ?? null" :counter="150" help="Maksimal 150 karakter." placeholder="Tulis judul yang jelas dan ringkas" />
                 <x-ui.field name="excerpt" label="Ringkasan" required :value="$item['excerpt'] ?? null" :counter="300" help="Ditampilkan di daftar berita dan beranda." placeholder="Satu–dua kalimat untuk kartu berita" />
-                <x-admin.editor name="isi_teks" label="Isi berita" :value="$ubah ? DemoStore::isiTeks($item) : null" />
+                <x-admin.editor name="isi_teks" label="Isi berita" :value="$item['isi_teks'] ?? null" />
             </div>
 
             <div class="flex flex-col gap-6">
@@ -77,10 +75,13 @@
                 {{-- Gambar utama --}}
                 <section aria-labelledby="gambar-utama-judul" class="flex flex-col gap-4 rounded-[14px] border border-border bg-surface p-5">
                     <h2 id="gambar-utama-judul" class="type-h3 text-text">Gambar utama</h2>
-                    {{-- TODO(backend): simpan gambar dan tampilkan gambar yang sudah ada saat mengubah berita. --}}
+                    @if ($item['gambar_url'] ?? null)
+                        <img src="{{ $item['gambar_url'] }}" alt="{{ $item['alt'] }}" loading="lazy" class="max-h-48 w-full rounded-[10px] border border-border object-cover">
+                        <x-ui.checkbox name="hapus_gambar" label="Hapus gambar utama saat disimpan" />
+                    @endif
                     <x-ui.uploader
                         name="gambar" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP"
-                        hint="JPG/PNG/WebP · maks. ukuran sesuai kebijakan"
+                        :hint="'JPG/PNG/WebP · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB · '.config('desa.unggahan.gambar_maks_piksel').' px'"
                     />
                     @error('gambar')
                         <p class="flex items-start gap-1.5 type-body-sm text-danger"><x-ui.icon name="alert" class="mt-0.5 size-4" /><span>{{ $message }}</span></p>

@@ -20,19 +20,22 @@
 
 @section('content')
     <div class="flex flex-col gap-6">
-        <x-admin.page-header :title="'Selamat datang, '.$pengguna['name']" description="Ringkasan konten situs. Tanda — berarti angkanya belum tersedia.">
+        <x-admin.page-header :title="'Selamat datang, '.$pengguna['name']" description="Ringkasan konten situs, dihitung dari data terbaru.">
             @can('akses-modul', Modul::Berita)
                 <x-ui.button :href="route('admin.berita.create')" icon="plus">Tambah Berita</x-ui.button>
             @endcan
         </x-admin.page-header>
 
-        {{-- Angka ringkas: yang belum ada sumbernya ditampilkan sebagai —, bukan angka karangan. --}}
-        {{-- TODO(backend): hitung UMKM dan data pertanian dari database. --}}
+        {{-- Semua angka dihitung dari database; kartu hanya tampil untuk modul yang boleh dibuka akun ini. --}}
         <section aria-label="Statistik" class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
-            <x-ui.card-stat label="Berita terbit" :value="$terbit" source="data contoh" />
-            <x-ui.card-stat label="Berita draf" :value="$draf" source="belum dipublikasikan" />
-            <x-ui.card-stat label="UMKM terdaftar" value="—" source="data aktif" />
-            <x-ui.card-stat label="Data pertanian" value="—" source="komoditas & kelompok" />
+            @can('akses-modul', Modul::Berita)
+                <x-ui.card-stat label="Berita terbit" :value="$terbit" source="tampil di situs publik" />
+                <x-ui.card-stat label="Berita draf" :value="$draf" source="belum dipublikasikan" />
+            @endcan
+            @can('akses-modul', Modul::Potensi)
+                <x-ui.card-stat label="UMKM terdaftar" :value="$umkm" source="terbit di situs publik" />
+                <x-ui.card-stat label="Data pertanian" :value="$komoditas" :source="'komoditas · '.$kelompokTani.' kelompok tani'" />
+            @endcan
             @can('akses-modul', Modul::Aspirasi)
                 <x-ui.card-stat label="Aspirasi belum diproses" :value="$aspirasiBaru" source="status “Baru”" tone="bahaya" />
             @endcan
@@ -47,7 +50,7 @@
                     <x-ui.button :href="route('admin.aspirasi.index')" variant="ghost" size="s" icon="arrow-right">Lihat semua</x-ui.button>
                 </div>
                 <ul>
-                    @foreach ($aspirasiTerbaru as $a)
+                    @forelse ($aspirasiTerbaru as $a)
                         <li class="flex items-center gap-3 border-t border-border px-5 py-3.5">
                             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
                                 <p class="type-label text-text">{{ $a['pengirim'] }}</p>
@@ -58,7 +61,9 @@
                                 <span class="type-label-sm text-muted">{{ $a['waktu'] }}</span>
                             </div>
                         </li>
-                    @endforeach
+                    @empty
+                        <li class="border-t border-border px-5 py-6 type-body text-muted">Belum ada aspirasi masuk.</li>
+                    @endforelse
                 </ul>
             </section>
             @endcan
@@ -75,6 +80,7 @@
             </section>
         </div>
 
+        @can('akses-modul', Modul::Berita)
         <section aria-labelledby="draf-terakhir-judul" class="rounded-[14px] border border-border bg-surface">
             <h2 id="draf-terakhir-judul" class="type-h3 px-5 py-4 text-text">Konten Draf Terakhir</h2>
             @forelse ($konten as $k)
@@ -89,5 +95,6 @@
                 <p class="border-t border-border px-5 py-6 type-body text-muted">Tidak ada konten draf. Semua konten sudah diterbitkan.</p>
             @endforelse
         </section>
+        @endcan
     </div>
 @endsection

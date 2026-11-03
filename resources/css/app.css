@@ -176,3 +176,55 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* Isi berita yang dirender di server dari teks penanda ringan (TeksRingan): p, h2/h3, kutipan, daftar, tautan. */
+.isi-berita {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.isi-berita p {
+    @apply type-body-lg text-text;
+}
+
+.isi-berita h2 {
+    @apply type-h2 mt-2 text-text;
+}
+
+.isi-berita h3 {
+    @apply type-h3 mt-1 text-text;
+}
+
+.isi-berita blockquote {
+    @apply type-h3 border-l-4 border-accent py-2 pl-4 text-primary;
+}
+
+.isi-berita blockquote p {
+    @apply type-h3 text-primary;
+}
+
+.isi-berita ul,
+.isi-berita ol {
+    @apply type-body-lg flex flex-col gap-2 pl-6 text-text;
+}
+
+.isi-berita ul {
+    list-style: disc;
+}
+
+.isi-berita ol {
+    list-style: decimal;
+}
+
+.isi-berita a {
+    @apply text-primary underline underline-offset-2;
+}
+
+.isi-berita a:hover {
+    text-decoration-thickness: 2px;
+}
+
+.isi-berita strong {
+    font-weight: 700;
+}

@@ -71,6 +71,7 @@ class Format
 
         return number_format(max(1, (int) round($bytes / 1024)), 0, ',', '.').' KB';
     }
+
     /**
      * NIK disamarkan: hanya 4 digit terakhir yang terlihat. Aspirasi tidak pernah menampilkan NIK utuh.
      */
