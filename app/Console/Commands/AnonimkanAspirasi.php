@@ -40,7 +40,10 @@ class AnonimkanAspirasi extends Command
         $jumlah = 0;
         $kueri->chunkById(100, function ($kumpulan) use (&$jumlah) {
             foreach ($kumpulan as $aspirasi) {
-                $aspirasi->forceFill(['nama' => null, 'nik' => null, 'dianonimkan_at' => now()])->save();
+                $aspirasi->forceFill(
+                    ['nama' => null, 'nik' => null, 'dianonimkan_at' => now()]
+                    + (config('desa.aspirasi.hapus_pesan_saat_anonim') ? ['pesan' => '[Isi pesan dihapus saat anonimisasi]'] : []),
+                )->save();
                 $jumlah++;
             }
         });

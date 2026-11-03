@@ -101,13 +101,7 @@
                 </section>
 
                 {{-- Peta: tampil setelah lokasi diverifikasi; alamat tertulis tetap terbaca bila peta gagal dimuat. --}}
-                <div class="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[14px] border border-border bg-primary-soft px-6 text-center text-primary lg:min-h-0">
-                    <x-ui.icon name="map-pin" class="size-9" />
-                    <p class="type-label">Peta lokasi desa</p>
-                    @unless ($petaTerverifikasi)
-                        <p class="type-body-sm max-w-xs text-muted">Peta akan ditampilkan setelah lokasi diverifikasi oleh pemerintah desa.</p>
-                    @endunless
-                </div>
+                <x-public.peta :peta="$peta" tinggi="h-[300px] lg:h-[440px]" />
             </div>
         </div>
     </div>

@@ -11,6 +11,7 @@ use App\Support\Aktivitas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -28,8 +29,10 @@ class AdminAkunController extends Controller
         return view('pages.admin.akun', [
             'daftar' => User::query()->with('modulAkses')->orderBy('name')->get(),
             'ubah' => $ubah,
-            'log' => LogAktivitas::query()->with('user')->latest('id')->limit(30)->get(),
+            'log' => $this->daftarLog($request),
             'labelAksi' => Aktivitas::LABEL,
+            'filterAksi' => $this->aksiDipilih($request),
+            'kataLog' => mb_substr(trim((string) $request->query('qlog', '')), 0, 100),
             'modulStaf' => Modul::untukStaf(),
         ]);
     }
@@ -142,6 +145,31 @@ class AdminAkunController extends Controller
         $modul = $user->modulAkses()->get()->map(fn ($m) => $m->modul->value)->all();
 
         return $modul === [] ? '' : ' · modul '.implode(', ', $modul);
+    }
+
+    /**
+     * Log aktivitas terbaru dengan filter jenis aksi (`aksi`) dan kata kunci keterangan (`qlog`), 20 per halaman.
+     *
+     * @return LengthAwarePaginator<int, LogAktivitas>
+     */
+    private function daftarLog(Request $request): LengthAwarePaginator
+    {
+        $aksi = $this->aksiDipilih($request);
+
+        return LogAktivitas::query()->with('user')
+            ->when($aksi !== null, fn ($q) => $q->where('aksi', $aksi))
+            ->cari(['keterangan'], (string) $request->query('qlog', ''))
+            ->latest('id')
+            ->paginate(20, pageName: 'halaman_log')
+            ->withQueryString()
+            ->fragment('log-judul');
+    }
+
+    private function aksiDipilih(Request $request): ?string
+    {
+        $aksi = $request->query('aksi');
+
+        return is_string($aksi) && array_key_exists($aksi, Aktivitas::LABEL) ? $aksi : null;
     }
 
     private function adaSuperAdminAktifLain(User $user): bool

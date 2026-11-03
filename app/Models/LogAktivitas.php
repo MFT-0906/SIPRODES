@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DapatDicari;
 use Database\Factories\LogAktivitasFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class LogAktivitas extends Model
 {
     /** @use HasFactory<LogAktivitasFactory> */
-    use HasFactory;
+    use DapatDicari, HasFactory;
 
     protected $table = 'log_aktivitas';
 

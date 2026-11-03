@@ -73,6 +73,12 @@ class KontenPublik
                 'url' => $terverifikasi && $adaKoordinat
                     ? 'https://www.google.com/maps?q='.rawurlencode($profil->lintang.','.$profil->bujur)
                     : null,
+                // Koordinat untuk peta interaktif (Leaflet) dan tautan peta besar; hanya ada setelah lokasi diverifikasi.
+                'lat' => $terverifikasi && $adaKoordinat ? (float) $profil->lintang : null,
+                'lng' => $terverifikasi && $adaKoordinat ? (float) $profil->bujur : null,
+                'osm_url' => $terverifikasi && $adaKoordinat
+                    ? 'https://www.openstreetmap.org/?mlat='.$profil->lintang.'&mlon='.$profil->bujur.'#map=17/'.$profil->lintang.'/'.$profil->bujur
+                    : null,
             ],
         ];
     }
