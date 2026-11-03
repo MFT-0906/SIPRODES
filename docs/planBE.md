@@ -25,7 +25,7 @@ Jika hasil fase belum sesuai, tulis koreksinya lalu minta: `Perbaiki fase N sesu
 | Fase | Nama | Status |
 |---|---|---|
 | 0 | Persiapan: versi PHP, database, alat bantu | Selesai |
-| 1 | Skema database, model, factory, seeder | Belum |
+| 1 | Skema database, model, factory, seeder | Selesai |
 | 2 | Autentikasi admin | Belum |
 | 3 | Otorisasi peran & modul Akun | Belum |
 | 4 | Halaman publik membaca database | Belum |
@@ -109,7 +109,7 @@ Konfirmasi ke desa/tim secepatnya. Sampai dikonfirmasi, pakai nilai bawaan ini (
 
 Rancang dari bentuk data di `DemoContent`, `DemoStoreKoleksi`, dan aturan validasi controller.
 
-- [ ] Migrasi dan model (nama tabel Bahasa Indonesia, snake_case):
+- [x] Migrasi dan model (nama tabel Bahasa Indonesia, snake_case):
 
 | Tabel | Kolom utama | Catatan |
 |---|---|---|
@@ -130,9 +130,9 @@ Rancang dari bentuk data di `DemoContent`, `DemoStoreKoleksi`, dan aturan valida
 | `aspirasi_riwayat` | `aspirasi_id`, `user_id`, `aksi`, `catatan` | |
 | `log_aktivitas` | `user_id`, `aksi`, `subjek_type`, `subjek_id`, `keterangan`, `ip` | |
 
-- [ ] Enum PHP untuk status (`StatusTerbit`, `StatusAspirasi`, `Peran`) dan scope `terbit()` di model konten.
-- [ ] Factory untuk semua model; seeder `DataContohSeeder` memindahkan isi `DemoContent`/`DemoStoreKoleksi` (ditandai "contoh"), dan `AdminAwalSeeder` membuat satu Super Admin dari `.env` (`ADMIN_EMAIL`, kata sandi acak dicetak sekali ke konsol).
-- [ ] Belum menyambungkan controller (dilakukan per fase).
+- [x] Enum PHP untuk status (`StatusTerbit`, `StatusAspirasi`, `Peran`) dan scope `terbit()` di model konten.
+- [x] Factory untuk semua model; seeder `DataContohSeeder` memindahkan isi `DemoContent`/`DemoStoreKoleksi` (ditandai "contoh"), dan `AdminAwalSeeder` membuat satu Super Admin dari `.env` (`ADMIN_EMAIL`, kata sandi acak dicetak sekali ke konsol).
+- [x] Belum menyambungkan controller (dilakukan per fase).
 
 **Checkpoint:** `php artisan migrate:fresh --seed` berhasil di SQLite dan MySQL; tes relasi dan scope `terbit()`.
 
@@ -264,3 +264,4 @@ Rancang dari bentuk data di `DemoContent`, `DemoStoreKoleksi`, dan aturan valida
 | Tanggal | Fase | Ringkasan | Commit |
 |---|---|---|---|
 | 2026-11-03 | 0 | `composer.json` `php: ^8.4` (asumsi hosting PHP ≥ 8.4, **belum dikonfirmasi**; lock memakai Symfony 8.1.9 yang butuh ≥ 8.4.1) dan `composer.lock` diperbarui hanya pada content-hash/constraint PHP. `.env.example` memakai MySQL (`siprodes`), `phpunit.xml` tetap SQLite memori. `boost:install --guidelines --skills --mcp` dijalankan (menambah `.claude/skills`, `.mcp.json`, `boost.json`, dan mengganti blok Boost di `CLAUDE.md`; Aturan Frontend tetap utuh); bagian "Aturan Backend" ditambahkan. `config/desa.php` (nama desa, batas unggahan, NIK, masa simpan aspirasi, waktu isi minimum, batas login). Hash commit di Log `planFE.md` fase 7–11 diperbaiki. Versi: PHP 8.5.8, Laravel 13.38.0, Symfony 8.1.9; 64 tes lolos. Catatan: `composer install` diuji dengan `--dry-run`; MySQL belum dijalankan (diuji mulai Fase 1). | (lihat git) |
+| 2026-11-03 | 1 | 6 berkas migrasi (alter `users` + `modul_akses`; profil/struktur; berita/agenda; potensi; APBDes; aspirasi/log), 17 model, enum `StatusTerbit`/`StatusAspirasi`/`Peran`/`Modul`/`JenisAnggaran`, trait `MemilikiStatusTerbit` (scope `terbit()`/`draf()`), 17 factory, seeder `MasterDataSeeder` (dusun 1–6, 8 jabatan, profil desa; aman di produksi), `AdminAwalSeeder` (dari `ADMIN_EMAIL`, kata sandi acak dicetak sekali), `DataContohSeeder` (semua baris `contoh = true`, tidak jalan di produksi). Penyimpangan dari rancangan: kolom `contoh` boolean ditambahkan di tabel konten untuk menandai data contoh; `profil_desa` memakai `visi_misi_resmi`, `perangkat_resmi`, `alamat_wilayah`, `mata_pencaharian` (pengganti `status_*`); `aspirasi.dianonimkan_at` dan `apbdes_dokumen.keterangan_periode` ditambahkan; `agenda.waktu` bertipe `time`; seeder tidak mengisi pembiayaan APBDes (FE belum punya daftarnya, Fase 7). Tanpa paket baru. Controller belum disambungkan. 12 tes baru (total 76 lolos), `npm run build` lolos, `migrate:fresh --seed` dan rollback/migrate ulang di SQLite berhasil. **Belum diuji di MySQL** (tidak ada server MySQL di mesin ini). | (lihat git) |

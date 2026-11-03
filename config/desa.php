@@ -15,6 +15,12 @@ return [
 
     'nama' => env('DESA_NAMA', 'Desa Marga Agung'),
 
+    // Super Admin pertama (AdminAwalSeeder). Kata sandi acak dicetak sekali ke konsol.
+    'admin' => [
+        'email' => env('ADMIN_EMAIL'),
+        'nama' => env('ADMIN_NAMA', 'Super Admin'),
+    ],
+
     // Batas unggahan (Fase 8). Ukuran dalam kilobita, sesuai aturan validasi Laravel.
     'unggahan' => [
         'gambar_maks_kb' => (int) env('UNGGAH_GAMBAR_MAKS_KB', 2048),
