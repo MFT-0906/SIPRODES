@@ -3,7 +3,7 @@
 namespace App\Enums;
 
 /**
- * Modul admin yang dapat ditugaskan ke akun Staf (dipakai penuh di Fase 3).
+ * Modul admin. Staf hanya boleh modul yang ditugaskan; Super Admin memegang semuanya.
  */
 enum Modul: string
 {
@@ -24,5 +24,21 @@ enum Modul: string
             self::Aspirasi => 'Aspirasi Warga',
             self::Akun => 'Akun & Hak Akses',
         };
+    }
+
+    /**
+     * Akun & Hak Akses hanya untuk Super Admin dan tidak dapat ditugaskan ke Staf.
+     */
+    public function dapatDitugaskanKeStaf(): bool
+    {
+        return $this !== self::Akun;
+    }
+
+    /**
+     * @return list<self>
+     */
+    public static function untukStaf(): array
+    {
+        return array_values(array_filter(self::cases(), fn (self $modul) => $modul->dapatDitugaskanKeStaf()));
     }
 }

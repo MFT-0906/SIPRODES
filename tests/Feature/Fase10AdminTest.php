@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Support\Format;
-use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\Concerns\MasukSebagaiAdmin;
@@ -163,31 +162,5 @@ class Fase10AdminTest extends TestCase
                 ->assertDontSee('Pengirim A')
                 ->assertDontSee('lampu jalan yang padam');
         }
-    }
-
-    public function test_akun_hanya_untuk_super_admin_dan_ditolak_untuk_staf(): void
-    {
-        $this->get(route('admin.akun.index'))->assertForbidden()->assertSee('Akses tidak diizinkan');
-        $this->post(route('admin.akun.store'), ['nama' => 'X', 'email' => 'x', 'peran' => 'staf'])->assertForbidden();
-    }
-
-    public function test_super_admin_melihat_akun_matriks_izin_dan_membuat_akun_tanpa_kata_sandi(): void
-    {
-        // Peran contoh hanya berlaku di lokal; di lingkungan itu CSRF aktif, jadi dimatikan khusus untuk tes ini.
-        $this->withoutMiddleware(PreventRequestForgery::class);
-        $this->app->detectEnvironment(fn () => 'local');
-        $this->get(route('admin.akun.index', ['peran' => 'super_admin']))->assertOk()
-            ->assertSee('Matriks Izin (draf — perlu konfirmasi desa)')->assertSee('Sesuai penugasan')
-            ->assertSee('Kata sandi tidak diisi admin')->assertDontSee('name="password"', false);
-
-        $this->post(route('admin.akun.store'), ['nama' => 'Akun Uji', 'email' => 'uji@desa.id', 'peran' => 'staf'])
-            ->assertRedirect(route('admin.akun.index'));
-        $this->get(route('admin.akun.index'))->assertSee('Akun Uji');
-
-        $this->from(route('admin.akun.index'))->post(route('admin.akun.store'), ['peran' => 'dewa'])
-            ->assertSessionHasErrors(['nama', 'email', 'peran']);
-
-        $this->post(route('admin.akun.reset', 'akun-2'))->assertRedirect()->assertSessionHas('toast');
-        $this->get(route('admin.akun.index', ['ubah' => 'akun-2']))->assertSee('Ubah Akun Admin');
     }
 }

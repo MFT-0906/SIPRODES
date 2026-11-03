@@ -22,7 +22,6 @@ class DemoStoreKoleksi
             'kelompok' => self::kelompok(),
             'umkm' => self::umkm(),
             'aspirasi' => self::aspirasi(),
-            'akun' => self::akun(),
             default => [],
         };
     }
@@ -107,16 +106,6 @@ class DemoStoreKoleksi
             $a('asp-3', 'Pengirim C', 'Mohon informasi tentang bantuan bibit jagung.', '2026-10-25 16:02', 'baru'),
             $a('asp-4', 'Pengirim D', 'Mohon informasi tentang lampu jalan yang padam.', '2026-10-20 19:30', 'dibaca'),
             $a('asp-5', 'Pengirim E', 'Mohon informasi tentang surat pengantar.', '2026-10-18 08:10', 'selesai'),
-        ];
-    }
-
-    /** @return list<array<string, mixed>> */
-    private static function akun(): array
-    {
-        return [
-            ['id' => 'akun-1', 'nama' => 'Nama Admin 1', 'email' => 'admin1@…', 'peran' => 'super_admin', 'aktif' => true],
-            ['id' => 'akun-2', 'nama' => 'Nama Admin 2', 'email' => 'staf1@…', 'peran' => 'staf', 'aktif' => true],
-            ['id' => 'akun-3', 'nama' => 'Nama Admin 3', 'email' => 'staf2@…', 'peran' => 'staf', 'aktif' => false],
         ];
     }
 

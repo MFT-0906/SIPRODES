@@ -45,58 +45,76 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/atur-ulang-kata-sandi', [AdminAuthController::class, 'aturUlang'])->middleware('throttle:10,1')->name('password.update');
     });
 
-    // TODO(backend): izin per peran/modul (Fase 3).
+    // Izin per modul ditegakkan di server: middleware `modul:*` memakai Gate `akses-modul`.
     Route::middleware(['auth', PastikanAkunAktif::class])->group(function () {
         Route::post('/keluar', [AdminAuthController::class, 'keluar'])->name('logout');
 
-        Route::get('/profil', [AdminProfilController::class, 'show'])->name('profil');
-        Route::put('/profil/{tab}', [AdminProfilController::class, 'simpan'])->name('profil.simpan');
+        Route::middleware('modul:profil')->group(function () {
 
-        Route::get('/struktur-perangkat', [AdminStrukturController::class, 'index'])->name('struktur');
-        Route::post('/struktur-perangkat', [AdminStrukturController::class, 'store'])->name('struktur.store');
-        Route::put('/struktur-perangkat/{id}', [AdminStrukturController::class, 'update'])->name('struktur.update');
-        Route::delete('/struktur-perangkat/{id}', [AdminStrukturController::class, 'destroy'])->name('struktur.destroy');
-        Route::post('/struktur-perangkat/{id}/geser', [AdminStrukturController::class, 'geser'])->name('struktur.geser');
+            Route::get('/profil', [AdminProfilController::class, 'show'])->name('profil');
+            Route::put('/profil/{tab}', [AdminProfilController::class, 'simpan'])->name('profil.simpan');
 
-        Route::get('/apbdes', [AdminApbdesController::class, 'index'])->name('apbdes');
-        Route::post('/apbdes', [AdminApbdesController::class, 'simpan'])->name('apbdes.store');
-        Route::put('/apbdes/{id}', [AdminApbdesController::class, 'simpan'])->name('apbdes.update');
-        Route::delete('/apbdes/{id}', [AdminApbdesController::class, 'destroy'])->name('apbdes.destroy');
+            Route::get('/struktur-perangkat', [AdminStrukturController::class, 'index'])->name('struktur');
+            Route::post('/struktur-perangkat', [AdminStrukturController::class, 'store'])->name('struktur.store');
+            Route::put('/struktur-perangkat/{id}', [AdminStrukturController::class, 'update'])->name('struktur.update');
+            Route::delete('/struktur-perangkat/{id}', [AdminStrukturController::class, 'destroy'])->name('struktur.destroy');
+            Route::post('/struktur-perangkat/{id}/geser', [AdminStrukturController::class, 'geser'])->name('struktur.geser');
+        });
 
-        Route::get('/potensi-pertanian', [AdminPotensiController::class, 'pertanian'])->name('pertanian');
-        Route::post('/potensi-pertanian', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.store');
-        Route::put('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.update');
-        Route::delete('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasHapus'])->name('pertanian.destroy');
+        Route::middleware('modul:apbdes')->group(function () {
 
-        Route::get('/kelompok-tani', [AdminPotensiController::class, 'kelompok'])->name('kelompok-tani');
-        Route::post('/kelompok-tani', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.store');
-        Route::put('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.update');
-        Route::delete('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokHapus'])->name('kelompok-tani.destroy');
+            Route::get('/apbdes', [AdminApbdesController::class, 'index'])->name('apbdes');
+            Route::post('/apbdes', [AdminApbdesController::class, 'simpan'])->name('apbdes.store');
+            Route::put('/apbdes/{id}', [AdminApbdesController::class, 'simpan'])->name('apbdes.update');
+            Route::delete('/apbdes/{id}', [AdminApbdesController::class, 'destroy'])->name('apbdes.destroy');
+        });
 
-        Route::get('/umkm', [AdminPotensiController::class, 'umkm'])->name('umkm');
-        Route::post('/umkm', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.store');
-        Route::put('/umkm/{id}', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.update');
-        Route::delete('/umkm/{id}', [AdminPotensiController::class, 'umkmHapus'])->name('umkm.destroy');
+        Route::middleware('modul:potensi')->group(function () {
 
-        Route::get('/aspirasi', [AdminAspirasiController::class, 'index'])->name('aspirasi.index');
-        Route::put('/aspirasi/{id}', [AdminAspirasiController::class, 'status'])->name('aspirasi.status');
+            Route::get('/potensi-pertanian', [AdminPotensiController::class, 'pertanian'])->name('pertanian');
+            Route::post('/potensi-pertanian', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.store');
+            Route::put('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.update');
+            Route::delete('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasHapus'])->name('pertanian.destroy');
 
-        Route::get('/akun', [AdminAkunController::class, 'index'])->name('akun.index');
-        Route::post('/akun', [AdminAkunController::class, 'store'])->name('akun.store');
-        Route::put('/akun/{id}', [AdminAkunController::class, 'update'])->name('akun.update');
-        Route::post('/akun/{id}/atur-ulang', [AdminAkunController::class, 'reset'])->name('akun.reset');
+            Route::get('/kelompok-tani', [AdminPotensiController::class, 'kelompok'])->name('kelompok-tani');
+            Route::post('/kelompok-tani', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.store');
+            Route::put('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.update');
+            Route::delete('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokHapus'])->name('kelompok-tani.destroy');
+
+            Route::get('/umkm', [AdminPotensiController::class, 'umkm'])->name('umkm');
+            Route::post('/umkm', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.store');
+            Route::put('/umkm/{id}', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.update');
+            Route::delete('/umkm/{id}', [AdminPotensiController::class, 'umkmHapus'])->name('umkm.destroy');
+        });
+
+        Route::middleware('modul:aspirasi')->group(function () {
+
+            Route::get('/aspirasi', [AdminAspirasiController::class, 'index'])->name('aspirasi.index');
+            Route::put('/aspirasi/{id}', [AdminAspirasiController::class, 'status'])->name('aspirasi.status');
+        });
+
+        Route::middleware('modul:akun')->group(function () {
+
+            Route::get('/akun', [AdminAkunController::class, 'index'])->name('akun.index');
+            Route::post('/akun', [AdminAkunController::class, 'store'])->name('akun.store');
+            Route::put('/akun/{user}', [AdminAkunController::class, 'update'])->name('akun.update');
+            Route::post('/akun/{user}/atur-ulang', [AdminAkunController::class, 'reset'])->name('akun.reset');
+        });
 
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/berita', [AdminBeritaController::class, 'index'])->name('berita.index');
-        Route::get('/berita/tambah', [AdminBeritaController::class, 'create'])->name('berita.create');
-        Route::post('/berita', [AdminBeritaController::class, 'store'])->name('berita.store');
-        Route::get('/berita/{slug}/ubah', [AdminBeritaController::class, 'edit'])->name('berita.edit');
-        Route::put('/berita/{slug}', [AdminBeritaController::class, 'update'])->name('berita.update');
-        Route::delete('/berita/{slug}', [AdminBeritaController::class, 'destroy'])->name('berita.destroy');
 
-        Route::get('/agenda', [AdminAgendaController::class, 'index'])->name('agenda.index');
-        Route::post('/agenda', [AdminAgendaController::class, 'store'])->name('agenda.store');
-        Route::put('/agenda/{id}', [AdminAgendaController::class, 'update'])->name('agenda.update');
-        Route::delete('/agenda/{id}', [AdminAgendaController::class, 'destroy'])->name('agenda.destroy');
+        Route::middleware('modul:berita')->group(function () {
+            Route::get('/berita', [AdminBeritaController::class, 'index'])->name('berita.index');
+            Route::get('/berita/tambah', [AdminBeritaController::class, 'create'])->name('berita.create');
+            Route::post('/berita', [AdminBeritaController::class, 'store'])->name('berita.store');
+            Route::get('/berita/{slug}/ubah', [AdminBeritaController::class, 'edit'])->name('berita.edit');
+            Route::put('/berita/{slug}', [AdminBeritaController::class, 'update'])->name('berita.update');
+            Route::delete('/berita/{slug}', [AdminBeritaController::class, 'destroy'])->name('berita.destroy');
+
+            Route::get('/agenda', [AdminAgendaController::class, 'index'])->name('agenda.index');
+            Route::post('/agenda', [AdminAgendaController::class, 'store'])->name('agenda.store');
+            Route::put('/agenda/{id}', [AdminAgendaController::class, 'update'])->name('agenda.update');
+            Route::delete('/agenda/{id}', [AdminAgendaController::class, 'destroy'])->name('agenda.destroy');
+        });
     });
 });

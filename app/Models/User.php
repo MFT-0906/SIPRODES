@@ -55,6 +55,10 @@ class User extends Authenticatable
             return true;
         }
 
+        if (! $modul->dapatDitugaskanKeStaf()) {
+            return false;
+        }
+
         return $this->modulAkses->contains(fn (ModulAkses $akses) => $akses->modul === $modul);
     }
 }

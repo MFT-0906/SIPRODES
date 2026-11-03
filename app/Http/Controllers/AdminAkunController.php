@@ -2,72 +2,124 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\DemoStore;
-use App\Support\Peran;
+use App\Enums\Modul;
+use App\Enums\Peran;
+use App\Http\Requests\Admin\SimpanAkunRequest;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
+/**
+ * Modul Akun & Hak Akses. Rute dilindungi middleware `modul:akun` (khusus Super Admin).
+ * Admin tidak pernah mengisi kata sandi: pengguna menerima tautan untuk membuatnya sendiri.
+ */
 class AdminAkunController extends Controller
 {
-    // TODO(backend): izin Super Admin WAJIB ditegakkan di server (middleware/policy); pemeriksaan di sini
-    // hanya mengikuti peran contoh. Kata sandi tidak pernah diisi admin: pengguna baru menerima tautan.
-
     public function index(Request $request): View
     {
-        $this->pastikanSuperAdmin();
+        $ubah = $request->filled('ubah') ? User::query()->with('modulAkses')->find($request->query('ubah')) : null;
 
         return view('pages.admin.akun', [
-            'daftar' => DemoStore::daftar('akun'),
-            'ubah' => DemoStore::item('akun', $request->query('ubah')),
+            'daftar' => User::query()->with('modulAkses')->orderBy('name')->get(),
+            'ubah' => $ubah,
+            'modulStaf' => Modul::untukStaf(),
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(SimpanAkunRequest $request): RedirectResponse
     {
-        $this->pastikanSuperAdmin();
+        $user = DB::transaction(function () use ($request) {
+            $user = User::query()->create([
+                'name' => $request->string('nama')->toString(),
+                'email' => $request->string('email')->toString(),
+                'username' => $request->filled('username') ? $request->string('username')->toString() : null,
+                // Kata sandi acak yang tidak diketahui siapa pun; pengguna membuat sendiri lewat tautan.
+                'password' => Str::random(40),
+                'peran' => Peran::from($request->string('peran')->toString()),
+                'aktif' => true,
+            ]);
+            $this->sinkronkanModul($user, $request);
 
-        // TODO(backend): buat akun tanpa kata sandi, kirim tautan pembuatan kata sandi ke pengguna.
-        DemoStore::simpan('akun', $this->data($request) + ['aktif' => true]);
+            return $user;
+        });
+
+        Password::sendResetLink(['email' => $user->email]);
 
         return redirect()->route('admin.akun.index')->with('toast', 'Akun dibuat. Pengguna akan menerima tautan untuk membuat kata sandi.');
     }
 
-    public function update(Request $request, string $id): RedirectResponse
+    public function update(SimpanAkunRequest $request, User $user): RedirectResponse
     {
-        $this->pastikanSuperAdmin();
-        abort_if(DemoStore::item('akun', $id) === null, 404);
+        $peranBaru = Peran::from($request->string('peran')->toString());
+        $aktifBaru = $request->boolean('aktif');
 
-        DemoStore::simpan('akun', $this->data($request) + ['aktif' => $request->boolean('aktif')], $id);
+        if ($request->user()->is($user) && ! $aktifBaru) {
+            return $this->tolak('aktif', 'Anda tidak dapat menonaktifkan akun Anda sendiri.');
+        }
+
+        $kehilanganSuperAdmin = $user->adalahSuperAdmin() && $user->aktif && ($peranBaru !== Peran::SuperAdmin || ! $aktifBaru);
+        if ($kehilanganSuperAdmin && ! $this->adaSuperAdminAktifLain($user)) {
+            return $this->tolak('peran', 'Harus ada minimal satu Super Admin aktif. Jadikan akun lain Super Admin lebih dulu.');
+        }
+
+        DB::transaction(function () use ($request, $user, $peranBaru, $aktifBaru) {
+            $user->update([
+                'name' => $request->string('nama')->toString(),
+                'email' => $request->string('email')->toString(),
+                'username' => $request->filled('username') ? $request->string('username')->toString() : null,
+                'peran' => $peranBaru,
+                'aktif' => $aktifBaru,
+            ]);
+            $this->sinkronkanModul($user, $request);
+        });
 
         return redirect()->route('admin.akun.index')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
-    public function reset(string $id): RedirectResponse
+    public function reset(User $user): RedirectResponse
     {
-        $this->pastikanSuperAdmin();
-        abort_if(DemoStore::item('akun', $id) === null, 404);
+        if (! $user->aktif) {
+            return redirect()->route('admin.akun.index')->with('toast', 'Akun nonaktif tidak dapat dikirimi tautan. Aktifkan akun lebih dulu.');
+        }
 
-        // TODO(backend): kirim tautan atur ulang kata sandi; pengguna membuat kata sandinya sendiri.
-        return redirect()->route('admin.akun.index')->with('toast', 'Tautan atur ulang kata sandi dikirim ke pengguna.');
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        return redirect()->route('admin.akun.index')->with('toast', $status === Password::RESET_THROTTLED
+            ? 'Tautan baru sudah dikirim barusan. Coba lagi dalam satu menit.'
+            : 'Tautan atur ulang kata sandi dikirim ke pengguna.');
     }
 
-    private function pastikanSuperAdmin(): void
+    private function adaSuperAdminAktifLain(User $user): bool
     {
-        abort_unless(Peran::superAdmin(), 403);
+        return User::query()
+            ->where('peran', Peran::SuperAdmin->value)
+            ->where('aktif', true)
+            ->whereKeyNot($user->getKey())
+            ->exists();
     }
 
-    /** @return array{nama: string, email: string, peran: string} */
-    private function data(Request $request): array
+    /**
+     * Staf memegang modul yang dipilih; Super Admin memegang semuanya sehingga tidak butuh penugasan.
+     */
+    private function sinkronkanModul(User $user, Request $request): void
     {
-        $valid = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'string', 'max:150'],
-            'peran' => ['required', 'in:staf,super_admin'],
-        ], [
-            'required' => ':attribute wajib diisi.', 'max' => ':attribute terlalu panjang (maksimal :max karakter).', 'in' => ':attribute tidak dikenal.',
-        ], ['nama' => 'Nama lengkap', 'email' => 'Email atau username', 'peran' => 'Peran']);
+        $user->modulAkses()->delete();
 
-        return ['nama' => $valid['nama'], 'email' => $valid['email'], 'peran' => $valid['peran']];
+        if ($user->peran !== Peran::Staf) {
+            return;
+        }
+
+        foreach (array_unique((array) $request->input('modul', [])) as $modul) {
+            $user->modulAkses()->create(['modul' => $modul]);
+        }
+    }
+
+    private function tolak(string $kolom, string $pesan): RedirectResponse
+    {
+        return back()->withInput()->withErrors([$kolom => $pesan]);
     }
 }

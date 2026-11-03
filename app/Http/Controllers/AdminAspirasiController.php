@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class AdminAspirasiController extends Controller
 {
-    // TODO(backend): middleware `auth`, pengecekan izin, dan penyimpanan ke database.
+    // TODO(backend): penyimpanan ke database.
     // Aspirasi tidak pernah tampil di halaman publik; NIK hanya tampil disamarkan.
 
     private const STATUS = ['baru' => 'Baru', 'dibaca' => 'Sudah Dibaca', 'selesai' => 'Selesai'];

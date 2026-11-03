@@ -11,7 +11,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminAgendaController extends Controller
 {
-    // TODO(backend): middleware `auth`, pengecekan izin, dan penyimpanan ke database.
+    // TODO(backend): penyimpanan ke database.
     // Hanya agenda berstatus terbit dan bertanggal mendatang yang tampil di situs publik.
 
     private const PER_HALAMAN = 5;

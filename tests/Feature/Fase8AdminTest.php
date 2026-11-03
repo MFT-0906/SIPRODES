@@ -33,23 +33,4 @@ class Fase8AdminTest extends TestCase
             $this->get(route('admin.'.$nama))->assertOk()->assertSee('Dashboard Admin');
         }
     }
-
-    public function test_menu_akun_hanya_untuk_super_admin(): void
-    {
-        $this->masukSebagaiAdmin();
-        $this->app->detectEnvironment(fn () => 'local');
-
-        $this->get(route('admin.dashboard', ['peran' => 'staf']))->assertOk()
-            ->assertDontSee('Akun &amp; Hak Akses', false)->assertSee('Aspirasi Warga')->assertSee('aspirasi baru');
-        $this->get(route('admin.dashboard', ['peran' => 'super_admin']))->assertOk()
-            ->assertSee('Akun &amp; Hak Akses', false)->assertSee('Super Admin');
-    }
-
-    public function test_parameter_peran_diabaikan_di_luar_lokal(): void
-    {
-        $this->masukSebagaiAdmin();
-
-        $this->get(route('admin.dashboard', ['peran' => 'super_admin']))->assertOk()
-            ->assertDontSee('Akun &amp; Hak Akses', false);
-    }
 }

@@ -10,7 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminBeritaController extends Controller
 {
-    // TODO(backend): middleware `auth`, pengecekan izin, penyimpanan ke database, dan penyimpanan gambar.
+    // TODO(backend): penyimpanan ke database dan gambar.
     // Hanya berita berstatus terbit yang boleh tampil di situs publik (ditegakkan di sisi publik).
 
     private const PER_HALAMAN = 5;

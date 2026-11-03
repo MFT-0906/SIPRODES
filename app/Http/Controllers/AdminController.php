@@ -9,7 +9,7 @@ use Illuminate\Contracts\View\View;
 
 class AdminController extends Controller
 {
-    // TODO(backend): middleware `auth` dan pengecekan izin per peran dipasang oleh backend.
+    // TODO(backend): angka ringkasan dari database (Fase 5).
 
     public function dashboard(): View
     {

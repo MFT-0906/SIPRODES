@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class AdminApbdesController extends Controller
 {
-    // TODO(backend): middleware `auth`, pengecekan izin, pemeriksaan isi PDF di server, dan penyimpanan ke database.
+    // TODO(backend): pemeriksaan isi PDF di server dan penyimpanan ke database.
 
     public function index(Request $request): View
     {

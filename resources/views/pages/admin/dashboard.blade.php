@@ -4,21 +4,26 @@
 @section('judul', 'Ringkasan')
 
 @php
+    use App\Enums\Modul;
     use App\Support\Format;
+    use Illuminate\Support\Facades\Gate;
 
-    $pintasan = [
-        ['Tambah berita', 'newspaper', route('admin.berita.create')],
-        ['Tambah agenda', 'calendar', route('admin.agenda.index').'#form-agenda'],
-        ['Unggah dokumen APBDes', 'upload', route('admin.apbdes')],
-        ['Tambah UMKM', 'store', route('admin.umkm')],
-        ['Perbarui struktur perangkat', 'users', route('admin.struktur')],
-    ];
+    // Pintasan hanya untuk modul yang boleh dibuka akun ini (izin sebenarnya di middleware `modul:*`).
+    $pintasan = collect([
+        ['Tambah berita', 'newspaper', route('admin.berita.create'), Modul::Berita],
+        ['Tambah agenda', 'calendar', route('admin.agenda.index').'#form-agenda', Modul::Berita],
+        ['Unggah dokumen APBDes', 'upload', route('admin.apbdes'), Modul::Apbdes],
+        ['Tambah UMKM', 'store', route('admin.umkm'), Modul::Potensi],
+        ['Perbarui struktur perangkat', 'users', route('admin.struktur'), Modul::Profil],
+    ])->filter(fn (array $p) => Gate::allows('akses-modul', $p[3]));
 @endphp
 
 @section('content')
     <div class="flex flex-col gap-6">
         <x-admin.page-header :title="'Selamat datang, '.$pengguna['name']" description="Ringkasan konten situs. Tanda — berarti angkanya belum tersedia.">
-            <x-ui.button :href="route('admin.berita.create')" icon="plus">Tambah Berita</x-ui.button>
+            @can('akses-modul', Modul::Berita)
+                <x-ui.button :href="route('admin.berita.create')" icon="plus">Tambah Berita</x-ui.button>
+            @endcan
         </x-admin.page-header>
 
         {{-- Angka ringkas: yang belum ada sumbernya ditampilkan sebagai —, bukan angka karangan. --}}
@@ -28,10 +33,13 @@
             <x-ui.card-stat label="Berita draf" :value="$draf" source="belum dipublikasikan" />
             <x-ui.card-stat label="UMKM terdaftar" value="—" source="data aktif" />
             <x-ui.card-stat label="Data pertanian" value="—" source="komoditas & kelompok" />
-            <x-ui.card-stat label="Aspirasi belum diproses" :value="$aspirasiBaru" source="status “Baru”" tone="bahaya" />
+            @can('akses-modul', Modul::Aspirasi)
+                <x-ui.card-stat label="Aspirasi belum diproses" :value="$aspirasiBaru" source="status “Baru”" tone="bahaya" />
+            @endcan
         </section>
 
         <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+            @can('akses-modul', Modul::Aspirasi)
             {{-- Aspirasi terbaru: hanya cuplikan; NIK tidak pernah ditampilkan. --}}
             <section aria-labelledby="aspirasi-terbaru-judul" class="flex flex-col rounded-[14px] border border-border bg-surface">
                 <div class="flex items-center justify-between gap-3 px-5 py-4">
@@ -53,6 +61,7 @@
                     @endforeach
                 </ul>
             </section>
+            @endcan
 
             <section aria-labelledby="pintasan-judul" class="flex flex-col gap-2.5 rounded-[14px] border border-border bg-surface p-5">
                 <h2 id="pintasan-judul" class="type-h3 text-text">Pintasan</h2>

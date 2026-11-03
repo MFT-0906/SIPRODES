@@ -396,35 +396,4 @@ class DemoContent
             ],
         ];
     }
-
-    /**
-     * Pengguna admin untuk layout dashboard. Nama mengikuti contoh di Figma; bukan data sungguhan.
-     *
-     * @return array{pengguna: array{name: string, role: string}}
-     */
-    public static function admin(): array
-    {
-        // TODO(backend): ganti dengan pengguna yang sedang masuk
-        return [
-            'pengguna' => ['name' => 'Nama Admin', 'role' => 'staf'],
-        ];
-    }
-    /**
-     * Matriks izin per peran (DRAF, perlu konfirmasi desa). Menyembunyikan menu di UI tidak menggantikan
-     * pemeriksaan izin di backend. Nilai: ya | tidak | penugasan.
-     *
-     * @return list<array{modul: string, super_admin: string, staf: string}>
-     */
-    public static function izin(): array
-    {
-        // TODO(backend): ganti dengan kebijakan izin yang dikonfirmasi desa.
-        return [
-            ['modul' => 'Berita & Agenda', 'super_admin' => 'ya', 'staf' => 'ya'],
-            ['modul' => 'Potensi (Pertanian, Kelompok Tani, UMKM)', 'super_admin' => 'ya', 'staf' => 'ya'],
-            ['modul' => 'Profil & Struktur Perangkat', 'super_admin' => 'ya', 'staf' => 'penugasan'],
-            ['modul' => 'APBDes (ringkasan & PDF)', 'super_admin' => 'ya', 'staf' => 'penugasan'],
-            ['modul' => 'Aspirasi Warga', 'super_admin' => 'ya', 'staf' => 'ya'],
-            ['modul' => 'Akun & Hak Akses', 'super_admin' => 'ya', 'staf' => 'tidak'],
-        ];
-    }
 }

@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class AdminStrukturController extends Controller
 {
-    // TODO(backend): middleware `auth`, pengecekan izin, penyimpanan foto, dan penyimpanan ke database.
+    // TODO(backend): penyimpanan foto dan data ke database.
 
     public function index(Request $request): View
     {

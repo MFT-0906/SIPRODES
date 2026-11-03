@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
-use App\Support\DemoContent;
+use App\Enums\Modul;
+use App\Models\User;
 use App\Support\DemoStore;
 use App\Support\Navigation;
 use App\Support\Peran;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('akses-modul', fn (User $user, Modul $modul) => $user->aktif && $user->punyaModul($modul));
+
         ResetPassword::createUrlUsing(fn (object $notifiable, string $token) => route('admin.password.reset', [
             'token' => $token,
             'email' => $notifiable->getEmailForPasswordReset(),
@@ -46,15 +50,21 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer(['layouts.admin', 'pages.admin.dashboard'], function ($view) {
-            // TODO(backend): $pengguna dan $aspirasiBaru berasal dari pengguna yang masuk dan database.
-            $pengguna = DemoContent::admin()['pengguna'];
-            $pengguna['name'] = auth()->user()?->name ?? $pengguna['name'];
-            $pengguna['role'] = Peran::saatIni();
-
-            // Hanya penyaring tampilan; izin sebenarnya ditegakkan backend.
+            // TODO(backend): $aspirasiBaru dari database (Fase 9).
+            $pengguna = ['name' => auth()->user()?->name ?? '', 'role' => Peran::saatIni()];
             $superAdmin = $pengguna['role'] === 'super_admin';
+
+            // Penyaring tampilan menurut izin modul; izin sebenarnya ditegakkan middleware `modul:*`.
             $menu = collect(Navigation::admin())
-                ->reject(fn (array $grup) => ($grup['super_admin'] ?? false) && ! $superAdmin)
+                ->map(function (array $grup) {
+                    $grup['items'] = array_values(array_filter(
+                        $grup['items'],
+                        fn (array $item) => ! isset($item['modul']) || Gate::allows('akses-modul', Modul::from($item['modul'])),
+                    ));
+
+                    return $grup;
+                })
+                ->filter(fn (array $grup) => $grup['items'] !== [])
                 ->values()
                 ->all();
 

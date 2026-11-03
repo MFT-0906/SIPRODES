@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
  */
 class AdminPotensiController extends Controller
 {
-    // TODO(backend): middleware `auth`, pengecekan izin, penyimpanan foto, dan penyimpanan ke database.
+    // TODO(backend): penyimpanan foto dan data ke database.
     // Kontak kelompok tani, WhatsApp, dan foto UMKM hanya tampil di publik bila persetujuan dicentang.
 
     private const PESAN = [

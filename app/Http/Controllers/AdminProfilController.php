@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class AdminProfilController extends Controller
 {
-    // TODO(backend): middleware `auth`, pengecekan izin, dan penyimpanan ke database.
+    // TODO(backend): penyimpanan ke database.
     // Lokasi dan kontak resmi hanya tampil di publik setelah dicentang "sudah diverifikasi".
 
     private const TAB = ['sejarah', 'visi', 'lokasi', 'data'];
