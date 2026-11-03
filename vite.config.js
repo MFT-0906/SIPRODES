@@ -1,21 +1,29 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
+import { local } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
 
+// Font di-host sebagai berkas di repo (resources/fonts) agar `npm run build` dan situs tidak butuh internet.
 export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
             fonts: [
-                bunny('Plus Jakarta Sans', {
-                    weights: [600, 700],
+                local('Plus Jakarta Sans', {
+                    variants: [
+                        { src: 'resources/fonts/plus-jakarta-sans-600.woff2', weight: 600 },
+                        { src: 'resources/fonts/plus-jakarta-sans-700.woff2', weight: 700 },
+                    ],
                     display: 'swap',
                     alias: 'heading',
                 }),
-                bunny('Inter', {
-                    weights: [400, 500, 600],
+                local('Inter', {
+                    variants: [
+                        { src: 'resources/fonts/inter-400.woff2', weight: 400 },
+                        { src: 'resources/fonts/inter-500.woff2', weight: 500 },
+                        { src: 'resources/fonts/inter-600.woff2', weight: 600 },
+                    ],
                     display: 'swap',
                     alias: 'body',
                 }),

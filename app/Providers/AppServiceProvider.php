@@ -12,6 +12,7 @@ use App\Support\Peran;
 use App\Support\Produksi;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
@@ -36,6 +37,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Produksi::terapkan($this->app);
+
+        // Di belakang proxy/penyeimbang beban, HTTPS dan IP pengunjung hanya terbaca benar bila proksinya dipercaya.
+        if ($proksi = config('desa.proksi_tepercaya')) {
+            TrustProxies::at($proksi === '*' ? '*' : array_map('trim', explode(',', $proksi)));
+        }
 
         // Pembatasan pengiriman aspirasi per IP (disimpan sebagai hash di cache, bukan di database): 5 per 10 menit, 30 per hari.
         RateLimiter::for('aspirasi', fn (Request $request) => [

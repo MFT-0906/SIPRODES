@@ -136,3 +136,16 @@
 - [ ] Data Master (Super Admin): ubah nama/urutan dusun dan jabatan sesuai data resmi; coba hapus jabatan yang dipakai perangkat (ditolak) dan dusun yang dipakai kelompok tani; staf biasa tidak melihat menu ini.
 - [ ] Tampilan HP 390 px untuk halaman Akun (log) dan Data Master.
 - [ ] **Konfirmasi ke desa**: daftar dusun dan jabatan resmi; kebijakan masa simpan log aktivitas (saat ini tidak dihapus otomatis).
+
+## Fase 11 — Pengujian akhir & rilis
+
+- [ ] Ikuti `docs/deploy.md` dari nol di server percobaan yang meniru produksi (PHP ≥ 8.4.1, MySQL, HTTPS): `migrate --force`, `MasterDataSeeder`, `AdminAwalSeeder`, `storage:link`, build, cache config/route/view.
+- [ ] `php artisan migrate:fresh --seed` dan `php artisan test` di **MySQL** (set `DB_CONNECTION=mysql` pada database percobaan); perhatikan pencarian `LIKE ... ESCAPE`, kolom JSON, dan enkripsi NIK.
+- [ ] Jalankan `composer update symfony/mime` (advisori CVE-2026-45070), lalu `php artisan test` dan uji email atur ulang kata sandi.
+- [ ] Lighthouse (mode seluler) pada Beranda, Berita, Potensi, APBDes di server percobaan: target waktu muat < 3 detik (NFR-01); catat hasilnya di `docs/laporanBE.md`.
+- [ ] Uji alur utama di browser dengan data dari database: lihat berita/APBDes/potensi, kirim aspirasi, login admin, terbitkan berita, unggah PDF APBDes, ubah status aspirasi, kelola akun. Ulangi di Chrome, Firefox, Safari (iOS) dan satu HP Android.
+- [ ] Buka konsol browser di setiap halaman: tidak ada galat Content-Security-Policy atau font.
+- [ ] Backup: jalankan skrip backup, lalu **pulihkan ke server percobaan** dan pastikan data, gambar, dan PDF utuh; simpan `APP_KEY` terpisah (NIK tak terbaca tanpa kunci ini).
+- [ ] Matikan MySQL sebentar: halaman publik menampilkan halaman galat desa (bukan jejak teknis); nyalakan lagi dan situs pulih sendiri.
+- [ ] Minta satu-dua perangkat desa mencoba memakai admin tanpa panduan; catat hal yang membingungkan.
+- [ ] Semua keputusan desa di `docs/laporanBE.md` §5 sudah dikonfirmasi atau sengaja memakai nilai bawaan.

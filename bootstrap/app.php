@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,14 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['modul' => PastikanPunyaModul::class]);
+        // Izin modul dicek SEBELUM model di-bind ke rute, supaya akun tanpa izin selalu mendapat 403
+        // (bukan 404 yang membocorkan ada/tidaknya data).
+        $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: PastikanPunyaModul::class);
         // Global (bukan hanya grup web) agar halaman 404 untuk rute yang tidak ada pun mendapat header.
         $middleware->append(HeaderKeamanan::class);
 
-        // Di belakang proxy/penyeimbang beban (mis. hosting dengan HTTPS di proxy), isi TRUSTED_PROXIES di .env
-        // (daftar IP dipisah koma, atau * bila proxy tidak dapat diketahui) agar HTTPS dan IP pengunjung terbaca benar.
-        if ($proksi = env('TRUSTED_PROXIES')) {
-            $middleware->trustProxies(at: $proksi === '*' ? '*' : array_map('trim', explode(',', $proksi)));
-        }
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
         $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
     })

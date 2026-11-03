@@ -15,6 +15,10 @@ return [
 
     'nama' => env('DESA_NAMA', 'Desa Marga Agung'),
 
+    // Proksi tepercaya (daftar IP dipisah koma, atau * bila proxy tidak dapat diketahui). Kosong = tidak ada.
+    // Dibaca lewat config agar tetap bekerja saat `php artisan config:cache` dipakai di produksi.
+    'proksi_tepercaya' => env('TRUSTED_PROXIES'),
+
     // Wilayah administrasi untuk header, footer, dan halaman kontak.
     'wilayah' => [
         'sebutan' => 'Pemerintah Desa',
