@@ -1,0 +1,266 @@
+# planBE.md — Rencana Backend Website Desa Marga Agung
+
+> Rencana kerja bertahap untuk Claude Code, lanjutan dari `docs/planFE.md` (fase 0–11 selesai).
+> Acuan: SKPL di `docs/`, `docs/DESIGN.md`, `docs/laporanFE.md` (§3 status SKPL, §4 daftar `TODO(backend)`, §5 keputusan desa).
+> Kerjakan **satu fase per sesi**. Setiap fase diakhiri titik periksa (checkpoint) untuk ditinjau manusia sebelum lanjut.
+
+---
+
+## Cara pakai
+
+Ketik perintah ini di Claude Code setiap kali ingin melanjutkan:
+
+```text
+Baca docs/planBE.md dan kerjakan fase berikutnya yang statusnya belum "Selesai".
+Ikuti bagian "Aturan kerja". Setelah fase selesai: centang tugasnya, isi Log,
+ubah status fase di tabel, commit, lalu berhenti dan laporkan hasilnya.
+```
+
+Jika hasil fase belum sesuai, tulis koreksinya lalu minta: `Perbaiki fase N sesuai catatan, lalu laporkan lagi.`
+
+---
+
+## Status fase
+
+| Fase | Nama | Status |
+|---|---|---|
+| 0 | Persiapan: versi PHP, database, alat bantu | Selesai |
+| 1 | Skema database, model, factory, seeder | Belum |
+| 2 | Autentikasi admin | Belum |
+| 3 | Otorisasi peran & modul Akun | Belum |
+| 4 | Halaman publik membaca database | Belum |
+| 5 | Admin A: Berita, Agenda, Ringkasan | Belum |
+| 6 | Admin B: Profil, Struktur, Potensi (komoditas, kelompok tani, UMKM) | Belum |
+| 7 | APBDes: periode, rincian, dokumen PDF | Belum |
+| 8 | Unggahan berkas & gambar (terpusat) | Belum |
+| 9 | Ruang Aspirasi: simpan, anti-spam, penanganan | Belum |
+| 10 | Audit log, pengamanan & data master | Belum |
+| 11 | Pengujian akhir, panduan rilis & laporan | Belum |
+
+Ubah kolom Status menjadi `Sedang` saat mulai dan `Selesai` setelah checkpoint lolos.
+
+---
+
+## Aturan kerja (wajib di setiap fase)
+
+1. **Baca dulu** bagian fase yang dikerjakan, `docs/laporanFE.md` §4–§5, dan kode yang akan diubah. Cari sisa pekerjaan dengan `grep -rn "TODO(backend)" app resources routes`.
+2. **Stack:** Laravel 13 + Eloquent, **MySQL/MariaDB** untuk produksi (SKPL TEC-03), SQLite in-memory untuk tes. Tanpa paket pihak ketiga kecuali benar-benar perlu; jika menambah paket, jelaskan alasannya di Log.
+3. **Jangan merusak frontend.** Nama field formulir yang sudah dipakai Blade (mis. `title`, `excerpt`, `isi_teks`, `login`) tetap dipakai; pemetaan ke kolom database dilakukan di controller/FormRequest. Perubahan tampilan hanya bila disebut di fase ini.
+4. **Validasi di server selalu** lewat FormRequest, dengan pesan Bahasa Indonesia yang sudah ada di controller.
+5. **Keamanan:** kata sandi di-hash (bawaan Laravel), query lewat Eloquent/Query Builder (tanpa SQL mentah dari input), keluaran Blade tetap di-escape (`{{ }}`), mass assignment dibatasi `$fillable`, izin dicek di server (Policy/Gate), bukan hanya disembunyikan di menu.
+6. **Data pribadi:** jangan menyimpan data yang tidak dibutuhkan. Aspirasi tidak pernah tampil di publik. NIK (bila dikumpulkan) disimpan terenkripsi dan hanya tampil disamarkan.
+7. **Publik hanya membaca konten berstatus `terbit`.** Draf tidak boleh bocor lewat daftar, detail, pencarian, atau hitungan.
+8. **Hapus jalan pintas demo** (`DemoContent`, `DemoStore*`, `?demo=`, `?peran=`, login lokal) sesuai fasenya; data contoh pindah ke seeder dan diberi tanda "contoh".
+9. **Keputusan desa yang belum ada:** pakai nilai bawaan dari tabel "Keputusan & nilai bawaan" di bawah, taruh di `config/desa.php`/`.env` agar mudah diubah, dan catat di Log.
+10. **Tes:** setiap fase menambah Feature test. Selesai fase: `php artisan test` lolos semua (termasuk 64 tes FE lama yang disesuaikan), `npm run build` lolos, lalu commit `feat(be): fase N — <ringkasan>`.
+
+---
+
+## Keputusan & nilai bawaan
+
+Konfirmasi ke desa/tim secepatnya. Sampai dikonfirmasi, pakai nilai bawaan ini (semua lewat `config/desa.php` atau `.env`).
+
+| Keputusan | Dibutuhkan di fase | Nilai bawaan sementara |
+|---|---|---|
+| Versi PHP di hosting | 0 | Lihat Fase 0: `composer.lock` saat ini **butuh PHP ≥ 8.4.1** |
+| Database produksi | 0 | MySQL 8 / MariaDB 10.6+, `utf8mb4` |
+| Pengirim email (SMTP) untuk atur ulang kata sandi | 2 | `MAIL_MAILER=log` di lokal; SMTP diisi saat rilis |
+| Matriks izin Staf ("sesuai penugasan") | 3 | Staf boleh modul yang **ditugaskan** per akun; Akun & Hak Akses hanya Super Admin (sesuai `DemoContent::izin()`) |
+| Batas unggahan | 8 | Gambar ≤ 2 MB (JPG/PNG/WebP, maks. 4000 px); PDF ≤ 10 MB |
+| Pengumpulan NIK pada aspirasi | 9 | Opsional, terenkripsi, tampil disamarkan; bisa dimatikan `ASPIRASI_NIK=false` |
+| Masa simpan aspirasi | 9 | 24 bulan sejak selesai, lalu nama & NIK dianonimkan |
+| Balasan aspirasi ke warga | 9 | Catatan internal saja (formulir tidak meminta kontak) |
+| Daftar dusun dan jabatan resmi | 10 | "Dusun 1–6" dan daftar jabatan yang sudah ada di FE |
+| Siapa menyetujui publikasi | 5–7 | Status `terbit` hanya bisa diset oleh akun dengan izin modul itu; dicatat di audit log |
+
+---
+
+## Temuan dari pemeriksaan FE (diselesaikan di fase terkait)
+
+| # | Temuan | Fase |
+|---|---|---|
+| 1 | `composer.json` menulis `php: ^8.3`, tetapi `composer.lock` berisi Symfony 8.1 yang **butuh PHP ≥ 8.4.1**. `composer install` gagal di PHP 8.3. | 0 |
+| 2 | Rute `/admin/*` belum dilindungi `auth`; login lokal dan `?peran=` masih aktif. | 2–3 |
+| 3 | Admin APBDes hanya menerima **total** pendapatan dan belanja, padahal halaman publik menampilkan **rincian per bidang** dan pembiayaan. Tanpa input rincian, tabel publik akan selalu kosong. | 7 |
+| 4 | Unggahan belum punya batas ukuran dan hanya dicek dari ekstensi. | 8 |
+| 5 | Form akun memakai satu kolom "Email atau username" tanpa validasi email; tautan atur ulang kata sandi butuh email yang valid dan unik. | 3 |
+| 6 | Komoditas pertanian belum punya unggahan foto (DESIGN.md §6.4 menyebut foto relevan). | 6 |
+| 7 | `npm run build` mengunduh font dari `fonts.bunny.net` saat build; server build/hosting harus punya akses internet, atau font di-host sebagai berkas di repo. | 11 |
+| 8 | Hash commit di Log `planFE.md` fase 7–11 tidak sama dengan riwayat git (mis. Log `e31a2f6`, git `df03e19`). Perbarui agar jejaknya benar. | 0 |
+
+---
+
+## Fase 0 — Persiapan: versi PHP, database, alat bantu
+
+- [x] Tentukan versi PHP hosting, lalu samakan proyek:
+  - Jika hosting **PHP ≥ 8.4**: ubah `composer.json` menjadi `"php": "^8.4"` dan biarkan lock.
+  - Jika hosting **PHP 8.3**: tambahkan `"config": {"platform": {"php": "8.3.x"}}` lalu `composer update` agar lock memilih paket yang cocok; pastikan tes tetap lolos. Catat versi Symfony yang terpasang.
+- [x] `.env.example`: contoh koneksi MySQL (`DB_CONNECTION=mysql`, `DB_DATABASE=siprodes`, dst.), tetap SQLite untuk tes di `phpunit.xml`.
+- [x] Jalankan `php artisan boost:install` (paket `laravel/boost` sudah ada di `require-dev`) agar Claude Code mendapat panduan dan alat bantu Laravel. Setelah itu blok bootstrap Boost di `CLAUDE.md`/`AGENTS.md` akan diganti otomatis.
+- [x] Tambahkan bagian **"Aturan Backend"** di `CLAUDE.md` (ringkasan Aturan kerja di atas + lokasi `docs/planBE.md`).
+- [x] Buat `config/desa.php` berisi nilai bawaan dari tabel Keputusan (batas unggahan, NIK aktif, masa simpan aspirasi, nama desa).
+- [x] Perbaiki hash commit di Log `planFE.md` (temuan #8).
+
+**Checkpoint:** `composer install` bersih di versi PHP yang dipilih, `php artisan test` (64 tes) lolos, laporan versi PHP/Laravel/Symfony/database.
+
+---
+
+## Fase 1 — Skema database, model, factory, seeder
+
+Rancang dari bentuk data di `DemoContent`, `DemoStoreKoleksi`, dan aturan validasi controller.
+
+- [ ] Migrasi dan model (nama tabel Bahasa Indonesia, snake_case):
+
+| Tabel | Kolom utama | Catatan |
+|---|---|---|
+| `users` (ubah) | `username` unik nullable, `peran` (`super_admin`/`staf`), `aktif` bool, `terakhir_masuk_at` | email wajib & unik |
+| `modul_akses` | `user_id`, `modul` | penugasan modul untuk Staf |
+| `profil_desa` | `sejarah`, `visi`, `misi` (json), `alamat`, `lintang`, `bujur`, `telepon`, `email`, `jam_layanan`, `kontak_terverifikasi`, `penduduk`, `kk`, `luas_ha`, `jumlah_dusun`, `sumber_data`, `data_terverifikasi`, `status_*` | satu baris |
+| `dusun`, `jabatan` | `nama`, `urutan` | data master |
+| `perangkat_desa` | `nama`, `jabatan_id`, `foto_path`, `urutan`, `tampil` | |
+| `berita` | `judul`, `slug` unik, `kategori`, `ringkasan`, `isi` (teks penanda ringan), `gambar_path`, `gambar_alt`, `tanggal`, `status`, `penulis_id`, `diterbitkan_at` | index `status, tanggal` |
+| `agenda` | `judul`, `tanggal`, `waktu` null, `lokasi` null, `deskripsi`, `status` | |
+| `komoditas` | `nama`, `deskripsi`, `musim_panen`, `foto_path`, `foto_alt`, `unggulan`, `status` | |
+| `kelompok_tani` | `nama`, `komoditas_id`, `dusun_id`, `ketua`, `kontak`, `kontak_disetujui` | |
+| `umkm` | `nama`, `produk`, `deskripsi`, `foto_path`, `foto_alt`, `whatsapp`, `whatsapp_disetujui`, `status` | |
+| `apbdes_periode` | `tahun` unik, `periode`, `status`, `diterbitkan_at` | |
+| `apbdes_rincian` | `periode_id`, `jenis` (`pendapatan`/`belanja`/`pembiayaan`), `uraian`, `anggaran` (bigint rupiah), `urutan` | |
+| `apbdes_dokumen` | `periode_id`, `judul`, `path`, `ukuran`, `diunggah_oleh` | disk privat |
+| `aspirasi` | `nama`, `nik` (cast `encrypted`, null), `pesan`, `status` (`baru`/`dibaca`/`selesai`), `dibaca_at`, `selesai_at` | tanpa IP mentah |
+| `aspirasi_riwayat` | `aspirasi_id`, `user_id`, `aksi`, `catatan` | |
+| `log_aktivitas` | `user_id`, `aksi`, `subjek_type`, `subjek_id`, `keterangan`, `ip` | |
+
+- [ ] Enum PHP untuk status (`StatusTerbit`, `StatusAspirasi`, `Peran`) dan scope `terbit()` di model konten.
+- [ ] Factory untuk semua model; seeder `DataContohSeeder` memindahkan isi `DemoContent`/`DemoStoreKoleksi` (ditandai "contoh"), dan `AdminAwalSeeder` membuat satu Super Admin dari `.env` (`ADMIN_EMAIL`, kata sandi acak dicetak sekali ke konsol).
+- [ ] Belum menyambungkan controller (dilakukan per fase).
+
+**Checkpoint:** `php artisan migrate:fresh --seed` berhasil di SQLite dan MySQL; tes relasi dan scope `terbit()`.
+
+---
+
+## Fase 2 — Autentikasi admin (FR-07, NFR-02)
+
+- [ ] `AdminAuthController@masuk`: login dengan **email atau username** + kata sandi, hanya akun `aktif`, `Auth::attempt` + `session()->regenerate()`, "ingat saya".
+- [ ] Pembatasan percobaan: `RateLimiter` per (login + IP), mis. 5 kali per menit lalu kunci 15 menit; pesan tetap umum (tidak membocorkan akun mana yang ada). Catat `terakhir_masuk_at`.
+- [ ] `keluar`: logout, `invalidate()`, `regenerateToken()`.
+- [ ] Lupa kata sandi: broker `Password` Laravel, notifikasi email Bahasa Indonesia, halaman **buat kata sandi baru** (tambahkan view sederhana dengan komponen yang ada), respons sama untuk email terdaftar/tidak.
+- [ ] Middleware: `guest` untuk masuk/lupa kata sandi, `auth` untuk seluruh `/admin/*` lainnya; redirect tamu ke `admin.login`.
+- [ ] Hapus jalan pintas login lokal di `AdminAuthController`.
+- [ ] Kebijakan kata sandi: minimal 10 karakter (`Password::min(10)`), tidak sama dengan email.
+
+**Checkpoint:** tes: tamu diarahkan ke login, login benar/salah, akun nonaktif ditolak, penguncian setelah gagal berulang, alur atur ulang kata sandi, logout.
+
+---
+
+## Fase 3 — Otorisasi peran & modul Akun (NFR-03)
+
+- [ ] `Peran::saatIni()` membaca `auth()->user()->peran`; hapus `?peran=` dan peran contoh.
+- [ ] Gate/Policy: Super Admin semua modul; Staf hanya modul di `modul_akses`. Terapkan `can:` pada rute/controller, `@can` di sidebar (`Navigation::admin()`), 403 untuk akses langsung.
+- [ ] Modul Akun (khusus Super Admin): tambah akun (email **wajib & unik**, username opsional, peran, modul untuk Staf), aktif/nonaktif, ubah peran, kirim tautan "buat kata sandi" (token broker), tanpa admin mengisi kata sandi. Cegah menonaktifkan diri sendiri dan Super Admin terakhir.
+- [ ] Matriks izin di halaman Akun dibaca dari konfigurasi/database, bukan `DemoContent::izin()`.
+
+**Checkpoint:** tes per peran: Staf tanpa penugasan mendapat 403 di setiap modul; Staf dengan penugasan bisa; Akun hanya Super Admin; Super Admin terakhir tidak bisa dinonaktifkan.
+
+---
+
+## Fase 4 — Halaman publik membaca database (FR-01–FR-05)
+
+- [ ] `PublicPageController` dan view composer memakai model, bukan `DemoContent`: Beranda, Profil, Potensi, Berita (filter kategori, pencarian `q`, paginasi), Detail (404 untuk draf/tidak ada), Kontak, APBDes (bagian ringkas; rincian diselesaikan Fase 7).
+- [ ] Pencarian Potensi lintas halaman di server (`?q=`), menggantikan penyaringan di klien (`resources/js/app.js`, temuan di laporanFE §4.5).
+- [ ] Kontak, alamat, peta, WhatsApp, dan kontak kelompok tani hanya tampil bila kolom persetujuan/terverifikasi bernilai benar.
+- [ ] Hindari N+1 (`with()`), tambah index yang dipakai filter.
+- [ ] Hapus `?demo=` dari kode produksi; keadaan kosong/gagal tetap teruji lewat data tes.
+
+**Checkpoint:** tes: draf tidak muncul di daftar, detail, pencarian, dan hitungan; kontak tidak tampil sebelum diverifikasi; paginasi & filter berfungsi.
+
+---
+
+## Fase 5 — Admin A: Berita, Agenda, Ringkasan (FR-11)
+
+- [ ] Berita: CRUD ke database (slug unik otomatis, status draf/terbit, `diterbitkan_at`), cari/filter/paginasi dari query.
+- [ ] Isi berita: simpan teks penanda ringan, render di server dengan `league/commonmark` (sudah terpasang bersama Laravel) memakai `html_input = strip` dan `allow_unsafe_links = false`; uji bahwa `<script>` tidak pernah dirender.
+- [ ] Gambar utama lewat layanan unggahan (sementara sederhana; dirapikan di Fase 8), alt wajib bila ada gambar.
+- [ ] Agenda: CRUD, status, filter waktu (mendatang/lewat).
+- [ ] Ringkasan dashboard: semua angka dihitung dari database (berita terbit/draf, UMKM, data pertanian, aspirasi baru), tanpa angka statis.
+
+**Checkpoint:** tes CRUD + otorisasi; konten yang diterbitkan langsung tampil di publik, draf tidak.
+
+---
+
+## Fase 6 — Admin B: Profil, Struktur, Potensi (FR-08, FR-10)
+
+- [ ] Profil (4 tab) ke tabel `profil_desa`; kontak/lokasi hanya tampil publik bila "sudah diverifikasi" dicentang.
+- [ ] Struktur perangkat: CRUD, urutan naik/turun (transaksi), foto 1:1, toggle tampil.
+- [ ] Komoditas: CRUD + **foto dan alt** (temuan #6; tambahkan uploader di form admin yang ada).
+- [ ] Kelompok tani: CRUD; kontak wajib bila dicentang disetujui; tampil publik hanya bila disetujui.
+- [ ] UMKM: CRUD; WhatsApp & foto tampil publik hanya bila disetujui; normalisasi nomor (format `62…` untuk tautan `wa.me`).
+
+**Checkpoint:** tes CRUD + aturan persetujuan + urutan struktur.
+
+---
+
+## Fase 7 — APBDes: periode, rincian, dokumen PDF (FR-03, FR-09)
+
+- [ ] **Tambahkan input rincian** di halaman admin APBDes (temuan #3): baris pendapatan per sumber, belanja per bidang, dan pembiayaan (uraian bawaan dari daftar yang dipakai FE, bisa ditambah). Pakai komponen tabel/field yang sudah ada; total dihitung otomatis dari rincian, bukan diketik.
+- [ ] CRUD periode (tahun unik), status draf/terbit; publik hanya menampilkan periode terbit.
+- [ ] Dokumen PDF: simpan di **disk privat**, rute unduhan `apbdes.unduh` yang memeriksa status terbit dan mengirim berkas dengan nama aman (`Content-Disposition: attachment`). Aktifkan tombol "Unduh PDF" di publik.
+- [ ] Diagram pendamping muncul otomatis bila total terisi (logika FE sudah ada).
+
+**Checkpoint:** tes: total = jumlah rincian, PDF draf tidak bisa diunduh publik, unduhan PDF terbit berhasil, berkas bukan PDF ditolak.
+
+---
+
+## Fase 8 — Unggahan berkas & gambar (terpusat, TEC-06)
+
+- [ ] Satu layanan `UnggahBerkas` untuk semua modul: nama berkas acak (`hashName`), folder per modul, disk `public` untuk gambar dan `local` (privat) untuk PDF.
+- [ ] Validasi di server: `mimetypes` (bukan hanya ekstensi), batas ukuran dari `config/desa.php`, dimensi gambar maksimum, cek tanda tangan berkas PDF (`%PDF-`); pesan galat sama seperti uploader FE.
+- [ ] Hapus berkas lama saat diganti atau datanya dihapus.
+- [ ] `php artisan storage:link` didokumentasikan; tidak ada berkas unggahan yang bisa dieksekusi dari web.
+
+**Checkpoint:** tes: berkas terlalu besar ditolak, berkas yang diganti ekstensinya ditolak, berkas lama terhapus.
+
+---
+
+## Fase 9 — Ruang Aspirasi (FR-06, FR-12)
+
+- [ ] `AspirasiController@store` menyimpan nama, pesan, status `baru`; NIK hanya bila `ASPIRASI_NIK=true`, disimpan terenkripsi.
+- [ ] Anti-spam: `throttle` per IP (sudah ada, sesuaikan), **honeypot** tersembunyi, dan waktu isi minimum; pesan galat tetap umum.
+- [ ] Admin: daftar & filter status dari database, detail menandai `dibaca` otomatis saat dibuka (atau lewat tombol, sesuai FE), ubah status, catatan tindak lanjut, riwayat di `aspirasi_riwayat`; NIK tampil lewat `Format::nikSamar()`.
+- [ ] Badge jumlah aspirasi baru di sidebar dari database.
+- [ ] Perintah terjadwal `aspirasi:anonimkan` sesuai masa simpan (`config/desa.php`), didaftarkan di scheduler.
+- [ ] Pastikan tidak ada jalur publik yang menampilkan isi aspirasi (tes yang ada tetap lolos).
+
+**Checkpoint:** tes: simpan aspirasi, NIK terenkripsi di database, honeypot menolak bot, status & riwayat tercatat, anonimisasi berjalan.
+
+---
+
+## Fase 10 — Audit log, pengamanan & data master (NFR-02)
+
+- [ ] `log_aktivitas` untuk tindakan sensitif: masuk/keluar, gagal masuk berulang, ubah akun/peran, terbitkan/hapus konten, unggah/hapus dokumen APBDes, ubah status aspirasi. Tampilkan daftar sederhana di halaman Akun (Super Admin).
+- [ ] Middleware header keamanan: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Content-Security-Policy` dasar yang tetap mengizinkan aset Vite dan Alpine.
+- [ ] Produksi: `APP_DEBUG=false`, paksa HTTPS, cookie sesi `secure` + `http_only` + `same_site=lax`.
+- [ ] Data master dusun & jabatan dari tabel (bukan daftar tetap di controller); halaman kelola sederhana untuk Super Admin, atau seeder bila desa belum memberi data.
+- [ ] Hapus `app/Support/DemoContent.php`, `DemoStore.php`, `DemoStoreKoleksi.php` bila sudah tidak dipakai; `grep -rn "TODO(backend)"` harus kosong atau tiap sisa dijelaskan di Log.
+
+**Checkpoint:** tes header, tes audit log, tidak ada referensi `Demo*` tersisa.
+
+---
+
+## Fase 11 — Pengujian akhir, panduan rilis & laporan
+
+- [ ] Tes keamanan: brute force login, akses per peran ke setiap rute admin, XSS pada semua input teks, unggahan berbahaya, CSRF, pencarian dengan karakter khusus (SQL injection).
+- [ ] Uji ulang FE: `php artisan test` penuh, `npm run build`, cek manual alur utama di browser dengan data dari database.
+- [ ] Performa: periksa query (N+1) di Beranda, Berita, Potensi, APBDes; ukur ulang Lighthouse Beranda di server yang mirip produksi.
+- [ ] Font: putuskan apakah font di-host sebagai berkas di repo atau build butuh internet (temuan #7).
+- [ ] `docs/deploy.md`: versi PHP & ekstensi, MySQL, `.env` produksi, `storage:link`, cron `schedule:run`, antrean (atau `sync`), SMTP, HTTPS, **backup harian database + `storage/app`** dan cara pemulihan (NFR-07), langkah membuat Super Admin pertama.
+- [ ] `docs/laporanBE.md`: fitur yang selesai per FR/NFR, keputusan yang masih memakai nilai bawaan, hasil tes, dan risiko yang tersisa.
+
+**Checkpoint:** laporan ditinjau tim; semua fase berstatus `Selesai`.
+
+---
+
+## Log
+
+| Tanggal | Fase | Ringkasan | Commit |
+|---|---|---|---|
+| 2026-11-03 | 0 | `composer.json` `php: ^8.4` (asumsi hosting PHP ≥ 8.4, **belum dikonfirmasi**; lock memakai Symfony 8.1.9 yang butuh ≥ 8.4.1) dan `composer.lock` diperbarui hanya pada content-hash/constraint PHP. `.env.example` memakai MySQL (`siprodes`), `phpunit.xml` tetap SQLite memori. `boost:install --guidelines --skills --mcp` dijalankan (menambah `.claude/skills`, `.mcp.json`, `boost.json`, dan mengganti blok Boost di `CLAUDE.md`; Aturan Frontend tetap utuh); bagian "Aturan Backend" ditambahkan. `config/desa.php` (nama desa, batas unggahan, NIK, masa simpan aspirasi, waktu isi minimum, batas login). Hash commit di Log `planFE.md` fase 7–11 diperbaiki. Versi: PHP 8.5.8, Laravel 13.38.0, Symfony 8.1.9; 64 tes lolos. Catatan: `composer install` diuji dengan `--dry-run`; MySQL belum dijalankan (diuji mulai Fase 1). | (lihat git) |
