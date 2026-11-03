@@ -111,3 +111,15 @@
 - [ ] Ganti foto, lalu hapus data: berkas lama hilang dari folder penyimpanan (periksa `berita/`, `perangkat/`, `komoditas/`, `umkm/`).
 - [ ] Atur `upload_max_filesize` ≥ 12M, `post_max_size` ≥ 14M, `memory_limit` ≥ 256M di server; uji unggah gambar 4000 × 3000 px (harus sukses atau ditolak dengan pesan wajar, bukan halaman galat).
 - [ ] Setelah semua modul dicoba, buka folder penyimpanan dan pastikan tidak ada berkas yatim yang menumpuk.
+
+## Fase 9 — Ruang Aspirasi
+
+- [ ] Kirim aspirasi dari HP sungguhan (dengan dan tanpa NIK): halaman “Aspirasi berhasil dikirim” muncul; di admin masuk sebagai Baru, badge sidebar bertambah, NIK hanya tampil samar (•••• •••• •••• 1234).
+- [ ] Cek database: kolom `nik` berisi teks terenkripsi (bukan 16 digit), tidak ada kolom IP; aspirasi tidak muncul di halaman publik mana pun.
+- [ ] Kirim sangat cepat (otomatis lewat skrip/curl tanpa menunggu 3 detik) atau mengisi kolom tersembunyi: tidak tersimpan. Pastikan pengguna manusia yang mengisi pelan tidak pernah ditolak, termasuk pengguna dengan pengisi otomatis peramban.
+- [ ] Kirim 6 kali dalam 10 menit dari satu jaringan: kiriman ke-6 ditolak (halaman 429 “Terlalu banyak permintaan”); pastikan halaman 429 terbaca baik (belum memakai tampilan khusus desa).
+- [ ] Admin: filter Baru/Sudah Dibaca/Selesai, cari, buka detail; “Tandai Sudah Dibaca”, “Simpan & Tandai Selesai”, ubah kembali ke Baru; riwayat mencatat status, catatan, dan nama petugas. Daftar dengan > 20 aspirasi terpaginasi.
+- [ ] Tampilan HP 390 px: daftar → detail → kembali; tombol aksi ≥ 44 px.
+- [ ] Penjadwal: pasang cron `* * * * * php /path/artisan schedule:run` di server, lalu jalankan `php artisan aspirasi:anonimkan --hitung` dan `php artisan schedule:list`; uji anonimisasi di database percobaan dengan aspirasi selesai berusia > 24 bulan.
+- [ ] **Konfirmasi ke desa**: masa simpan 24 bulan, NIK dikumpulkan atau tidak (`ASPIRASI_NIK`), dan kebijakan balasan (catatan internal saja, formulir tidak meminta kontak) sudah disetujui.
+- [ ] Aspirasi yang sudah dianonimkan di admin tampil “Tanpa nama” dan “NIK: dianonimkan”; isi pesan tetap ada — periksa apakah desa menghendaki pesan ikut dihapus.

@@ -10,7 +10,7 @@ namespace App\Support;
  */
 class DemoContent
 {
-    // TODO(backend): ganti dengan data dari database
+    // Hanya untuk katalog komponen internal (/_komponen); bukan data situs.
 
     /**
      * Contoh isi untuk katalog komponen (/_komponen). Teks mengikuti contoh di Figma.

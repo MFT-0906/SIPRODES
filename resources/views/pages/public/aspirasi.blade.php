@@ -17,7 +17,10 @@
         'Data dikumpulkan hanya untuk menindaklanjuti aspirasi Anda.',
         'Pesan hanya dapat dibaca perangkat desa yang berwenang.',
         'Aspirasi tidak ditampilkan ke publik.',
-        'NIK bersifat opsional — kosongkan jika tidak diperlukan.',
+        config('desa.aspirasi.nik_aktif')
+            ? 'NIK bersifat opsional — kosongkan jika tidak diperlukan. Bila diisi, NIK disimpan terenkripsi.'
+            : 'Kami tidak meminta NIK Anda.',
+        'Nama dan NIK dianonimkan otomatis '.config('desa.aspirasi.masa_simpan_bulan').' bulan setelah aspirasi selesai ditangani.',
     ];
     $tips = [
         ['Ceritakan dengan jelas', 'Sebutkan hal yang ingin Anda sampaikan dan lokasinya.'],
@@ -68,6 +71,12 @@
                     >
                         @csrf
 
+                        {{-- Anti-spam: token waktu terenkripsi dan kolom jebakan yang tidak terlihat oleh manusia. --}}
+                        <input type="hidden" name="{{ \App\Support\AntiSpamAspirasi::KOLOM_TOKEN }}" value="{{ \App\Support\AntiSpamAspirasi::token() }}">
+                        <div class="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+                            <input type="text" name="{{ \App\Support\AntiSpamAspirasi::KOLOM_JEBAKAN }}" value="" tabindex="-1" autocomplete="off">
+                        </div>
+
                         <div class="flex flex-col gap-2">
                             <h2 class="type-h2 text-text">Formulir aspirasi</h2>
                             <p class="type-body-sm text-muted">Kolom bertanda “Wajib” harus diisi.</p>
@@ -83,11 +92,17 @@
                             <p x-text="ringkasan !== '' ? ringkasan : {{ \Illuminate\Support\Js::from($pesanGalat) }}">{{ $pesanGalat }}</p>
                         </div>
 
+                        @error('formulir')
+                            <x-ui.alert tone="bahaya">{{ $message }}</x-ui.alert>
+                        @enderror
+
                         <x-ui.field name="nama" label="Nama" required client-validated placeholder="Tulis nama Anda" help="Boleh nama panggilan." autocomplete="name" />
-                        <x-ui.field
-                            name="nik" label="NIK" client-validated placeholder="16 digit angka" inputmode="numeric" maxlength="16" autocomplete="off"
-                            help="Tidak wajib. Isi hanya jika diminta untuk keperluan layanan tertentu."
-                        />
+                        @if (config('desa.aspirasi.nik_aktif'))
+                            <x-ui.field
+                                name="nik" label="NIK" client-validated placeholder="16 digit angka" inputmode="numeric" maxlength="16" autocomplete="off"
+                                help="Tidak wajib. Isi hanya jika diminta untuk keperluan layanan tertentu."
+                            />
+                        @endif
                         <x-ui.field
                             name="pesan" label="Isi Pesan" multiline required client-validated :counter="1000"
                             placeholder="Tuliskan pertanyaan, keluhan, atau saran Anda…" help="Minimal 20 karakter"

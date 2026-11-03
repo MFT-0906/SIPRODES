@@ -1,7 +1,6 @@
 @props(['name', 'label', 'options' => [], 'selected' => null]) {{-- options: [nilai => teks]; memilih opsi membuka URL dengan ?{name}={nilai} --}}
 
 @php
-    // TODO(backend): controller membaca parameter query ini untuk menyaring daftar.
     $selected = $selected ?? request($name, array_key_first($options));
     $currentText = $options[$selected] ?? (reset($options) ?: '');
 @endphp

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Support\AntiSpamAspirasi;
 use Database\Seeders\DataContohSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -62,6 +63,7 @@ class Fase6PagesTest extends TestCase
             'nama' => 'Warga',
             'nik' => '',
             'pesan' => 'Mohon perbaikan jalan di dusun saya, terima kasih.',
+            'dibuka' => AntiSpamAspirasi::token(30),
         ])
             ->assertRedirect('/ruang-aspirasi')
             ->assertSessionHas('aspirasi_terkirim');

@@ -26,8 +26,7 @@ Route::get('/berita/{slug}', [PublicPageController::class, 'beritaShow'])->name(
 Route::get('/kontak-lokasi', [PublicPageController::class, 'kontak'])->name('kontak');
 
 Route::get('/ruang-aspirasi', [AspirasiController::class, 'create'])->name('aspirasi.create');
-// TODO(backend): pembatasan spam final disepakati bersama desa; ini hanya pembatas dasar.
-Route::post('/ruang-aspirasi', [AspirasiController::class, 'store'])->middleware('throttle:5,1')->name('aspirasi.store');
+Route::post('/ruang-aspirasi', [AspirasiController::class, 'store'])->middleware('throttle:aspirasi')->name('aspirasi.store');
 
 // Halaman uji internal, hanya untuk lingkungan lokal.
 if (app()->environment('local')) {
@@ -93,7 +92,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('modul:aspirasi')->group(function () {
 
             Route::get('/aspirasi', [AdminAspirasiController::class, 'index'])->name('aspirasi.index');
-            Route::put('/aspirasi/{id}', [AdminAspirasiController::class, 'status'])->name('aspirasi.status');
+            Route::put('/aspirasi/{id}', [AdminAspirasiController::class, 'status'])->whereNumber('id')->name('aspirasi.status');
         });
 
         Route::middleware('modul:akun')->group(function () {

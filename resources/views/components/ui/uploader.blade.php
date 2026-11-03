@@ -3,7 +3,7 @@
     'label' => null,
     'accept' => 'application/pdf,image/jpeg,image/png',
     'acceptLabel' => 'PDF, JPG, atau PNG',
-    'hint' => 'PDF/JPG/PNG · batas ukuran sesuai kebijakan', // TODO(backend): samakan dengan batas ukuran yang ditetapkan desa
+    'hint' => 'PDF/JPG/PNG · batas ukuran mengikuti konfigurasi desa',
     'maxMb' => null,
     'id' => null,
     // Hanya untuk peragaan di katalog: kosong | mengunggah | berhasil | ditolak.

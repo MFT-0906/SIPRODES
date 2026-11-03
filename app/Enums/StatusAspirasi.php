@@ -12,7 +12,7 @@ enum StatusAspirasi: string
     {
         return match ($this) {
             self::Baru => 'Baru',
-            self::Dibaca => 'Dibaca',
+            self::Dibaca => 'Sudah Dibaca',
             self::Selesai => 'Selesai',
         };
     }

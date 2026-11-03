@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatusAspirasi;
+use App\Models\Concerns\DapatDicari;
 use Database\Factories\AspirasiFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Aspirasi extends Model
 {
     /** @use HasFactory<AspirasiFactory> */
-    use HasFactory;
+    use DapatDicari, HasFactory;
 
     protected $table = 'aspirasi';
 

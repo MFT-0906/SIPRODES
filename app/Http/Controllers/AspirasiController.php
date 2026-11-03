@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusAspirasi;
+use App\Http\Requests\SimpanAspirasiRequest;
+use App\Models\Aspirasi;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * Ruang Aspirasi (publik). Aspirasi tidak pernah ditampilkan ke publik; NIK opsional, terenkripsi, dan tidak ada IP mentah.
+ */
 class AspirasiController extends Controller
 {
     public function create(): View
@@ -13,24 +19,25 @@ class AspirasiController extends Controller
         return view('pages.public.aspirasi');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(SimpanAspirasiRequest $request): RedirectResponse
     {
-        // Validasi di sini wajib diulang di server; validasi di sisi klien hanya untuk kenyamanan.
-        $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'nik' => ['nullable', 'digits:16'],
-            'pesan' => ['required', 'string', 'min:20', 'max:1000'],
-        ], [
-            'nama.required' => 'Nama wajib diisi.',
-            'nama.max' => 'Nama paling banyak :max karakter.',
-            'nik.digits' => 'NIK harus terdiri dari 16 digit angka. Kosongkan jika tidak diperlukan.',
-            'pesan.required' => 'Isi pesan wajib diisi.',
-            'pesan.min' => 'Pesan terlalu pendek. Tulis minimal :min karakter.',
-            'pesan.max' => 'Pesan terlalu panjang. Tulis paling banyak :max karakter.',
-        ]);
+        // Honeypot terisi: tampak berhasil bagi pengirim, tetapi tidak ada yang disimpan.
+        if ($request->jebakanTerisi()) {
+            return redirect()->route('aspirasi.create')->with('aspirasi_terkirim', true);
+        }
 
-        // TODO(backend): simpan aspirasi (nama, pesan, waktu kirim, status "Baru"; NIK hanya bila benar-benar
-        // dibutuhkan dan sudah ada kebijakan perlindungannya) dan terapkan pembatasan spam yang disepakati.
+        $nik = config('desa.aspirasi.nik_aktif') && $request->filled('nik') ? $request->string('nik')->toString() : null;
+
+        DB::transaction(function () use ($request, $nik) {
+            $aspirasi = Aspirasi::query()->create([
+                'nama' => $request->string('nama')->toString(),
+                'nik' => $nik,
+                'pesan' => $request->string('pesan')->toString(),
+                'status' => StatusAspirasi::Baru,
+            ]);
+
+            $aspirasi->riwayat()->create(['aksi' => 'diterima', 'catatan' => null]);
+        });
 
         return redirect()->route('aspirasi.create')->with('aspirasi_terkirim', true);
     }

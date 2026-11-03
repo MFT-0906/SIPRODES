@@ -10,8 +10,11 @@ use App\Support\KontenPublik;
 use App\Support\Navigation;
 use App\Support\Peran;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +34,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Pembatasan pengiriman aspirasi per IP (disimpan sebagai hash di cache, bukan di database): 5 per 10 menit, 30 per hari.
+        RateLimiter::for('aspirasi', fn (Request $request) => [
+            Limit::perMinutes(10, 5)->by('aspirasi:'.sha1((string) $request->ip())),
+            Limit::perDay(30)->by('aspirasi-harian:'.sha1((string) $request->ip())),
+        ]);
+
         Gate::define('akses-modul', fn (User $user, Modul $modul) => $user->aktif && $user->punyaModul($modul));
 
         ResetPassword::createUrlUsing(fn (object $notifiable, string $token) => route('admin.password.reset', [

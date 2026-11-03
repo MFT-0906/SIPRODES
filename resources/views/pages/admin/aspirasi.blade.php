@@ -67,6 +67,7 @@
                             </li>
                         @endforeach
                     </ul>
+                    <x-ui.pagination :paginator="$daftar" class="p-3" />
                 </section>
 
                 {{-- Detail aspirasi: di HP tampil bila dipilih, di layar lebar selalu tampil --}}
@@ -86,7 +87,7 @@
                         {{-- NIK hanya tampil disamarkan; aspirasi tidak pernah tampil di halaman publik. --}}
                         <p class="flex items-center gap-2 rounded-[10px] bg-background px-3.5 py-3 type-body-sm text-muted">
                             <x-ui.icon name="lock" class="size-4 shrink-0" />
-                            NIK: {{ Format::nikSamar($a['nik']) ?? 'tidak diisi pengirim' }}
+                            NIK: {{ $a['nik_samar'] ?? ($a['anonim'] ? 'dianonimkan' : 'tidak diisi pengirim') }}
                         </p>
 
                         <div class="flex flex-col gap-1.5">
