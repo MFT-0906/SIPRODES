@@ -7,6 +7,7 @@ use App\Enums\StatusTerbit;
 use App\Http\Requests\Admin\SimpanApbdesRequest;
 use App\Models\ApbdesDokumen;
 use App\Models\ApbdesPeriode;
+use App\Support\Aktivitas;
 use App\Support\UnggahBerkas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -50,6 +51,8 @@ class AdminApbdesController extends Controller
     {
         $periode = $id === null ? new ApbdesPeriode : ApbdesPeriode::query()->findOrFail($id);
         $status = StatusTerbit::from($request->input('aksi') ?: $request->input('status'));
+        $baru = ! $periode->exists;
+        $statusLama = $periode->exists ? $periode->status->value : null;
 
         $berkasBaru = null;
         try {
@@ -93,6 +96,11 @@ class AdminApbdesController extends Controller
             throw $e;
         }
 
+        Aktivitas::simpanKonten('apbdes', $periode, 'APBDes '.$periode->tahun, $baru, $statusLama, $status->value);
+        if ($berkasBaru !== null) {
+            Aktivitas::catat('apbdes.dokumen_diunggah', $periode->dokumen()->latest('id')->first(), $request->string('judul_dokumen')->toString());
+        }
+
         return redirect()->route('admin.apbdes', ['periode' => $periode->id])->with('toast', 'Perubahan berhasil disimpan.');
     }
 
@@ -102,6 +110,7 @@ class AdminApbdesController extends Controller
         $berkas = $periode->dokumen->pluck('path')->all();
 
         $periode->delete();
+        Aktivitas::catat('apbdes.dihapus', $periode, 'APBDes '.$periode->tahun);
         foreach ($berkas as $path) {
             UnggahBerkas::hapusPdf($path);
         }
@@ -116,6 +125,7 @@ class AdminApbdesController extends Controller
 
         $dokumen->delete();
         UnggahBerkas::hapusPdf($path);
+        Aktivitas::catat('apbdes.dokumen_dihapus', $dokumen, $dokumen->judul);
 
         return redirect()->route('admin.apbdes', ['periode' => $periodeId])->with('toast', 'Dokumen berhasil dihapus.');
     }

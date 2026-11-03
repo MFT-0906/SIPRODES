@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\SimpanProfilRequest;
 use App\Models\ProfilDesa;
+use App\Support\Aktivitas;
 use App\Support\Format;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -36,6 +37,7 @@ class AdminProfilController extends Controller
 
         $profil = ProfilDesa::saatIni();
         $v = $request->validated();
+        $kontakLama = (bool) $profil->kontak_terverifikasi;
 
         match ($tab) {
             'sejarah' => $profil->sejarah = $v['sejarah'],
@@ -44,6 +46,11 @@ class AdminProfilController extends Controller
             default => $this->simpanData($profil, $v),
         };
         $profil->save();
+
+        Aktivitas::catat('profil.diubah', $profil, 'Tab: '.$tab);
+        if ($tab === 'lokasi' && $kontakLama !== (bool) $profil->kontak_terverifikasi) {
+            Aktivitas::catat($profil->kontak_terverifikasi ? 'profil.kontak_diterbitkan' : 'profil.kontak_ditarik', $profil);
+        }
 
         return redirect()->route('admin.profil', ['tab' => $tab])->with('toast', 'Perubahan berhasil disimpan.');
     }

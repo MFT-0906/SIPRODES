@@ -76,6 +76,28 @@
             </x-admin.table>
         </section>
 
+        {{-- Log aktivitas: 30 tindakan sensitif terakhir (masuk/keluar, akun, publikasi, dokumen APBDes, status aspirasi). --}}
+        <section aria-labelledby="log-judul" class="rounded-[14px] border border-border bg-surface">
+            <div class="flex flex-col gap-1 p-5">
+                <h2 id="log-judul" class="type-h3 text-text">Log Aktivitas</h2>
+                <p class="type-body-sm text-muted">30 tindakan sensitif terakhir. Kata sandi, NIK, dan isi aspirasi tidak pernah dicatat.</p>
+            </div>
+            @if ($log->isEmpty())
+                <p class="border-t border-border px-5 py-6 type-body text-muted">Belum ada aktivitas tercatat.</p>
+            @else
+                <ul>
+                    @foreach ($log as $baris)
+                        <li class="flex flex-col gap-1 border-t border-border px-5 py-3.5 lg:flex-row lg:items-baseline lg:gap-4">
+                            <p class="type-label-sm text-muted lg:w-40 lg:shrink-0">{{ $baris->created_at->locale('id')->translatedFormat('j M Y, H.i') }} WIB</p>
+                            <p class="type-label text-text lg:w-60 lg:shrink-0">{{ $labelAksi[$baris->aksi] ?? $baris->aksi }}</p>
+                            <p class="min-w-0 flex-1 type-body-sm text-muted">{{ $baris->keterangan }}</p>
+                            <p class="type-label-sm text-muted lg:text-right">{{ $baris->user?->name ?? 'Sistem/tamu' }} · {{ $baris->ip }}</p>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </section>
+
         {{-- Modal Tambah Akun: kata sandi tidak diisi admin; pengguna menerima tautan. --}}
         <x-ui.modal name="akun-baru" title="Tambah Akun Admin" size="lg" :open="$bukaBaru">
             <form id="form-akun-baru" method="post" action="{{ route('admin.akun.store') }}" class="flex flex-col gap-4">

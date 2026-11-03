@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Admin\SimpanPerangkatRequest;
 use App\Models\Jabatan;
 use App\Models\PerangkatDesa;
+use App\Support\Aktivitas;
 use App\Support\UnggahBerkas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -33,6 +34,7 @@ class AdminStrukturController extends Controller
         $perangkat = new PerangkatDesa;
         $perangkat->urutan = ((int) PerangkatDesa::query()->max('urutan')) + 1;
         $this->isi($perangkat, $request)->save();
+        Aktivitas::catat('perangkat.dibuat', $perangkat, $perangkat->nama);
 
         return $this->selesai('Perubahan berhasil disimpan.');
     }
@@ -42,6 +44,7 @@ class AdminStrukturController extends Controller
         $perangkat = PerangkatDesa::query()->findOrFail($id);
         $fotoLama = $perangkat->foto_path;
         $this->isi($perangkat, $request)->save();
+        Aktivitas::catat('perangkat.diubah', $perangkat, $perangkat->nama);
 
         if ($fotoLama && $fotoLama !== $perangkat->foto_path) {
             UnggahBerkas::hapusGambar($fotoLama);
@@ -56,6 +59,7 @@ class AdminStrukturController extends Controller
         $foto = $perangkat->foto_path;
         $perangkat->delete();
         UnggahBerkas::hapusGambar($foto);
+        Aktivitas::catat('perangkat.dihapus', $perangkat, $perangkat->nama);
 
         return $this->selesai('Perangkat berhasil dihapus.');
     }
@@ -84,6 +88,8 @@ class AdminStrukturController extends Controller
                 }
             }
         });
+
+        Aktivitas::catat('perangkat.urutan', PerangkatDesa::query()->find($id), 'Urutan digeser '.$arah);
 
         return $this->selesai('Urutan berhasil diubah.');
     }

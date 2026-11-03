@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminAspirasiController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminBeritaController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminMasterController;
 use App\Http\Controllers\AdminPotensiController;
 use App\Http\Controllers\AdminProfilController;
 use App\Http\Controllers\AdminStrukturController;
@@ -101,6 +102,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/akun', [AdminAkunController::class, 'store'])->name('akun.store');
             Route::put('/akun/{user}', [AdminAkunController::class, 'update'])->name('akun.update');
             Route::post('/akun/{user}/atur-ulang', [AdminAkunController::class, 'reset'])->name('akun.reset');
+
+            Route::get('/data-master', [AdminMasterController::class, 'index'])->name('master');
+            Route::post('/data-master/{jenis}', [AdminMasterController::class, 'store'])->whereIn('jenis', ['dusun', 'jabatan'])->name('master.store');
+            Route::put('/data-master/{jenis}/{id}', [AdminMasterController::class, 'update'])->whereIn('jenis', ['dusun', 'jabatan'])->whereNumber('id')->name('master.update');
+            Route::delete('/data-master/{jenis}/{id}', [AdminMasterController::class, 'destroy'])->whereIn('jenis', ['dusun', 'jabatan'])->whereNumber('id')->name('master.destroy');
         });
 
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');

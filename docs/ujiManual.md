@@ -123,3 +123,16 @@
 - [ ] Penjadwal: pasang cron `* * * * * php /path/artisan schedule:run` di server, lalu jalankan `php artisan aspirasi:anonimkan --hitung` dan `php artisan schedule:list`; uji anonimisasi di database percobaan dengan aspirasi selesai berusia > 24 bulan.
 - [ ] **Konfirmasi ke desa**: masa simpan 24 bulan, NIK dikumpulkan atau tidak (`ASPIRASI_NIK`), dan kebijakan balasan (catatan internal saja, formulir tidak meminta kontak) sudah disetujui.
 - [ ] Aspirasi yang sudah dianonimkan di admin tampil “Tanpa nama” dan “NIK: dianonimkan”; isi pesan tetap ada — periksa apakah desa menghendaki pesan ikut dihapus.
+
+## Fase 10 — Audit log, pengamanan & data master
+
+- [ ] Lakukan serangkaian tindakan sebagai admin (login, tambah/terbitkan/hapus berita, ubah peran akun, unggah dokumen APBDes, ubah status aspirasi) lalu buka **Akun & Hak Akses → Log Aktivitas**: semua tercatat dengan waktu WIB yang benar, nama petugas, dan IP.
+- [ ] Salah kata sandi 5 kali: tercatat satu entri “Login dikunci”. Periksa tidak ada kata sandi/NIK/isi aspirasi di log atau tabel `log_aktivitas`.
+- [ ] **Waktu**: bandingkan jam di log/riwayat aspirasi dengan jam sebenarnya (zona Asia/Jakarta; `APP_TIMEZONE`). Data lama yang disimpan sebelum perubahan zona waktu (bila ada) bisa bergeser 7 jam.
+- [ ] Di server produksi dengan HTTPS: periksa header dengan `curl -I https://domain` dan alat seperti securityheaders.com / Mozilla Observatory — ada CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy.
+- [ ] Jelajahi **semua** halaman publik & admin di Chrome, Firefox, dan Safari dengan konsol terbuka: tidak ada galat “Refused to …” dari Content-Security-Policy (menu HP, dialog, toast, tab Potensi, editor berita, uploader, formulir aspirasi, peta/tautan eksternal).
+- [ ] `.env` produksi: `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://…`; cookie sesi (DevTools → Application) bertanda Secure, HttpOnly, SameSite=Lax; membuka `http://` dialihkan ke HTTPS oleh server. Bila di belakang proxy, isi `TRUSTED_PROXIES` dan cek IP di log benar (bukan IP proxy).
+- [ ] Sengaja memicu galat 500 di produksi: tampil halaman galat desa tanpa jejak teknis.
+- [ ] Data Master (Super Admin): ubah nama/urutan dusun dan jabatan sesuai data resmi; coba hapus jabatan yang dipakai perangkat (ditolak) dan dusun yang dipakai kelompok tani; staf biasa tidak melihat menu ini.
+- [ ] Tampilan HP 390 px untuk halaman Akun (log) dan Data Master.
+- [ ] **Konfirmasi ke desa**: daftar dusun dan jabatan resmi; kebijakan masa simpan log aktivitas (saat ini tidak dihapus otomatis).

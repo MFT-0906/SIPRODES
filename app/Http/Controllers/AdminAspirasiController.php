@@ -6,6 +6,7 @@ use App\Enums\StatusAspirasi;
 use App\Http\Requests\Admin\UbahStatusAspirasiRequest;
 use App\Models\Aspirasi;
 use App\Models\AspirasiRiwayat;
+use App\Support\Aktivitas;
 use App\Support\Format;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -60,6 +61,7 @@ class AdminAspirasiController extends Controller
         // Tombol yang ditekan menentukan status akhir; tanpa tombol, pilihan "Ubah status" dipakai.
         $baru = StatusAspirasi::from($request->input('aksi') ?: $request->input('status'));
         $catatan = $request->filled('catatan') ? trim($request->string('catatan')->toString()) : null;
+        $statusLama = $aspirasi->status;
 
         DB::transaction(function () use ($aspirasi, $baru, $catatan, $request) {
             $lama = $aspirasi->status;
@@ -84,6 +86,10 @@ class AdminAspirasiController extends Controller
                 $aspirasi->riwayat()->create(['user_id' => $request->user()->id, 'aksi' => 'catatan', 'catatan' => $catatan]);
             }
         });
+
+        if ($baru !== $statusLama) {
+            Aktivitas::catat('aspirasi.status', $aspirasi, $statusLama->label().' → '.$baru->label());
+        }
 
         return redirect()->route('admin.aspirasi.index', ['id' => $aspirasi->id])->with('toast', 'Perubahan berhasil disimpan.');
     }

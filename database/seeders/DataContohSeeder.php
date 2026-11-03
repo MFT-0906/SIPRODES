@@ -17,7 +17,7 @@ use App\Models\Umkm;
 use Illuminate\Database\Seeder;
 
 /**
- * Data contoh dari frontend (DemoContent/DemoStoreKoleksi). Semua baris bertanda `contoh = true`
+ * Data contoh yang dipindahkan dari prototipe frontend. Semua baris bertanda `contoh = true`
  * dan BUKAN data resmi desa; hapus atau ganti sebelum rilis. Tidak dijalankan di produksi.
  */
 class DataContohSeeder extends Seeder

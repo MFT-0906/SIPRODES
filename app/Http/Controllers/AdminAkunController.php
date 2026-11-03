@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\Modul;
 use App\Enums\Peran;
 use App\Http\Requests\Admin\SimpanAkunRequest;
+use App\Models\LogAktivitas;
 use App\Models\User;
+use App\Support\Aktivitas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,6 +28,8 @@ class AdminAkunController extends Controller
         return view('pages.admin.akun', [
             'daftar' => User::query()->with('modulAkses')->orderBy('name')->get(),
             'ubah' => $ubah,
+            'log' => LogAktivitas::query()->with('user')->latest('id')->limit(30)->get(),
+            'labelAksi' => Aktivitas::LABEL,
             'modulStaf' => Modul::untukStaf(),
         ]);
     }
@@ -49,6 +53,8 @@ class AdminAkunController extends Controller
 
         Password::sendResetLink(['email' => $user->email]);
 
+        Aktivitas::catat('akun.dibuat', $user, $user->email.' · peran '.$user->peran->label().$this->ringkasModul($user));
+
         return redirect()->route('admin.akun.index')->with('toast', 'Akun dibuat. Pengguna akan menerima tautan untuk membuat kata sandi.');
     }
 
@@ -66,6 +72,7 @@ class AdminAkunController extends Controller
             return $this->tolak('peran', 'Harus ada minimal satu Super Admin aktif. Jadikan akun lain Super Admin lebih dulu.');
         }
 
+        $sebelum = $this->potret($user);
         DB::transaction(function () use ($request, $user, $peranBaru, $aktifBaru) {
             $user->update([
                 'name' => $request->string('nama')->toString(),
@@ -77,6 +84,8 @@ class AdminAkunController extends Controller
             $this->sinkronkanModul($user, $request);
         });
 
+        Aktivitas::catat('akun.diubah', $user, $user->email.$this->selisih($sebelum, $this->potret($user->refresh())));
+
         return redirect()->route('admin.akun.index')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
@@ -87,10 +96,52 @@ class AdminAkunController extends Controller
         }
 
         $status = Password::sendResetLink(['email' => $user->email]);
+        if ($status !== Password::RESET_THROTTLED) {
+            Aktivitas::catat('akun.tautan_dikirim', $user, $user->email);
+        }
 
         return redirect()->route('admin.akun.index')->with('toast', $status === Password::RESET_THROTTLED
             ? 'Tautan baru sudah dikirim barusan. Coba lagi dalam satu menit.'
             : 'Tautan atur ulang kata sandi dikirim ke pengguna.');
+    }
+
+    /**
+     * @return array{peran: string, aktif: bool, modul: list<string>}
+     */
+    private function potret(User $user): array
+    {
+        $modul = $user->modulAkses()->get()->map(fn ($m) => $m->modul->value)->sort()->values()->all();
+
+        return ['peran' => $user->peran->label(), 'aktif' => (bool) $user->aktif, 'modul' => $modul];
+    }
+
+    /**
+     * Ringkasan perubahan peran, status, dan modul untuk audit log.
+     *
+     * @param  array{peran: string, aktif: bool, modul: list<string>}  $a
+     * @param  array{peran: string, aktif: bool, modul: list<string>}  $b
+     */
+    private function selisih(array $a, array $b): string
+    {
+        $bagian = [];
+        if ($a['peran'] !== $b['peran']) {
+            $bagian[] = 'peran '.$a['peran'].' → '.$b['peran'];
+        }
+        if ($a['aktif'] !== $b['aktif']) {
+            $bagian[] = $b['aktif'] ? 'diaktifkan' : 'dinonaktifkan';
+        }
+        if ($a['modul'] !== $b['modul']) {
+            $bagian[] = 'modul ['.implode(', ', $a['modul']).'] → ['.implode(', ', $b['modul']).']';
+        }
+
+        return $bagian === [] ? ' · data diri diubah' : ' · '.implode('; ', $bagian);
+    }
+
+    private function ringkasModul(User $user): string
+    {
+        $modul = $user->modulAkses()->get()->map(fn ($m) => $m->modul->value)->all();
+
+        return $modul === [] ? '' : ' · modul '.implode(', ', $modul);
     }
 
     private function adaSuperAdminAktifLain(User $user): bool

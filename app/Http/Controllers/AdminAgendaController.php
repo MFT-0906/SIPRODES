@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\StatusTerbit;
 use App\Http\Requests\Admin\SimpanAgendaRequest;
 use App\Models\Agenda;
+use App\Support\Aktivitas;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -47,21 +48,28 @@ class AdminAgendaController extends Controller
 
     public function store(SimpanAgendaRequest $request): RedirectResponse
     {
-        $this->isi(new Agenda, $request)->save();
+        $agenda = $this->isi(new Agenda, $request);
+        $agenda->save();
+        Aktivitas::simpanKonten('agenda', $agenda, $agenda->judul, true, null, $agenda->status->value);
 
         return redirect()->route('admin.agenda.index', ['waktu' => 'semua'])->with('toast', 'Perubahan berhasil disimpan.');
     }
 
     public function update(SimpanAgendaRequest $request, int $id): RedirectResponse
     {
-        $this->isi(Agenda::query()->findOrFail($id), $request)->save();
+        $agenda = Agenda::query()->findOrFail($id);
+        $statusLama = $agenda->status->value;
+        $this->isi($agenda, $request)->save();
+        Aktivitas::simpanKonten('agenda', $agenda, $agenda->judul, false, $statusLama, $agenda->status->value);
 
         return redirect()->route('admin.agenda.index', ['waktu' => 'semua'])->with('toast', 'Perubahan berhasil disimpan.');
     }
 
     public function destroy(int $id): RedirectResponse
     {
-        Agenda::query()->findOrFail($id)->delete();
+        $agenda = Agenda::query()->findOrFail($id);
+        $agenda->delete();
+        Aktivitas::catat('agenda.dihapus', $agenda, $agenda->judul);
 
         return redirect()->route('admin.agenda.index', ['waktu' => 'semua'])->with('toast', 'Agenda berhasil dihapus.');
     }

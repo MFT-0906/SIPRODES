@@ -9,7 +9,7 @@
 </head>
 <body>
 @php
-    $d = \App\Support\DemoContent::katalog();
+    $d = require resource_path('views/dev/katalog-data.php');
     $ikon = collect(glob(resource_path('svg/icons/*.svg')))->map(fn ($path) => basename($path, '.svg'))->sort()->values();
 @endphp
 

@@ -69,6 +69,7 @@ class Navigation
             ]],
             ['label' => 'Administrasi · Super Admin', 'items' => [
                 ['label' => 'Akun & Hak Akses', 'route' => 'admin.akun.index', 'modul' => 'akun', 'match' => ['admin.akun.*'], 'icon' => 'shield'],
+                ['label' => 'Data Master', 'route' => 'admin.master', 'modul' => 'akun', 'match' => ['admin.master*'], 'icon' => 'building'],
             ]],
         ];
     }

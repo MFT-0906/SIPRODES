@@ -10,6 +10,7 @@ use App\Models\Dusun;
 use App\Models\KelompokTani;
 use App\Models\Komoditas;
 use App\Models\Umkm;
+use App\Support\Aktivitas;
 use App\Support\Format;
 use App\Support\UnggahBerkas;
 use Illuminate\Contracts\View\View;
@@ -51,6 +52,8 @@ class AdminPotensiController extends Controller
     {
         $komoditas = $id === null ? new Komoditas : Komoditas::query()->findOrFail($id);
         $fotoLama = $komoditas->foto_path;
+        $baru = ! $komoditas->exists;
+        $statusLama = $komoditas->exists ? $komoditas->status->value : null;
 
         $komoditas->nama = $request->string('nama')->toString();
         $komoditas->musim_panen = $request->filled('musim_panen') ? $request->string('musim_panen')->toString() : null;
@@ -60,6 +63,7 @@ class AdminPotensiController extends Controller
         $komoditas->contoh = false;
         $this->isiFoto($komoditas, $request, 'komoditas');
         $komoditas->save();
+        Aktivitas::simpanKonten('komoditas', $komoditas, $komoditas->nama, $baru, $statusLama, $komoditas->status->value);
 
         if ($fotoLama && $fotoLama !== $komoditas->foto_path) {
             UnggahBerkas::hapusGambar($fotoLama);
@@ -74,6 +78,7 @@ class AdminPotensiController extends Controller
         $foto = $komoditas->foto_path;
         $komoditas->delete();
         UnggahBerkas::hapusGambar($foto);
+        Aktivitas::catat('komoditas.dihapus', $komoditas, $komoditas->nama);
 
         return redirect()->route('admin.pertanian')->with('toast', 'Komoditas berhasil dihapus.');
     }
@@ -97,6 +102,7 @@ class AdminPotensiController extends Controller
     public function kelompokSimpan(SimpanKelompokTaniRequest $request, ?int $id = null): RedirectResponse
     {
         $kelompok = $id === null ? new KelompokTani : KelompokTani::query()->findOrFail($id);
+        $baru = ! $kelompok->exists;
 
         $kelompok->nama = $request->string('nama')->toString();
         $kelompok->komoditas_id = $request->integer('komoditas');
@@ -106,13 +112,16 @@ class AdminPotensiController extends Controller
         $kelompok->kontak_disetujui = $request->boolean('disetujui');
         $kelompok->contoh = false;
         $kelompok->save();
+        Aktivitas::catat('kelompok_tani.'.($baru ? 'dibuat' : 'diubah'), $kelompok, $kelompok->nama);
 
         return redirect()->route('admin.kelompok-tani')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
     public function kelompokHapus(int $id): RedirectResponse
     {
-        KelompokTani::query()->findOrFail($id)->delete();
+        $kelompok = KelompokTani::query()->findOrFail($id);
+        $kelompok->delete();
+        Aktivitas::catat('kelompok_tani.dihapus', $kelompok, $kelompok->nama);
 
         return redirect()->route('admin.kelompok-tani')->with('toast', 'Kelompok tani berhasil dihapus.');
     }
@@ -136,6 +145,8 @@ class AdminPotensiController extends Controller
     {
         $umkm = $id === null ? new Umkm : Umkm::query()->findOrFail($id);
         $fotoLama = $umkm->foto_path;
+        $baru = ! $umkm->exists;
+        $statusLama = $umkm->exists ? $umkm->status->value : null;
 
         $umkm->nama = $request->string('nama')->toString();
         $umkm->produk = $request->string('produk')->toString();
@@ -146,6 +157,7 @@ class AdminPotensiController extends Controller
         $umkm->contoh = false;
         $this->isiFoto($umkm, $request, 'umkm');
         $umkm->save();
+        Aktivitas::simpanKonten('umkm', $umkm, $umkm->nama, $baru, $statusLama, $umkm->status->value);
 
         if ($fotoLama && $fotoLama !== $umkm->foto_path) {
             UnggahBerkas::hapusGambar($fotoLama);
@@ -160,6 +172,7 @@ class AdminPotensiController extends Controller
         $foto = $umkm->foto_path;
         $umkm->delete();
         UnggahBerkas::hapusGambar($foto);
+        Aktivitas::catat('umkm.dihapus', $umkm, $umkm->nama);
 
         return redirect()->route('admin.umkm')->with('toast', 'UMKM berhasil dihapus.');
     }

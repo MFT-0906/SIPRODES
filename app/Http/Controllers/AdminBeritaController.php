@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\StatusTerbit;
 use App\Http\Requests\Admin\SimpanBeritaRequest;
 use App\Models\Berita;
+use App\Support\Aktivitas;
 use App\Support\UnggahBerkas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -62,6 +63,8 @@ class AdminBeritaController extends Controller
             return $berita;
         });
 
+        Aktivitas::simpanKonten('berita', $berita, $berita->judul, true, null, $berita->status->value);
+
         return redirect()->route('admin.berita.index')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
@@ -77,6 +80,7 @@ class AdminBeritaController extends Controller
     {
         $berita = Berita::query()->where('slug', $slug)->firstOrFail();
         $gambarLama = $berita->gambar_path;
+        $statusLama = $berita->status->value;
 
         // Alt tetap wajib selama gambar lama dipertahankan.
         if ($gambarLama && ! $request->hasFile('gambar') && ! $request->boolean('hapus_gambar') && blank($request->input('alt')) && blank($berita->gambar_alt)) {
@@ -92,6 +96,8 @@ class AdminBeritaController extends Controller
             UnggahBerkas::hapusGambar($gambarLama);
         }
 
+        Aktivitas::simpanKonten('berita', $berita, $berita->judul, false, $statusLama, $berita->status->value);
+
         return redirect()->route('admin.berita.index')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
@@ -102,6 +108,7 @@ class AdminBeritaController extends Controller
 
         $berita->delete();
         UnggahBerkas::hapusGambar($gambar);
+        Aktivitas::catat('berita.dihapus', $berita, $berita->judul);
 
         return redirect()->route('admin.berita.index')->with('toast', 'Berita berhasil dihapus.');
     }

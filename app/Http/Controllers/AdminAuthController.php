@@ -6,6 +6,7 @@ use App\Http\Requests\Admin\AturUlangKataSandiRequest;
 use App\Http\Requests\Admin\LupaKataSandiRequest;
 use App\Http\Requests\Admin\MasukRequest;
 use App\Models\User;
+use App\Support\Aktivitas;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -49,6 +50,11 @@ class AdminAuthController extends Controller
         if (! $berhasil) {
             RateLimiter::hit($kunci, (int) config('desa.auth.kunci_menit') * 60);
 
+            // Penguncian dicatat satu kali, tepat saat batas percobaan tercapai.
+            if (RateLimiter::attempts($kunci) === $maks) {
+                Aktivitas::catat('masuk.dikunci', null, 'Login: '.$login.' (batas '.$maks.' percobaan gagal tercapai)');
+            }
+
             // Pesan umum: tidak membocorkan akun mana yang ada atau nonaktif.
             return back()->withInput($request->only('login'))->with('gagal_masuk', self::PESAN_GAGAL);
         }
@@ -56,6 +62,7 @@ class AdminAuthController extends Controller
         RateLimiter::clear($kunci);
         $request->session()->regenerate();
         $request->user()->forceFill(['terakhir_masuk_at' => now()])->save();
+        Aktivitas::catat('masuk', $request->user());
 
         return redirect()->intended(route('admin.dashboard'));
     }
@@ -110,11 +117,16 @@ class AdminAuthController extends Controller
                 ->withErrors(['email' => 'Tautan atur ulang tidak valid atau sudah kedaluwarsa. Minta tautan baru.']);
         }
 
+        if ($pengguna = User::query()->where('email', $email)->first()) {
+            Aktivitas::catat('kata_sandi.diatur_ulang', $pengguna, $pengguna->email);
+        }
+
         return redirect()->route('admin.login')->with('status_masuk', 'Kata sandi berhasil diubah. Silakan masuk dengan kata sandi baru.');
     }
 
     public function keluar(Request $request): RedirectResponse
     {
+        Aktivitas::catat('keluar', $request->user());
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

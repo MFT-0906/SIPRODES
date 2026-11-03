@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\KontenPublik;
 use App\Support\Navigation;
 use App\Support\Peran;
+use App\Support\Produksi;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -34,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Produksi::terapkan($this->app);
+
         // Pembatasan pengiriman aspirasi per IP (disimpan sebagai hash di cache, bukan di database): 5 per 10 menit, 30 per hari.
         RateLimiter::for('aspirasi', fn (Request $request) => [
             Limit::perMinutes(10, 5)->by('aspirasi:'.sha1((string) $request->ip())),
