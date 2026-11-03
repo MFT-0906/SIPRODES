@@ -132,7 +132,7 @@
                                 <h3 class="type-label text-text">{{ $dokumen['judul'] }}</h3>
                                 <p class="type-body-sm text-muted">
                                     {{ collect([
-                                        'Periode: '.$dokumen['periode'],
+                                        $dokumen['periode'] ? 'Periode: '.$dokumen['periode'] : null,
                                         'PDF',
                                         $dokumen['ukuran'] ? Format::ukuranBerkas($dokumen['ukuran']) : null,
                                         $dokumen['diunggah'] ? 'Diunggah '.Format::tanggal($dokumen['diunggah']) : null,
@@ -142,7 +142,6 @@
                             </div>
                         </div>
 
-                        {{-- TODO(backend): isi `url` dengan rute unduhan berkas PDF yang sebenarnya. --}}
                         <x-ui.button
                             variant="secondary" size="s" icon="download"
                             :href="$dokumen['url']" :disabled="is_null($dokumen['url'])"

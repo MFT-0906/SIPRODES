@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PublicPageController::class, 'home'])->name('home');
 Route::get('/profil-desa', [PublicPageController::class, 'profil'])->name('profil');
 Route::get('/transparansi-apbdes', [PublicPageController::class, 'apbdes'])->name('apbdes');
+Route::get('/transparansi-apbdes/dokumen/{dokumen}', [PublicPageController::class, 'unduhDokumen'])->whereNumber('dokumen')->name('apbdes.unduh');
 Route::get('/potensi-desa', [PublicPageController::class, 'potensi'])->name('potensi');
 Route::get('/berita', [PublicPageController::class, 'berita'])->name('berita.index');
 Route::get('/berita/{slug}', [PublicPageController::class, 'beritaShow'])->name('berita.show');
@@ -65,8 +66,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('/apbdes', [AdminApbdesController::class, 'index'])->name('apbdes');
             Route::post('/apbdes', [AdminApbdesController::class, 'simpan'])->name('apbdes.store');
-            Route::put('/apbdes/{id}', [AdminApbdesController::class, 'simpan'])->name('apbdes.update');
-            Route::delete('/apbdes/{id}', [AdminApbdesController::class, 'destroy'])->name('apbdes.destroy');
+            Route::put('/apbdes/{id}', [AdminApbdesController::class, 'simpan'])->whereNumber('id')->name('apbdes.update');
+            Route::delete('/apbdes/{id}', [AdminApbdesController::class, 'destroy'])->whereNumber('id')->name('apbdes.destroy');
+            Route::delete('/apbdes/dokumen/{dokumen}', [AdminApbdesController::class, 'dokumenHapus'])->whereNumber('dokumen')->name('apbdes.dokumen.destroy');
+            Route::get('/apbdes/dokumen/{dokumen}/unduh', [AdminApbdesController::class, 'dokumenUnduh'])->whereNumber('dokumen')->name('apbdes.dokumen.unduh');
         });
 
         Route::middleware('modul:potensi')->group(function () {

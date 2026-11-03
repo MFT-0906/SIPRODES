@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Support\Format;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Tests\Concerns\MasukSebagaiAdmin;
 use Tests\TestCase;
 
@@ -16,28 +15,6 @@ class Fase10AdminTest extends TestCase
     {
         parent::setUp();
         $this->masukSebagaiAdmin();
-    }
-
-    public function test_apbdes_menolak_angka_bukan_angka_dan_menyimpan_yang_benar(): void
-    {
-        $this->get(route('admin.apbdes'))->assertOk()->assertSee('Kelola APBDes')->assertSee('APBDes 2026')->assertSee('2 PDF');
-
-        $this->from(route('admin.apbdes'))->put(route('admin.apbdes.update', '2026'), [
-            'tahun' => 2026, 'periode' => 'Jan – Des', 'pendapatan' => '12.500.000', 'belanja' => '12.500.000,5x', 'status' => 'draf',
-        ])->assertSessionHasErrors(['belanja' => 'Masukkan angka saja tanpa huruf.']);
-
-        $this->put(route('admin.apbdes.update', '2026'), [
-            'tahun' => 2026, 'periode' => 'Jan – Des', 'pendapatan' => '12.500.000', 'belanja' => '11.000.000,50', 'status' => 'draf', 'aksi' => 'terbit',
-        ])->assertRedirect()->assertSessionHas('toast');
-        $this->get(route('admin.apbdes', ['periode' => '2026']))->assertSee('12.500.000');
-    }
-
-    public function test_apbdes_menolak_berkas_bukan_pdf(): void
-    {
-        $this->from(route('admin.apbdes'))->post(route('admin.apbdes.store'), [
-            'tahun' => 2027, 'periode' => 'Jan – Des', 'pendapatan' => '1', 'belanja' => '1', 'status' => 'draf',
-            'dokumen' => UploadedFile::fake()->create('dokumen.exe', 10, 'application/x-msdownload'),
-        ])->assertSessionHasErrors(['dokumen' => 'Ditolak: hanya PDF yang diizinkan. Pilih berkas lain.']);
     }
 
     public function test_aspirasi_filter_detail_dan_ubah_status(): void

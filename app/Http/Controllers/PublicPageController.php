@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agenda;
+use App\Models\ApbdesDokumen;
+use App\Models\ApbdesPeriode;
 use App\Models\Berita;
 use App\Models\Umkm;
 use App\Support\KontenPublik;
+use App\Support\UnggahBerkas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Halaman publik. Semua data dibaca dari database dan hanya konten berstatus `terbit`
@@ -69,6 +74,22 @@ class PublicPageController extends Controller
 
             return view('pages.public.apbdes-gagal');
         }
+    }
+
+    /**
+     * Unduhan PDF APBDes dari disk privat. Hanya dokumen milik periode yang terbit; selain itu 404
+     * (draf tidak boleh bocor lewat tebakan id).
+     */
+    public function unduhDokumen(ApbdesDokumen $dokumen): StreamedResponse
+    {
+        abort_unless(
+            filled($dokumen->path)
+            && ApbdesPeriode::query()->terbit()->whereKey($dokumen->periode_id)->exists()
+            && Storage::disk('local')->exists($dokumen->path),
+            404,
+        );
+
+        return UnggahBerkas::unduhPdf($dokumen->path, $dokumen->judul);
     }
 
     public function potensi(Request $request): View

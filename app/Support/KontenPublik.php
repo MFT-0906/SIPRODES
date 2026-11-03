@@ -304,8 +304,7 @@ class KontenPublik
             'dokumen' => $periode->dokumen->map(fn ($d) => [
                 'judul' => $d->judul,
                 'periode' => $d->keterangan_periode,
-                // TODO(backend): tautan unduhan lewat rute apbdes.unduh (Fase 7); berkas privat tidak boleh dilayani langsung.
-                'url' => null,
+                'url' => $d->path ? route('apbdes.unduh', $d) : null,
                 'ukuran' => $d->path ? $d->ukuran : null,
                 'diunggah' => $d->path ? $d->created_at->toDateString() : null,
             ])->all(),

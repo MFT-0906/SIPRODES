@@ -87,3 +87,15 @@
 - [ ] Hapus komoditas yang dipakai kelompok tani: kelompok tetap ada (komoditasnya kosong “—”).
 - [ ] Semua form di atas rapi di HP 390 px (uploader, daftar misi, tombol panah ≥ 44 px) dan galat validasi terbaca.
 - [ ] Daftar Dusun 1–6 dan jabatan di data master sudah sesuai data resmi (belum ada halaman kelola master; saat ini lewat seeder/database).
+
+## Fase 7 — APBDes
+
+- [ ] Tambah periode baru: uraian bawaan muncul; isi angka dari dokumen APBDes resmi (format `12.500.000`), tambah/hapus baris; jumlah per bagian berubah langsung saat mengetik dan **sama** dengan angka di halaman publik setelah disimpan.
+- [ ] “Simpan Draf”: tidak tampil di publik; “Simpan & Terbitkan”: tampil di `/transparansi-apbdes` (tabel, kartu ringkasan, diagram, persentase). Periksa pembulatan persentase terhadap dokumen resmi.
+- [ ] Unggah PDF asli: judul wajib; ukuran tampil; di publik tombol “Unduh PDF” mengunduh berkas dengan nama sesuai judul. Coba PDF besar (> 10 MB), berkas `.exe`/`.docx` yang diganti nama menjadi `.pdf`, dan gambar: ditolak dengan pesan jelas.
+- [ ] Periksa folder `storage/app/private/apbdes`: berkas bernama acak dan **tidak** dapat dibuka lewat URL langsung (`/storage/apbdes/...`).
+- [ ] Periode berstatus draf: tautan unduhan dokumennya 404 untuk pengunjung umum, tetapi admin masih bisa mengunduh dari halaman admin.
+- [ ] Hapus dokumen dan hapus periode: berkas PDF ikut hilang dari folder privat.
+- [ ] Pembiayaan: pastikan cara pengisian “pembiayaan netto” (satu angka) cukup untuk dokumen APBDes desa; bila perlu rincian penerimaan/pengeluaran, kabari agar skemanya diperluas.
+- [ ] Di server produksi tes unduhan PDF besar (± 10 MB) lewat HTTPS dan di HP; pastikan batas `upload_max_filesize` dan `post_max_size` PHP ≥ 12 MB.
+- [ ] Tampilan HP 390 px: editor rincian (kolom anggaran, tombol hapus ≥ 44 px), daftar dokumen, dan halaman publik APBDes tidak terpotong.

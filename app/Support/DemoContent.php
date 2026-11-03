@@ -13,41 +13,6 @@ class DemoContent
     // TODO(backend): ganti dengan data dari database
 
     /**
-     * Ringkasan APBDes per tahun. Semua angka masih kosong (null) karena nilai resmi belum diinput;
-     * nama dokumen hanyalah contoh dari desain dan belum memiliki berkas.
-     *
-     * @return array<string, mixed>
-     */
-    public static function apbdes(): array
-    {
-        $pendapatan = ['Pendapatan Asli Desa', 'Dana Desa', 'Alokasi Dana Desa', 'Bagi Hasil Pajak & Retribusi', 'Bantuan Keuangan', 'Lain-lain Pendapatan yang Sah'];
-        $belanja = ['Penyelenggaraan Pemerintahan Desa', 'Pelaksanaan Pembangunan Desa', 'Pembinaan Kemasyarakatan', 'Pemberdayaan Masyarakat', 'Penanggulangan Bencana, Darurat & Mendesak'];
-
-        $tahun = fn (int $tahun, array $dokumen = []) => [
-            'periode' => "1 Januari – 31 Desember {$tahun}",
-            // false = angka dan dokumen masih contoh/kosong dan harus diberi penanda di halaman.
-            'resmi' => false,
-            'ringkasan' => ['pendapatan' => null, 'belanja' => null, 'pembiayaan' => null],
-            'pendapatan' => ['rows' => array_map(fn ($uraian) => ['uraian' => $uraian, 'anggaran' => null], $pendapatan), 'total' => null],
-            'belanja' => ['rows' => array_map(fn ($uraian) => ['uraian' => $uraian, 'anggaran' => null], $belanja), 'total' => null],
-            'dokumen' => $dokumen,
-        ];
-
-        return [
-            'pengantar' => 'Ringkasan Anggaran Pendapatan dan Belanja Desa (APBDes) Marga Agung beserta dokumen resminya. Seluruh angka bersumber dari dokumen APBDes yang telah ditetapkan.',
-            'tahun_default' => 2026,
-            'tahun' => [
-                2026 => $tahun(2026, [
-                    ['judul' => 'Peraturan Desa tentang APBDes Tahun 2026', 'periode' => 'Jan–Des 2026', 'url' => null, 'ukuran' => null, 'diunggah' => null],
-                    ['judul' => 'Laporan Realisasi APBDes Semester I 2026', 'periode' => 'Jan–Jun 2026', 'url' => null, 'ukuran' => null, 'diunggah' => null],
-                ]),
-                2025 => $tahun(2025),
-                2024 => $tahun(2024),
-            ],
-        ];
-    }
-
-    /**
      * Contoh isi untuk katalog komponen (/_komponen). Teks mengikuti contoh di Figma.
      *
      * @return array<string, mixed>

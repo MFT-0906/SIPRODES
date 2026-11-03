@@ -313,9 +313,6 @@ Alpine.data('bagikan', (judul = '') => ({
     },
 }));
 
-window.Alpine = Alpine;
-Alpine.start();
-
 // Cegah klik ganda: tombol kirim yang bertanda data-submit-loading dikunci saat formulir dikirim.
 document.addEventListener('submit', (event) => {
     const form = event.target;
@@ -343,3 +340,41 @@ window.addEventListener('pageshow', (event) => {
         button.disabled = false;
     });
 });
+
+/**
+ * Editor rincian APBDes: baris uraian + anggaran per jenis (pendapatan, belanja, pembiayaan).
+ * Total ditampilkan otomatis dan hanya untuk bantuan; server menghitung ulang total dari rincian.
+ */
+Alpine.data('rincianApbdes', (awal = {}) => ({
+    daftar: {
+        pendapatan: (awal.pendapatan ?? []).map((b, i) => ({ ...b, id: `pendapatan-${i}` })),
+        belanja: (awal.belanja ?? []).map((b, i) => ({ ...b, id: `belanja-${i}` })),
+        pembiayaan: (awal.pembiayaan ?? []).map((b, i) => ({ ...b, id: `pembiayaan-${i}` })),
+    },
+    nomor: 1000,
+
+    tambah(jenis) {
+        this.daftar[jenis].push({ uraian: '', anggaran: '', id: `${jenis}-${this.nomor++}` });
+        this.$nextTick(() => {
+            const kolom = this.$root.querySelectorAll(`[data-jenis="${jenis}"] input[name$="[uraian]"]`);
+            kolom[kolom.length - 1]?.focus();
+        });
+    },
+
+    hapus(jenis, i) {
+        this.daftar[jenis].splice(i, 1);
+    },
+
+    total(jenis) {
+        const jumlah = this.daftar[jenis].reduce((sum, b) => {
+            const angka = parseInt(String(b.anggaran ?? '').replace(/\./g, ''), 10);
+
+            return sum + (Number.isNaN(angka) ? 0 : angka);
+        }, 0);
+
+        return 'Rp ' + jumlah.toLocaleString('id-ID');
+    },
+}));
+
+window.Alpine = Alpine;
+Alpine.start();

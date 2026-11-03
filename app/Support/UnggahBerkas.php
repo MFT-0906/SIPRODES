@@ -2,8 +2,11 @@
 
 namespace App\Support;
 
+use Closure;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Penyimpanan unggahan sederhana: nama berkas acak (hashName), folder per modul, disk `public` untuk gambar.
@@ -23,9 +26,79 @@ class UnggahBerkas
         }
     }
 
+    /**
+     * PDF disimpan di disk privat (`local`), bukan di web root; hanya bisa diunduh lewat rute yang memeriksa status terbit.
+     */
+    public static function simpanPdf(UploadedFile $berkas, string $folder): string
+    {
+        return $berkas->store($folder, 'local');
+    }
+
+    public static function hapusPdf(?string $path): void
+    {
+        if (filled($path)) {
+            Storage::disk('local')->delete($path);
+        }
+    }
+
+    /**
+     * Mengirim PDF privat sebagai unduhan (attachment) dengan nama berkas yang aman.
+     */
+    public static function unduhPdf(string $path, string $judul): StreamedResponse
+    {
+        return Storage::disk('local')->download(
+            $path,
+            (Str::slug($judul) ?: 'dokumen').'.pdf',
+            ['Content-Type' => 'application/pdf', 'X-Content-Type-Options' => 'nosniff'],
+        );
+    }
+
     public static function urlGambar(?string $path): ?string
     {
         return filled($path) ? Storage::disk('public')->url($path) : null;
+    }
+
+    /**
+     * Aturan validasi PDF: jenis isi, ukuran dari config/desa.php, dan tanda tangan berkas `%PDF-`.
+     *
+     * @return list<mixed>
+     */
+    public static function aturanPdf(): array
+    {
+        return [
+            'nullable', 'file', 'mimetypes:application/pdf', 'max:'.config('desa.unggahan.pdf_maks_kb'),
+            function (string $atribut, mixed $berkas, Closure $gagal): void {
+                if ($berkas instanceof UploadedFile && ! self::tandaTanganPdf($berkas)) {
+                    $gagal('Ditolak: hanya PDF yang diizinkan. Pilih berkas lain.');
+                }
+            },
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function pesanPdf(string $kolom): array
+    {
+        $mb = round((int) config('desa.unggahan.pdf_maks_kb') / 1024);
+
+        return [
+            "{$kolom}.file" => 'Berkas tidak valid.',
+            "{$kolom}.mimetypes" => 'Ditolak: hanya PDF yang diizinkan. Pilih berkas lain.',
+            "{$kolom}.max" => "Ukuran PDF maksimal {$mb} MB.",
+        ];
+    }
+
+    public static function tandaTanganPdf(UploadedFile $berkas): bool
+    {
+        $buka = @fopen($berkas->getRealPath(), 'rb');
+        if ($buka === false) {
+            return false;
+        }
+        $awal = fread($buka, 5);
+        fclose($buka);
+
+        return $awal === '%PDF-';
     }
 
     /**

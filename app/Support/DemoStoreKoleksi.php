@@ -5,35 +5,20 @@ namespace App\Support;
 use Illuminate\Support\Str;
 
 /**
- * Bawaan (data awal) koleksi demo untuk modul yang belum memakai database (APBDes dan Aspirasi).
+ * Bawaan (data awal) koleksi demo untuk modul yang belum memakai database (Aspirasi).
  * Isinya mengikuti contoh di desain Figma; bukan data resmi desa.
  */
 class DemoStoreKoleksi
 {
-    // TODO(backend): hapus; APBDes disambungkan di Fase 7 dan Aspirasi di Fase 9.
+    // TODO(backend): hapus; Aspirasi disambungkan di Fase 9.
 
     /** @return list<array<string, mixed>> */
     public static function bawaan(string $kunci): array
     {
         return match ($kunci) {
-            'apbdes' => self::apbdes(),
             'aspirasi' => self::aspirasi(),
             default => [],
         };
-    }
-
-    /** @return list<array<string, mixed>> */
-    private static function apbdes(): array
-    {
-        $data = DemoContent::apbdes();
-
-        return collect($data['tahun'])
-            ->map(fn (array $t, int $tahun) => [
-                'id' => (string) $tahun, 'tahun' => $tahun, 'periode' => 'Jan – Des', 'pendapatan' => null, 'belanja' => null,
-                'dokumen' => $t['dokumen'], 'status' => 'terbit',
-            ])
-            ->values()
-            ->all();
     }
 
     /**
