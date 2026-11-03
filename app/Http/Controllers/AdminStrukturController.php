@@ -97,7 +97,12 @@ class AdminStrukturController extends Controller
     private function isi(PerangkatDesa $perangkat, SimpanPerangkatRequest $request): PerangkatDesa
     {
         $perangkat->nama = $request->string('nama')->toString();
-        $perangkat->jabatan_id = Jabatan::query()->where('nama', $request->input('jabatan'))->value('id');
+        $namaJabatan = preg_replace('/\s+/', ' ', trim($request->input('jabatan')));
+        $jabatan = Jabatan::query()->firstOrCreate(
+            ['nama' => $namaJabatan],
+            ['urutan' => ((int) Jabatan::query()->max('urutan')) + 1],
+        );
+        $perangkat->jabatan_id = $jabatan->id;
         $perangkat->tampil = $request->boolean('tampil');
         // Data yang diinput admin adalah data nyata, bukan contoh.
         $perangkat->contoh = false;

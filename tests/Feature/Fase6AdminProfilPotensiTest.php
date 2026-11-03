@@ -116,7 +116,7 @@ class Fase6AdminProfilPotensiTest extends TestCase
         $this->assertSame('Nama Baru', $p->fresh()->nama);
         $this->assertFalse($p->fresh()->tampil);
 
-        $this->from(route('admin.struktur'))->post(route('admin.struktur.store'), ['nama' => '', 'jabatan' => 'Tidak ada'])->assertSessionHasErrors(['nama', 'jabatan']);
+        $this->from(route('admin.struktur'))->post(route('admin.struktur.store'), ['nama' => '', 'jabatan' => 'Tidak ada'])->assertSessionHasErrors(['nama']);
 
         $this->delete(route('admin.struktur.destroy', $p->id))->assertRedirect();
         $this->assertSame(0, PerangkatDesa::count());

@@ -28,8 +28,7 @@ class PublicPagesTest extends TestCase
         $this->get('/transparansi-apbdes')
             ->assertOk()
             ->assertSee('Rp —', false)
-            ->assertSee('Diagram belum tersedia')
-            ->assertSee('Data contoh');
+            ->assertSee('Diagram belum tersedia');
     }
 
     public function test_apbdes_tahun_tanpa_dokumen_menampilkan_keadaan_kosong(): void

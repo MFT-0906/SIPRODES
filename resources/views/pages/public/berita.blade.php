@@ -5,8 +5,6 @@
 
 @php
     use App\Support\Format;
-
-    $saring = fn (?string $kategoriDipilih) => array_filter(['kategori' => $kategoriDipilih, 'q' => $kata]);
 @endphp
 
 @section('content')
@@ -22,21 +20,23 @@
     <div class="bg-surface">
         <div class="container-page flex flex-col gap-8 pb-14 pt-8 lg:gap-12 lg:pb-20 lg:pt-10">
             {{-- Filter kategori dan pencarian --}}
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <nav aria-label="Kategori berita" class="-mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0">
-                    <x-ui.chip :href="route('berita.index', $saring(null))" :active="is_null($aktif)" class="shrink-0">Semua</x-ui.chip>
-                    @foreach ($kategori as $nama)
-                        <x-ui.chip :href="route('berita.index', $saring($nama))" :active="$aktif === $nama" class="shrink-0">{{ $nama }}</x-ui.chip>
-                    @endforeach
-                </nav>
-
-                <form method="get" action="{{ route('berita.index') }}" role="search" class="lg:w-[320px]">
-                    @if ($aktif)
-                        <input type="hidden" name="kategori" value="{{ $aktif }}">
-                    @endif
+            <form method="get" action="{{ route('berita.index') }}" role="search" class="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+                <div class="flex flex-col gap-3 w-full lg:w-[250px] lg:shrink-0">
+                    <x-ui.select
+                        name="kategori"
+                        label="Kategori"
+                        placeholder="Semua kategori"
+                        :penanda="false"
+                        :selected="$aktif"
+                        :options="array_combine($kategori->all(), $kategori->all())"
+                        x-on:change="$el.form.requestSubmit()"
+                    />
+                    <noscript><x-ui.button type="submit" class="mt-3 w-full">Tampilkan</x-ui.button></noscript>
+                </div>
+                <div class="flex flex-col gap-3 w-full lg:flex-1 lg:max-w-[320px]">
                     <x-ui.search name="q" label="Cari berita" placeholder="Cari berita…" :value="$kata" />
-                </form>
-            </div>
+                </div>
+            </form>
 
             <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8">
                 {{-- Daftar berita --}}

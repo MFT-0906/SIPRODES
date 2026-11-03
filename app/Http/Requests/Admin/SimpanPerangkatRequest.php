@@ -4,7 +4,6 @@ namespace App\Http\Requests\Admin;
 
 use App\Support\UnggahBerkas;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class SimpanPerangkatRequest extends FormRequest
 {
@@ -20,7 +19,7 @@ class SimpanPerangkatRequest extends FormRequest
     {
         return [
             'nama' => ['required', 'string', 'max:100'],
-            'jabatan' => ['required', Rule::exists('jabatan', 'nama')],
+            'jabatan' => ['required', 'string', 'max:100'],
             'tampil' => ['nullable', 'boolean'],
             'foto' => UnggahBerkas::aturanGambar(persegi: true),
             'hapus_foto' => ['nullable', 'boolean'],
@@ -35,7 +34,6 @@ class SimpanPerangkatRequest extends FormRequest
         return [
             'required' => ':attribute wajib diisi.',
             'max' => ':attribute terlalu panjang (maksimal :max karakter).',
-            'exists' => ':attribute tidak dikenal.',
         ] + UnggahBerkas::pesanGambar('foto', persegi: true);
     }
 

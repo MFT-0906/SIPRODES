@@ -109,7 +109,7 @@
             </section>
 
             {{-- Lokasi dan geografis --}}
-            <section id="lokasi" aria-labelledby="lokasi-judul" class="grid scroll-mt-6 gap-6 lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-8">
+            <section id="lokasi" aria-labelledby="lokasi-judul" class="flex scroll-mt-6 flex-col gap-6 lg:gap-8">
                 <div class="flex flex-col items-start gap-4">
                     <h2 id="lokasi-judul" class="type-h2 text-text">Lokasi dan geografis</h2>
                     <p class="flex items-start gap-2.5 type-body text-text">

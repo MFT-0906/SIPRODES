@@ -385,7 +385,7 @@ class Fase10KeamananTest extends TestCase
         $this->masukSebagaiAdmin();
         $this->post(route('admin.master.store', 'jabatan'), ['nama' => 'Kaur Baru'])->assertRedirect();
 
-        $this->get(route('admin.struktur'))->assertOk()->assertSee('Kaur Baru');
+        $this->get(route('admin.struktur'))->assertOk()->assertSee('Jabatan');
     }
 
     // ---- Kebersihan kode ----

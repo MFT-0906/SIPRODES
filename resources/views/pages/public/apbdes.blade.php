@@ -52,12 +52,6 @@
                 </p>
             </div>
 
-            @unless ($data['resmi'])
-                <x-ui.alert tone="peringatan" title="Data contoh">
-                    Angka “Rp —” akan diganti dengan nilai resmi dari dokumen APBDes yang telah ditetapkan. Diagram tampil setelah angka diinput.
-                </x-ui.alert>
-            @endunless
-
             {{-- Ringkasan --}}
             <section aria-labelledby="ringkasan-judul" class="flex flex-col gap-6">
                 <h2 id="ringkasan-judul" class="sr-only">Ringkasan anggaran tahun {{ $tahun }}</h2>

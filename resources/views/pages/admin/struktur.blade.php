@@ -77,7 +77,7 @@
                         <p class="flex items-start gap-1.5 type-body-sm text-danger"><x-ui.icon name="alert" class="mt-0.5 size-4" /><span>{{ $message }}</span></p>
                     @enderror
                     <x-ui.field name="nama" label="Nama lengkap" required :value="$item['nama'] ?? null" placeholder="Nama sesuai SK" />
-                    <x-ui.select name="jabatan" label="Jabatan" required placeholder="Pilih jabatan" :options="array_combine($jabatan, $jabatan)" :selected="$item['jabatan'] ?? null" />
+                    <x-ui.field name="jabatan" label="Jabatan" required :value="$item['jabatan'] ?? null" placeholder="Contoh: Kepala Desa, Sekretaris Desa" />
                     <div class="flex items-center justify-between gap-3">
                         <span class="type-label text-text" id="tampil-label">Tampilkan di situs publik</span>
                         <x-ui.toggle name="tampil" label="Tampilkan di situs publik" :checked="$tampilAwal" />
