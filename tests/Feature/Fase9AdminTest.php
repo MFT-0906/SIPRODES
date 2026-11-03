@@ -2,10 +2,21 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Tests\Concerns\MasukSebagaiAdmin;
 use Tests\TestCase;
 
 class Fase9AdminTest extends TestCase
 {
+    use MasukSebagaiAdmin, RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->masukSebagaiAdmin();
+    }
+
     public function test_ringkasan_menampilkan_statistik_aspirasi_dan_draf(): void
     {
         $this->get(route('admin.dashboard'))->assertOk()
@@ -94,7 +105,7 @@ class Fase9AdminTest extends TestCase
         $this->post(route('admin.berita.store'), [
             'title' => 'Judul', 'excerpt' => 'Ringkasan', 'isi_teks' => 'Isi', 'tanggal' => '2026-10-29',
             'kategori' => 'Kegiatan', 'status' => 'draf',
-            'gambar' => \Illuminate\Http\UploadedFile::fake()->image('foto.jpg'),
+            'gambar' => UploadedFile::fake()->image('foto.jpg'),
         ])->assertSessionHasErrors('alt');
     }
 

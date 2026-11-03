@@ -3,10 +3,22 @@
 namespace Tests\Feature;
 
 use App\Support\Format;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Tests\Concerns\MasukSebagaiAdmin;
 use Tests\TestCase;
 
 class Fase10AdminTest extends TestCase
 {
+    use MasukSebagaiAdmin, RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->masukSebagaiAdmin();
+    }
+
     public function test_profil_menampilkan_setiap_tab(): void
     {
         $this->get(route('admin.profil'))->assertOk()->assertSee('Naskah sejarah')->assertSee('Terakhir diperbarui');
@@ -65,7 +77,7 @@ class Fase10AdminTest extends TestCase
     {
         $this->from(route('admin.apbdes'))->post(route('admin.apbdes.store'), [
             'tahun' => 2027, 'periode' => 'Jan – Des', 'pendapatan' => '1', 'belanja' => '1', 'status' => 'draf',
-            'dokumen' => \Illuminate\Http\UploadedFile::fake()->create('dokumen.exe', 10, 'application/x-msdownload'),
+            'dokumen' => UploadedFile::fake()->create('dokumen.exe', 10, 'application/x-msdownload'),
         ])->assertSessionHasErrors(['dokumen' => 'Ditolak: hanya PDF yang diizinkan. Pilih berkas lain.']);
     }
 
@@ -162,7 +174,7 @@ class Fase10AdminTest extends TestCase
     public function test_super_admin_melihat_akun_matriks_izin_dan_membuat_akun_tanpa_kata_sandi(): void
     {
         // Peran contoh hanya berlaku di lokal; di lingkungan itu CSRF aktif, jadi dimatikan khusus untuk tes ini.
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
         $this->app->detectEnvironment(fn () => 'local');
         $this->get(route('admin.akun.index', ['peran' => 'super_admin']))->assertOk()
             ->assertSee('Matriks Izin (draf — perlu konfirmasi desa)')->assertSee('Sesuai penugasan')

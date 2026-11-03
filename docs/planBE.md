@@ -26,7 +26,7 @@ Jika hasil fase belum sesuai, tulis koreksinya lalu minta: `Perbaiki fase N sesu
 |---|---|---|
 | 0 | Persiapan: versi PHP, database, alat bantu | Selesai |
 | 1 | Skema database, model, factory, seeder | Selesai |
-| 2 | Autentikasi admin | Belum |
+| 2 | Autentikasi admin | Selesai |
 | 3 | Otorisasi peran & modul Akun | Belum |
 | 4 | Halaman publik membaca database | Belum |
 | 5 | Admin A: Berita, Agenda, Ringkasan | Belum |
@@ -140,13 +140,13 @@ Rancang dari bentuk data di `DemoContent`, `DemoStoreKoleksi`, dan aturan valida
 
 ## Fase 2 — Autentikasi admin (FR-07, NFR-02)
 
-- [ ] `AdminAuthController@masuk`: login dengan **email atau username** + kata sandi, hanya akun `aktif`, `Auth::attempt` + `session()->regenerate()`, "ingat saya".
-- [ ] Pembatasan percobaan: `RateLimiter` per (login + IP), mis. 5 kali per menit lalu kunci 15 menit; pesan tetap umum (tidak membocorkan akun mana yang ada). Catat `terakhir_masuk_at`.
-- [ ] `keluar`: logout, `invalidate()`, `regenerateToken()`.
-- [ ] Lupa kata sandi: broker `Password` Laravel, notifikasi email Bahasa Indonesia, halaman **buat kata sandi baru** (tambahkan view sederhana dengan komponen yang ada), respons sama untuk email terdaftar/tidak.
-- [ ] Middleware: `guest` untuk masuk/lupa kata sandi, `auth` untuk seluruh `/admin/*` lainnya; redirect tamu ke `admin.login`.
-- [ ] Hapus jalan pintas login lokal di `AdminAuthController`.
-- [ ] Kebijakan kata sandi: minimal 10 karakter (`Password::min(10)`), tidak sama dengan email.
+- [x] `AdminAuthController@masuk`: login dengan **email atau username** + kata sandi, hanya akun `aktif`, `Auth::attempt` + `session()->regenerate()`, "ingat saya".
+- [x] Pembatasan percobaan: `RateLimiter` per (login + IP), mis. 5 kali per menit lalu kunci 15 menit; pesan tetap umum (tidak membocorkan akun mana yang ada). Catat `terakhir_masuk_at`.
+- [x] `keluar`: logout, `invalidate()`, `regenerateToken()`.
+- [x] Lupa kata sandi: broker `Password` Laravel, notifikasi email Bahasa Indonesia, halaman **buat kata sandi baru** (tambahkan view sederhana dengan komponen yang ada), respons sama untuk email terdaftar/tidak.
+- [x] Middleware: `guest` untuk masuk/lupa kata sandi, `auth` untuk seluruh `/admin/*` lainnya; redirect tamu ke `admin.login`.
+- [x] Hapus jalan pintas login lokal di `AdminAuthController`.
+- [x] Kebijakan kata sandi: minimal 10 karakter (`Password::min(10)`), tidak sama dengan email.
 
 **Checkpoint:** tes: tamu diarahkan ke login, login benar/salah, akun nonaktif ditolak, penguncian setelah gagal berulang, alur atur ulang kata sandi, logout.
 
@@ -265,3 +265,4 @@ Rancang dari bentuk data di `DemoContent`, `DemoStoreKoleksi`, dan aturan valida
 |---|---|---|---|
 | 2026-11-03 | 0 | `composer.json` `php: ^8.4` (asumsi hosting PHP ≥ 8.4, **belum dikonfirmasi**; lock memakai Symfony 8.1.9 yang butuh ≥ 8.4.1) dan `composer.lock` diperbarui hanya pada content-hash/constraint PHP. `.env.example` memakai MySQL (`siprodes`), `phpunit.xml` tetap SQLite memori. `boost:install --guidelines --skills --mcp` dijalankan (menambah `.claude/skills`, `.mcp.json`, `boost.json`, dan mengganti blok Boost di `CLAUDE.md`; Aturan Frontend tetap utuh); bagian "Aturan Backend" ditambahkan. `config/desa.php` (nama desa, batas unggahan, NIK, masa simpan aspirasi, waktu isi minimum, batas login). Hash commit di Log `planFE.md` fase 7–11 diperbaiki. Versi: PHP 8.5.8, Laravel 13.38.0, Symfony 8.1.9; 64 tes lolos. Catatan: `composer install` diuji dengan `--dry-run`; MySQL belum dijalankan (diuji mulai Fase 1). | (lihat git) |
 | 2026-11-03 | 1 | 6 berkas migrasi (alter `users` + `modul_akses`; profil/struktur; berita/agenda; potensi; APBDes; aspirasi/log), 17 model, enum `StatusTerbit`/`StatusAspirasi`/`Peran`/`Modul`/`JenisAnggaran`, trait `MemilikiStatusTerbit` (scope `terbit()`/`draf()`), 17 factory, seeder `MasterDataSeeder` (dusun 1–6, 8 jabatan, profil desa; aman di produksi), `AdminAwalSeeder` (dari `ADMIN_EMAIL`, kata sandi acak dicetak sekali), `DataContohSeeder` (semua baris `contoh = true`, tidak jalan di produksi). Penyimpangan dari rancangan: kolom `contoh` boolean ditambahkan di tabel konten untuk menandai data contoh; `profil_desa` memakai `visi_misi_resmi`, `perangkat_resmi`, `alamat_wilayah`, `mata_pencaharian` (pengganti `status_*`); `aspirasi.dianonimkan_at` dan `apbdes_dokumen.keterangan_periode` ditambahkan; `agenda.waktu` bertipe `time`; seeder tidak mengisi pembiayaan APBDes (FE belum punya daftarnya, Fase 7). Tanpa paket baru. Controller belum disambungkan. 12 tes baru (total 76 lolos), `npm run build` lolos, `migrate:fresh --seed` dan rollback/migrate ulang di SQLite berhasil. **Belum diuji di MySQL** (tidak ada server MySQL di mesin ini). | (lihat git) |
+| 2026-11-03 | 2 | Login email atau username (`Auth::attempt` + `aktif`, regenerasi sesi, "ingat saya", `terakhir_masuk_at`); pembatas percobaan per (login + IP) lewat `RateLimiter`: 5 gagal dalam 15 menit mengunci login (nilai di `config/desa.php`), pesan gagal tetap umum, hitungan direset saat berhasil; `throttle:30,1` di rute sebagai pembatas kasar. Logout (`invalidate` + `regenerateToken`). Lupa kata sandi lewat broker `Password`: tautan hanya dikirim ke akun **aktif**, respons selalu sama; email Bahasa Indonesia (`ResetPassword::toMailUsing`/`createUrlUsing` di `AppServiceProvider`), berlaku 60 menit; halaman baru `atur-ulang-kata-sandi` (rute `admin.password.reset`/`password.update`); token sekali pakai, akun nonaktif ditolak. Kebijakan kata sandi: min. 10 karakter, tidak sama dengan email, konfirmasi. Middleware `guest` untuk masuk/lupa/atur ulang, `auth` + `PastikanAkunAktif` (akun yang dinonaktifkan langsung keluar) untuk semua `/admin/*` lainnya; tamu diarahkan ke `admin.login`. Jalan pintas login lokal dihapus; nama pengguna di layout admin kini dari akun yang masuk. Tiga FormRequest di `app/Http/Requests/Admin`. Tes: `Fase2AutentikasiTest` (17), tes admin lama disesuaikan agar login lewat `tests/Concerns/MasukSebagaiAdmin`, `Fase8AdminTest` ditulis ulang (tes login-demo diganti tes sungguhan). Total 91 tes lolos, `npm run build` lolos. Catatan: `?peran=` dan `DemoContent::admin()` untuk peran masih ada sampai Fase 3; SMTP belum dikonfigurasi (`MAIL_MAILER=log` di lokal), pengiriman email sungguhan belum diuji; tombol Keluar di UI memakai rute yang sama (POST `admin.logout`). | (lihat git) |

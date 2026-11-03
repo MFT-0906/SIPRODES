@@ -2,38 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\AturUlangKataSandiRequest;
+use App\Http\Requests\Admin\LupaKataSandiRequest;
+use App\Http\Requests\Admin\MasukRequest;
+use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class AdminAuthController extends Controller
 {
-    // TODO(backend): autentikasi sungguhan (guard, penguncian akun setelah gagal berulang, kirim email atur ulang).
+    private const PESAN_GAGAL = 'Email/username atau kata sandi tidak sesuai. Silakan coba lagi.';
 
     public function login(): View
     {
         return view('pages.admin.login');
     }
 
-    public function masuk(Request $request): RedirectResponse
+    public function masuk(MasukRequest $request): RedirectResponse
     {
-        $request->validate([
-            'login' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'max:255'],
-        ], [
-            'login.required' => 'Email atau username wajib diisi.',
-            'password.required' => 'Kata sandi wajib diisi.',
-        ]);
+        $kunci = $this->kunciPercobaan($request);
+        $maks = (int) config('desa.auth.percobaan_maks');
 
-        // Hanya untuk meninjau tampilan: di lokal, formulir yang lengkap membuka dashboard.
-        // Di lingkungan lain selalu gagal dengan pesan umum (tidak membocorkan akun mana yang ada).
-        if (app()->environment('local')) {
-            return redirect()->route('admin.dashboard');
+        // Penguncian berlaku per (login + IP) dan tidak bergantung pada ada-tidaknya akun.
+        if (RateLimiter::tooManyAttempts($kunci, $maks)) {
+            $menit = (int) ceil(RateLimiter::availableIn($kunci) / 60);
+
+            return back()
+                ->withInput($request->only('login'))
+                ->with('gagal_masuk', "Terlalu banyak percobaan masuk. Coba lagi dalam {$menit} menit.");
         }
 
-        return back()
-            ->withInput($request->only('login'))
-            ->with('gagal_masuk', 'Email/username atau kata sandi tidak sesuai. Silakan coba lagi.');
+        $login = trim($request->string('login')->toString());
+        $kolom = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $berhasil = Auth::attempt(
+            [$kolom => $login, 'password' => $request->string('password')->toString(), 'aktif' => true],
+            $request->boolean('ingat'),
+        );
+
+        if (! $berhasil) {
+            RateLimiter::hit($kunci, (int) config('desa.auth.kunci_menit') * 60);
+
+            // Pesan umum: tidak membocorkan akun mana yang ada atau nonaktif.
+            return back()->withInput($request->only('login'))->with('gagal_masuk', self::PESAN_GAGAL);
+        }
+
+        RateLimiter::clear($kunci);
+        $request->session()->regenerate();
+        $request->user()->forceFill(['terakhir_masuk_at' => now()])->save();
+
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     public function lupa(): View
@@ -41,20 +65,65 @@ class AdminAuthController extends Controller
         return view('pages.admin.lupa-kata-sandi');
     }
 
-    public function kirimTautan(Request $request): RedirectResponse
+    public function kirimTautan(LupaKataSandiRequest $request): RedirectResponse
     {
-        $request->validate(
-            ['email' => ['required', 'email', 'max:255']],
-            ['email.required' => 'Email wajib diisi.', 'email.email' => 'Format email belum benar.'],
-        );
+        $email = $request->string('email')->toString();
 
-        // TODO(backend): kirim tautan hanya bila email terdaftar; respons tetap sama untuk email terdaftar/tidak.
+        // Hanya akun aktif yang dikirimi tautan; respons selalu sama agar email terdaftar tidak terbongkar.
+        if (User::query()->where('email', $email)->where('aktif', true)->exists()) {
+            Password::sendResetLink(['email' => $email]);
+        }
+
         return back()->with('tautan_terkirim', true);
     }
 
-    public function keluar(): RedirectResponse
+    public function formAturUlang(Request $request, string $token): View
     {
-        // TODO(backend): akhiri sesi pengguna.
+        return view('pages.admin.atur-ulang-kata-sandi', [
+            'token' => $token,
+            'email' => (string) $request->query('email', ''),
+        ]);
+    }
+
+    public function aturUlang(AturUlangKataSandiRequest $request): RedirectResponse
+    {
+        $email = $request->string('email')->toString();
+        $akunAktif = User::query()->where('email', $email)->where('aktif', true)->exists();
+
+        $status = $akunAktif
+            ? Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function (User $user, string $kataSandi): void {
+                    $user->forceFill([
+                        'password' => $kataSandi,
+                        'remember_token' => Str::random(60),
+                    ])->save();
+
+                    event(new PasswordReset($user));
+                },
+            )
+            : Password::INVALID_TOKEN;
+
+        if ($status !== Password::PASSWORD_RESET) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Tautan atur ulang tidak valid atau sudah kedaluwarsa. Minta tautan baru.']);
+        }
+
+        return redirect()->route('admin.login')->with('status_masuk', 'Kata sandi berhasil diubah. Silakan masuk dengan kata sandi baru.');
+    }
+
+    public function keluar(Request $request): RedirectResponse
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('admin.login');
+    }
+
+    private function kunciPercobaan(Request $request): string
+    {
+        return Str::transliterate(Str::lower($request->string('login')->toString()).'|'.$request->ip());
     }
 }

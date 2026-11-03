@@ -11,12 +11,15 @@
             <p class="type-body-sm text-muted">Khusus perangkat desa yang memiliki akun.</p>
         </div>
 
+        @if (session('status_masuk'))
+            <x-ui.alert tone="sukses">{{ session('status_masuk') }}</x-ui.alert>
+        @endif
+
         {{-- Pesan gagal bersifat umum: tidak menyebut apakah email atau kata sandi yang salah. --}}
         @if (session('gagal_masuk'))
             <x-ui.alert tone="bahaya">{{ session('gagal_masuk') }}</x-ui.alert>
         @endif
 
-        {{-- TODO(backend): autentikasi, penguncian sementara setelah beberapa kali gagal. --}}
         <form method="post" action="{{ route('admin.login.store') }}" class="flex flex-col gap-5" novalidate>
             @csrf
             <x-ui.field

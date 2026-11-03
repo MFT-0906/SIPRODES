@@ -9,7 +9,6 @@
         <h1 class="type-h2 text-text">Lupa kata sandi?</h1>
         <p class="type-body-sm text-muted">Masukkan email akun Anda. Jika terdaftar, kami kirim tautan atur ulang kata sandi. Bila tidak menerima email, hubungi Super Admin desa.</p>
 
-        {{-- TODO(backend): kirim tautan hanya bila email terdaftar; pesan konfirmasi tetap sama. --}}
         <form method="post" action="{{ route('admin.password.email') }}" class="flex flex-col gap-[18px]" novalidate>
             @csrf
             <x-ui.field name="email" type="email" label="Email" required placeholder="nama@…" autocomplete="email" />
