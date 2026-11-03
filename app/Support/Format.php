@@ -73,6 +73,28 @@ class Format
     }
 
     /**
+     * Menormalkan nomor WhatsApp ke format internasional tanpa tanda plus (mis. 6281234567890) untuk tautan wa.me.
+     * Mengembalikan null bila bukan nomor seluler Indonesia yang masuk akal.
+     */
+    public static function nomorWa(?string $nomor): ?string
+    {
+        $digit = preg_replace('/\D/', '', (string) $nomor);
+
+        if ($digit === '') {
+            return null;
+        }
+
+        $digit = match (true) {
+            str_starts_with($digit, '62') => $digit,
+            str_starts_with($digit, '0') => '62'.substr($digit, 1),
+            str_starts_with($digit, '8') => '62'.$digit,
+            default => $digit,
+        };
+
+        return preg_match('/^628\d{8,12}$/', $digit) === 1 ? $digit : null;
+    }
+
+    /**
      * NIK disamarkan: hanya 4 digit terakhir yang terlihat. Aspirasi tidak pernah menampilkan NIK utuh.
      */
     public static function nikSamar(?string $nik): ?string

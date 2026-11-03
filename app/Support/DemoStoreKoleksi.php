@@ -5,36 +5,21 @@ namespace App\Support;
 use Illuminate\Support\Str;
 
 /**
- * Bawaan (data awal) koleksi demo untuk modul admin fase 10. Isinya mengikuti contoh di desain Figma
- * dan data placeholder publik; bukan data resmi desa.
+ * Bawaan (data awal) koleksi demo untuk modul yang belum memakai database (APBDes dan Aspirasi).
+ * Isinya mengikuti contoh di desain Figma; bukan data resmi desa.
  */
 class DemoStoreKoleksi
 {
-    // TODO(backend): hapus; data berasal dari database.
+    // TODO(backend): hapus; APBDes disambungkan di Fase 7 dan Aspirasi di Fase 9.
 
     /** @return list<array<string, mixed>> */
     public static function bawaan(string $kunci): array
     {
         return match ($kunci) {
-            'struktur' => self::struktur(),
             'apbdes' => self::apbdes(),
-            'komoditas' => self::komoditas(),
-            'kelompok' => self::kelompok(),
-            'umkm' => self::umkm(),
             'aspirasi' => self::aspirasi(),
             default => [],
         };
-    }
-
-    /** @return list<array<string, mixed>> */
-    private static function struktur(): array
-    {
-        return collect(DemoContent::profil()['perangkat']['daftar'])
-            ->values()
-            ->map(fn (array $p, int $i) => [
-                'id' => 'perangkat-'.($i + 1), 'nama' => $p['name'], 'jabatan' => $p['position'], 'tampil' => true,
-            ])
-            ->all();
     }
 
     /** @return list<array<string, mixed>> */
@@ -48,42 +33,6 @@ class DemoStoreKoleksi
                 'dokumen' => $t['dokumen'], 'status' => 'terbit',
             ])
             ->values()
-            ->all();
-    }
-
-    /** @return list<array<string, mixed>> */
-    private static function komoditas(): array
-    {
-        return collect(DemoContent::potensi()['komoditas'])
-            ->values()
-            ->map(fn (array $k, int $i) => [
-                'id' => 'komoditas-'.($i + 1), 'nama' => $k['nama'], 'musim_panen' => $k['musim_panen'],
-                'status' => 'terbit', 'deskripsi' => $k['deskripsi'],
-            ])
-            ->all();
-    }
-
-    /** @return list<array<string, mixed>> */
-    private static function kelompok(): array
-    {
-        return collect(DemoContent::potensi()['kelompok_tani']['daftar'])
-            ->values()
-            ->map(fn (array $k, int $i) => [
-                'id' => 'kelompok-'.($i + 1), 'nama' => $k['nama'], 'komoditas' => $k['komoditas'], 'dusun' => $k['dusun'],
-                'ketua' => null, 'kontak' => $k['kontak'], 'disetujui' => $k['kontak_disetujui'],
-            ])
-            ->all();
-    }
-
-    /** @return list<array<string, mixed>> */
-    private static function umkm(): array
-    {
-        return collect(DemoContent::potensi()['umkm']['daftar'])
-            ->values()
-            ->map(fn (array $u, int $i) => [
-                'id' => 'umkm-'.($i + 1), 'nama' => $u['name'], 'produk' => $u['products'], 'deskripsi' => $u['description'],
-                'whatsapp' => $u['whatsapp'], 'disetujui' => $u['whatsappApproved'], 'status' => 'terbit',
-            ])
             ->all();
     }
 

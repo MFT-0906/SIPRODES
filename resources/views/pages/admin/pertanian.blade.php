@@ -67,7 +67,7 @@
             <section id="form-komoditas" aria-labelledby="form-komoditas-judul" class="scroll-mt-24 rounded-[14px] border border-border bg-surface p-5 lg:p-6">
                 <h2 id="form-komoditas-judul" class="type-h3 mb-5 text-text">{{ $ubah ? 'Ubah Komoditas' : 'Tambah Komoditas' }}</h2>
                 <x-admin.galat class="mb-5" />
-                <form method="post" class="flex flex-col gap-5" action="{{ $ubah ? route('admin.pertanian.update', $item['id']) : route('admin.pertanian.store') }}">
+                <form method="post" enctype="multipart/form-data" class="flex flex-col gap-5" action="{{ $ubah ? route('admin.pertanian.update', $item['id']) : route('admin.pertanian.store') }}">
                     @csrf
                     @if ($ubah)
                         @method('put')
@@ -78,6 +78,16 @@
                         <x-ui.select name="status" label="Status" required :placeholder="null" :options="['draf' => 'Draf', 'terbit' => 'Terbit']" :selected="$item['status'] ?? 'draf'" />
                     </div>
                     <x-ui.field name="deskripsi" label="Deskripsi" multiline :rows="4" :value="$item['deskripsi'] ?? null" />
+                    <x-ui.checkbox name="unggulan" label="Tandai sebagai komoditas unggulan (tampil di Beranda)" :checked="$item['unggulan'] ?? false" />
+                    <div class="flex flex-col gap-3 rounded-[10px] border border-border p-4">
+                        <p class="type-label text-text">Foto komoditas</p>
+                        @if ($item['foto_url'] ?? null)
+                            <img src="{{ $item['foto_url'] }}" alt="{{ $item['alt'] }}" loading="lazy" class="max-h-40 rounded-[10px] border border-border object-cover">
+                            <x-ui.checkbox name="hapus_foto" label="Hapus foto saat disimpan" />
+                        @endif
+                        <x-ui.uploader name="foto" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" :hint="'Foto asli yang disetujui desa · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB'" />
+                        <x-ui.field name="alt" label="Teks alternatif foto" :value="$item['alt'] ?? null" help="Wajib diisi bila foto dipilih." />
+                    </div>
                     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                         <x-ui.button :href="route('admin.pertanian')" variant="ghost">Batal</x-ui.button>
                         <x-ui.button type="submit">Simpan</x-ui.button>

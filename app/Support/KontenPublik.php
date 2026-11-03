@@ -12,7 +12,6 @@ use App\Models\PerangkatDesa;
 use App\Models\ProfilDesa;
 use App\Models\Umkm;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Menyusun data situs publik dari database dalam bentuk yang dipakai template Blade.
@@ -126,6 +125,7 @@ class KontenPublik
                     'nama' => $unggulan->nama,
                     'deskripsi' => $unggulan->deskripsi ?? '',
                     'foto_keterangan' => $unggulan->foto_alt ?: 'Foto '.mb_strtolower($unggulan->nama),
+                    'foto' => UnggahBerkas::urlGambar($unggulan->foto_path),
                 ] : null,
                 'umkm' => Umkm::query()->terbit()->orderBy('nama')->limit(2)->get()->map(fn (Umkm $u) => $this->umkm($u))->all(),
             ],
@@ -180,11 +180,12 @@ class KontenPublik
                 'misi' => $misi !== [] ? $misi : ['Butir misi 1', 'Butir misi 2', 'Butir misi 3', 'Butir misi 4'],
             ],
             'perangkat' => [
-                'resmi' => (bool) $profil->perangkat_resmi && $perangkat->isNotEmpty() && $perangkat->every(fn (PerangkatDesa $p) => ! $p->contoh),
+                'resmi' => $perangkat->isNotEmpty() && $perangkat->every(fn (PerangkatDesa $p) => ! $p->contoh),
                 'daftar' => $perangkat->map(fn (PerangkatDesa $p) => [
                     'name' => $p->nama,
                     'position' => $p->jabatan->nama,
-                    'photo' => $p->foto_path ? Storage::disk('public')->url($p->foto_path) : null,
+                    'photo' => UnggahBerkas::urlGambar($p->foto_path),
+                    'photo_alt' => 'Foto '.$p->nama.', '.$p->jabatan->nama,
                 ])->all(),
             ],
             'lokasi' => [
@@ -222,6 +223,7 @@ class KontenPublik
                 'deskripsi' => $k->deskripsi ?? '',
                 'musim_panen' => $k->musim_panen,
                 'foto_keterangan' => $k->foto_alt ?: 'Foto '.mb_strtolower($k->nama),
+                'foto' => UnggahBerkas::urlGambar($k->foto_path),
                 'peluang' => [],
             ])->all(),
             'kelompok_tani' => [
@@ -258,6 +260,9 @@ class KontenPublik
             'description' => $u->deskripsi ?? '',
             'whatsapp' => $wa,
             'whatsappApproved' => $wa !== null,
+            // Foto produk dan WhatsApp memakai satu persetujuan pemilik usaha.
+            'image' => $u->whatsapp_disetujui ? UnggahBerkas::urlGambar($u->foto_path) : null,
+            'imageAlt' => $u->foto_alt ?: 'Foto produk '.$u->nama,
         ];
     }
 

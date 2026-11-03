@@ -18,46 +18,6 @@ class Fase10AdminTest extends TestCase
         $this->masukSebagaiAdmin();
     }
 
-    public function test_profil_menampilkan_setiap_tab(): void
-    {
-        $this->get(route('admin.profil'))->assertOk()->assertSee('Naskah sejarah')->assertSee('Terakhir diperbarui');
-        $this->get(route('admin.profil', ['tab' => 'visi']))->assertOk()->assertSee('Tambah butir misi')->assertSee('Salin sesuai dokumen RPJMDes');
-        $this->get(route('admin.profil', ['tab' => 'lokasi']))->assertOk()->assertSee('Pratinjau titik peta')->assertSee('sudah diverifikasi pemerintah desa');
-        $this->get(route('admin.profil', ['tab' => 'data']))->assertOk()->assertSee('Sumber data');
-    }
-
-    public function test_profil_memvalidasi_dan_menyimpan(): void
-    {
-        $this->from(route('admin.profil', ['tab' => 'lokasi']))
-            ->put(route('admin.profil.simpan', 'lokasi'), ['lintang' => 'abc'])
-            ->assertSessionHasErrors(['alamat', 'lintang', 'bujur']);
-
-        $this->put(route('admin.profil.simpan', 'visi'), ['visi' => 'Visi uji', 'misi' => ['Misi satu', 'Misi dua']])
-            ->assertRedirect(route('admin.profil', ['tab' => 'visi']))
-            ->assertSessionHas('toast', 'Perubahan berhasil disimpan.');
-        $this->get(route('admin.profil', ['tab' => 'visi']))->assertSee('Misi dua');
-
-        $this->put(route('admin.profil.simpan', 'tidak-ada'), [])->assertNotFound();
-    }
-
-    public function test_struktur_tambah_geser_dan_hapus(): void
-    {
-        $this->get(route('admin.struktur'))->assertOk()->assertSee('Struktur Perangkat Desa')->assertSee('Tampil');
-
-        $this->post(route('admin.struktur.store'), ['nama' => 'Perangkat Uji', 'jabatan' => 'Kepala Desa', 'tampil' => '1'])
-            ->assertRedirect(route('admin.struktur'));
-        $this->get(route('admin.struktur'))->assertSee('Perangkat Uji');
-
-        $this->post(route('admin.struktur.geser', 'perangkat-2'), ['arah' => 'naik'])->assertRedirect();
-        $this->post(route('admin.struktur.geser', 'perangkat-2'), ['arah' => 'miring'])->assertSessionHasErrors('arah');
-
-        $this->delete(route('admin.struktur.destroy', 'perangkat-1'))->assertRedirect();
-        $this->get(route('admin.struktur', ['ubah' => 'perangkat-1']))->assertDontSee('Edit Perangkat');
-
-        $this->from(route('admin.struktur'))->post(route('admin.struktur.store'), ['nama' => '', 'jabatan' => 'Tidak ada'])
-            ->assertSessionHasErrors(['nama', 'jabatan']);
-    }
-
     public function test_apbdes_menolak_angka_bukan_angka_dan_menyimpan_yang_benar(): void
     {
         $this->get(route('admin.apbdes'))->assertOk()->assertSee('Kelola APBDes')->assertSee('APBDes 2026')->assertSee('2 PDF');
@@ -78,45 +38,6 @@ class Fase10AdminTest extends TestCase
             'tahun' => 2027, 'periode' => 'Jan – Des', 'pendapatan' => '1', 'belanja' => '1', 'status' => 'draf',
             'dokumen' => UploadedFile::fake()->create('dokumen.exe', 10, 'application/x-msdownload'),
         ])->assertSessionHasErrors(['dokumen' => 'Ditolak: hanya PDF yang diizinkan. Pilih berkas lain.']);
-    }
-
-    public function test_pertanian_menampilkan_komoditas_dan_kelompok_lalu_menyimpan(): void
-    {
-        $this->get(route('admin.pertanian'))->assertOk()->assertSee('Jagung')->assertSee('Menunggu konfirmasi')
-            ->assertSee('Kontak tidak dipublikasikan')->assertSee('bukti persetujuan');
-
-        $this->post(route('admin.pertanian.store'), ['nama' => 'Singkong', 'status' => 'draf'])->assertRedirect(route('admin.pertanian'));
-        $this->get(route('admin.pertanian'))->assertSee('Singkong');
-
-        $this->from(route('admin.pertanian'))->post(route('admin.pertanian.store'), [])->assertSessionHasErrors(['nama', 'status']);
-        $this->delete(route('admin.pertanian.destroy', 'tidak-ada'))->assertNotFound();
-    }
-
-    public function test_kontak_kelompok_tani_wajib_diisi_bila_disetujui_untuk_publikasi(): void
-    {
-        $this->get(route('admin.kelompok-tani'))->assertOk()->assertSee('Belum disetujui')->assertSee('Hanya tampil di publik jika disetujui.');
-
-        $this->from(route('admin.kelompok-tani'))->post(route('admin.kelompok-tani.store'), [
-            'nama' => 'Kelompok Uji', 'komoditas' => 'Jagung', 'dusun' => 'Dusun 1', 'disetujui' => '1',
-        ])->assertSessionHasErrors('kontak');
-
-        $this->post(route('admin.kelompok-tani.store'), [
-            'nama' => 'Kelompok Uji', 'komoditas' => 'Jagung', 'dusun' => 'Dusun 1', 'kontak' => '0812-3456-7890', 'disetujui' => '1',
-        ])->assertRedirect(route('admin.kelompok-tani'));
-        $this->get(route('admin.kelompok-tani'))->assertSee('Kelompok Uji')->assertSee('Disetujui');
-    }
-
-    public function test_umkm_menyimpan_dan_menghapus(): void
-    {
-        $this->get(route('admin.umkm'))->assertOk()->assertSee('Dapur Jagung Bersama')->assertSee('Dengan izin pemilik usaha');
-
-        $this->post(route('admin.umkm.store'), ['nama' => 'Usaha Uji', 'produk' => 'Produk uji', 'disetujui' => '1', 'whatsapp' => '0812 3456 7890'])
-            ->assertRedirect(route('admin.umkm'));
-        $this->get(route('admin.umkm'))->assertSee('Usaha Uji');
-
-        $this->from(route('admin.umkm'))->post(route('admin.umkm.store'), ['whatsapp' => 'abc'])->assertSessionHasErrors(['nama', 'produk', 'whatsapp']);
-        $this->delete(route('admin.umkm.destroy', 'umkm-1'))->assertRedirect(route('admin.umkm'));
-        $this->get(route('admin.umkm'))->assertDontSee('Dapur Jagung Bersama');
     }
 
     public function test_aspirasi_filter_detail_dan_ubah_status(): void

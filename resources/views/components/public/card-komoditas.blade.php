@@ -1,8 +1,11 @@
-@props(['nama', 'deskripsi', 'unggulan' => false, 'musimPanen' => null, 'fotoKeterangan' => 'Foto komoditas', 'peluang' => []])
+@props(['nama', 'deskripsi', 'unggulan' => false, 'musimPanen' => null, 'fotoKeterangan' => 'Foto komoditas', 'foto' => null, 'peluang' => []])
 
 <article {{ $attributes->class(['flex flex-col overflow-hidden rounded-[14px] border border-border bg-surface']) }}>
-    {{-- TODO: ganti dengan foto asli yang disetujui desa (bukan foto AI/stok). --}}
-    <x-ui.image-placeholder :caption="$fotoKeterangan" class="h-[180px] w-full" />
+    @if ($foto)
+        <img src="{{ $foto }}" alt="{{ $fotoKeterangan }}" loading="lazy" class="h-[180px] w-full object-cover">
+    @else
+        <x-ui.image-placeholder :caption="$fotoKeterangan" class="h-[180px] w-full" />
+    @endif
 
     <div class="flex flex-1 flex-col gap-2.5 p-5">
         <div class="flex flex-wrap items-center gap-2">

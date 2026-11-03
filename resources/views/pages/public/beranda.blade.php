@@ -76,7 +76,11 @@
                 @php $unggulan = $content['potensi']['unggulan']; @endphp
                 @if ($unggulan)
                 <article class="flex flex-col overflow-hidden rounded-card bg-primary-dark">
-                    <x-ui.image-placeholder :caption="$unggulan['foto_keterangan']" class="h-[220px]" />
+                    @if ($unggulan['foto'])
+                        <img src="{{ $unggulan['foto'] }}" alt="{{ $unggulan['foto_keterangan'] }}" loading="lazy" class="h-[220px] w-full object-cover">
+                    @else
+                        <x-ui.image-placeholder :caption="$unggulan['foto_keterangan']" class="h-[220px]" />
+                    @endif
                     <div class="flex flex-1 flex-col items-start gap-3 p-6 lg:p-7">
                         <x-ui.badge tone="aksen">{{ $unggulan['badge'] }}</x-ui.badge>
                         <h3 class="type-h1 text-surface">{{ $unggulan['nama'] }}</h3>
@@ -95,7 +99,7 @@
                         @forelse ($content['potensi']['umkm'] as $usaha)
                             <x-ui.card-umkm
                                 :name="$usaha['name']" :products="$usaha['products']" :description="$usaha['description']"
-                                :whatsapp="$usaha['whatsapp']" :whatsapp-approved="$usaha['whatsappApproved']"
+                                :whatsapp="$usaha['whatsapp']" :whatsapp-approved="$usaha['whatsappApproved']" :image="$usaha['image']" :image-alt="$usaha['imageAlt']"
                             />
                         @empty
                             <p class="type-body text-muted sm:col-span-2">Belum ada usaha warga yang dipublikasikan.</p>

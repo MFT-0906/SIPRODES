@@ -2,77 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\DemoStore;
+use App\Enums\StatusTerbit;
+use App\Http\Requests\Admin\SimpanKelompokTaniRequest;
+use App\Http\Requests\Admin\SimpanKomoditasRequest;
+use App\Http\Requests\Admin\SimpanUmkmRequest;
+use App\Models\Dusun;
+use App\Models\KelompokTani;
+use App\Models\Komoditas;
+use App\Models\Umkm;
+use App\Support\Format;
+use App\Support\UnggahBerkas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
- * Admin Potensi: komoditas (Potensi Pertanian), Kelompok Tani, dan UMKM.
+ * Admin Potensi: komoditas (Potensi Pertanian), Kelompok Tani, dan UMKM. Rute dilindungi middleware `modul:potensi`.
+ * Kontak kelompok tani, WhatsApp, dan foto UMKM hanya tampil di publik bila persetujuan dicentang.
  */
 class AdminPotensiController extends Controller
 {
-    // TODO(backend): penyimpanan foto dan data ke database.
-    // Kontak kelompok tani, WhatsApp, dan foto UMKM hanya tampil di publik bila persetujuan dicentang.
-
-    private const PESAN = [
-        'required' => ':attribute wajib diisi.',
-        'max' => ':attribute terlalu panjang (maksimal :max karakter).',
-        'in' => ':attribute tidak dikenal.',
-        'regex' => ':attribute belum berupa nomor telepon yang benar.',
-        'mimes' => 'Foto harus berformat JPG, PNG, atau WebP.',
-        'required_if' => ':attribute wajib diisi bila dicentang untuk publikasi.',
-    ];
-
-    private const TELEPON = ['nullable', 'regex:/^[0-9 +\-]{8,20}$/'];
-
     // ---- Potensi Pertanian (komoditas) ------------------------------------------------------
 
     public function pertanian(Request $request): View
     {
-        $semua = collect(DemoStore::daftar('komoditas'));
         $status = in_array($request->query('status'), ['terbit', 'draf'], true) ? $request->query('status') : 'semua';
-        $kata = trim((string) $request->query('q', ''));
+        $kata = mb_substr(trim((string) $request->query('q', '')), 0, 100);
 
-        $komoditas = $semua
-            ->when($status !== 'semua', fn ($c) => $c->where('status', $status))
-            ->when($kata !== '', fn ($c) => $c->filter(fn (array $k) => str_contains(mb_strtolower($k['nama']), mb_strtolower($kata))))
-            ->values();
+        $komoditas = Komoditas::query()
+            ->when($status !== 'semua', fn ($q) => $q->where('status', $status))
+            ->cari(['nama'], $kata)
+            ->orderBy('nama')->orderBy('id')->get();
+
+        $ubah = $request->filled('ubah') ? Komoditas::query()->find($request->query('ubah')) : null;
 
         return view('pages.admin.pertanian', [
-            'komoditas' => $komoditas,
-            'kelompok' => DemoStore::daftar('kelompok'),
-            'item' => DemoStore::item('komoditas', $request->query('ubah')),
+            'komoditas' => $komoditas->map(fn (Komoditas $k) => $this->larikKomoditas($k)),
+            'kelompok' => KelompokTani::query()->with(['komoditas', 'dusun'])->orderBy('nama')->get()
+                ->map(fn (KelompokTani $g) => $this->larikKelompok($g))->all(),
+            'item' => $ubah ? $this->larikKomoditas($ubah) : null,
             'tambah' => $request->boolean('tambah'),
             'disaring' => $status !== 'semua' || $kata !== '',
-            'ada' => $semua->isNotEmpty(),
+            'ada' => Komoditas::query()->exists(),
         ]);
     }
 
-    public function komoditasSimpan(Request $request, ?string $id = null): RedirectResponse
+    public function komoditasSimpan(SimpanKomoditasRequest $request, ?int $id = null): RedirectResponse
     {
-        abort_if($id !== null && DemoStore::item('komoditas', $id) === null, 404);
+        $komoditas = $id === null ? new Komoditas : Komoditas::query()->findOrFail($id);
+        $fotoLama = $komoditas->foto_path;
 
-        $valid = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'musim_panen' => ['nullable', 'string', 'max:100'],
-            'status' => ['required', 'in:draf,terbit'],
-            'deskripsi' => ['nullable', 'string', 'max:1000'],
-        ], self::PESAN, ['nama' => 'Nama komoditas', 'musim_panen' => 'Musim panen', 'status' => 'Status']);
+        $komoditas->nama = $request->string('nama')->toString();
+        $komoditas->musim_panen = $request->filled('musim_panen') ? $request->string('musim_panen')->toString() : null;
+        $komoditas->deskripsi = $request->filled('deskripsi') ? $request->string('deskripsi')->toString() : null;
+        $komoditas->status = StatusTerbit::from($request->string('status')->toString());
+        $komoditas->unggulan = $request->boolean('unggulan');
+        $komoditas->contoh = false;
+        $this->isiFoto($komoditas, $request, 'komoditas');
+        $komoditas->save();
 
-        DemoStore::simpan('komoditas', [
-            'nama' => $valid['nama'], 'musim_panen' => $valid['musim_panen'] ?? null,
-            'status' => $valid['status'], 'deskripsi' => $valid['deskripsi'] ?? null,
-        ], $id);
+        if ($fotoLama && $fotoLama !== $komoditas->foto_path) {
+            UnggahBerkas::hapusGambar($fotoLama);
+        }
 
         return redirect()->route('admin.pertanian')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
-    public function komoditasHapus(string $id): RedirectResponse
+    public function komoditasHapus(int $id): RedirectResponse
     {
-        abort_if(DemoStore::item('komoditas', $id) === null, 404);
-        DemoStore::hapus('komoditas', $id);
+        $komoditas = Komoditas::query()->findOrFail($id);
+        $foto = $komoditas->foto_path;
+        $komoditas->delete();
+        UnggahBerkas::hapusGambar($foto);
 
         return redirect()->route('admin.pertanian')->with('toast', 'Komoditas berhasil dihapus.');
     }
@@ -81,45 +82,37 @@ class AdminPotensiController extends Controller
 
     public function kelompok(Request $request): View
     {
-        $kata = trim((string) $request->query('q', ''));
-        $daftar = collect(DemoStore::daftar('kelompok'))
-            ->when($kata !== '', fn ($c) => $c->filter(fn (array $k) => str_contains(mb_strtolower($k['nama']), mb_strtolower($kata))))
-            ->values();
+        $kata = mb_substr(trim((string) $request->query('q', '')), 0, 100);
+        $daftar = KelompokTani::query()->with(['komoditas', 'dusun'])->cari(['nama', 'ketua'], $kata)->orderBy('nama')->get();
+        $ubah = $request->filled('ubah') ? KelompokTani::query()->with(['komoditas', 'dusun'])->find($request->query('ubah')) : null;
 
         return view('pages.admin.kelompok-tani', [
-            'daftar' => $daftar,
-            'item' => DemoStore::item('kelompok', $request->query('ubah')),
-            'komoditas' => collect(DemoStore::daftar('komoditas'))->pluck('nama')->all(),
-            'dusun' => $this->dusun(),
+            'daftar' => $daftar->map(fn (KelompokTani $g) => $this->larikKelompok($g)),
+            'item' => $ubah ? $this->larikKelompok($ubah) : null,
+            'komoditas' => Komoditas::query()->orderBy('nama')->pluck('nama', 'id')->all(),
+            'dusun' => Dusun::query()->orderBy('urutan')->pluck('nama', 'id')->all(),
         ]);
     }
 
-    public function kelompokSimpan(Request $request, ?string $id = null): RedirectResponse
+    public function kelompokSimpan(SimpanKelompokTaniRequest $request, ?int $id = null): RedirectResponse
     {
-        abort_if($id !== null && DemoStore::item('kelompok', $id) === null, 404);
+        $kelompok = $id === null ? new KelompokTani : KelompokTani::query()->findOrFail($id);
 
-        $valid = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'komoditas' => ['required', Rule::in(collect(DemoStore::daftar('komoditas'))->pluck('nama')->all())],
-            'dusun' => ['required', Rule::in($this->dusun())],
-            'ketua' => ['nullable', 'string', 'max:100'],
-            'kontak' => ['required_if:disetujui,1', ...self::TELEPON],
-            'disetujui' => ['nullable', 'boolean'],
-        ], self::PESAN, ['nama' => 'Nama kelompok', 'komoditas' => 'Komoditas', 'dusun' => 'Dusun', 'kontak' => 'Nomor kontak', 'ketua' => 'Nama ketua']);
-
-        DemoStore::simpan('kelompok', [
-            'nama' => $valid['nama'], 'komoditas' => $valid['komoditas'], 'dusun' => $valid['dusun'],
-            'ketua' => $valid['ketua'] ?? null, 'kontak' => $valid['kontak'] ?? null,
-            'disetujui' => (bool) ($valid['disetujui'] ?? false),
-        ], $id);
+        $kelompok->nama = $request->string('nama')->toString();
+        $kelompok->komoditas_id = $request->integer('komoditas');
+        $kelompok->dusun_id = $request->integer('dusun');
+        $kelompok->ketua = $request->filled('ketua') ? $request->string('ketua')->toString() : null;
+        $kelompok->kontak = $request->filled('kontak') ? $request->string('kontak')->toString() : null;
+        $kelompok->kontak_disetujui = $request->boolean('disetujui');
+        $kelompok->contoh = false;
+        $kelompok->save();
 
         return redirect()->route('admin.kelompok-tani')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
-    public function kelompokHapus(string $id): RedirectResponse
+    public function kelompokHapus(int $id): RedirectResponse
     {
-        abort_if(DemoStore::item('kelompok', $id) === null, 404);
-        DemoStore::hapus('kelompok', $id);
+        KelompokTani::query()->findOrFail($id)->delete();
 
         return redirect()->route('admin.kelompok-tani')->with('toast', 'Kelompok tani berhasil dihapus.');
     }
@@ -128,53 +121,94 @@ class AdminPotensiController extends Controller
 
     public function umkm(Request $request): View
     {
-        $kata = trim((string) $request->query('q', ''));
-        $daftar = collect(DemoStore::daftar('umkm'))
-            ->when($kata !== '', fn ($c) => $c->filter(fn (array $u) => str_contains(mb_strtolower($u['nama']), mb_strtolower($kata))))
-            ->values();
+        $kata = mb_substr(trim((string) $request->query('q', '')), 0, 100);
+        $daftar = Umkm::query()->cari(['nama', 'produk'], $kata)->orderBy('nama')->orderBy('id')->get();
+        $ubah = $request->filled('ubah') ? Umkm::query()->find($request->query('ubah')) : null;
 
         return view('pages.admin.umkm', [
-            'daftar' => $daftar,
-            'item' => DemoStore::item('umkm', $request->query('ubah')),
+            'daftar' => $daftar->map(fn (Umkm $u) => $this->larikUmkm($u)),
+            'item' => $ubah ? $this->larikUmkm($ubah) : null,
             'tambah' => $request->boolean('tambah'),
         ]);
     }
 
-    public function umkmSimpan(Request $request, ?string $id = null): RedirectResponse
+    public function umkmSimpan(SimpanUmkmRequest $request, ?int $id = null): RedirectResponse
     {
-        abort_if($id !== null && DemoStore::item('umkm', $id) === null, 404);
+        $umkm = $id === null ? new Umkm : Umkm::query()->findOrFail($id);
+        $fotoLama = $umkm->foto_path;
 
-        $valid = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'produk' => ['required', 'string', 'max:150'],
-            'deskripsi' => ['nullable', 'string', 'max:300'],
-            'whatsapp' => self::TELEPON,
-            'disetujui' => ['nullable', 'boolean'],
-            // TODO(backend): periksa isi berkas, batas ukuran, dan simpan foto; tampil di publik hanya bila disetujui.
-            'foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp'],
-        ], self::PESAN, ['nama' => 'Nama usaha', 'produk' => 'Produk', 'deskripsi' => 'Deskripsi', 'whatsapp' => 'Nomor WhatsApp']);
+        $umkm->nama = $request->string('nama')->toString();
+        $umkm->produk = $request->string('produk')->toString();
+        $umkm->deskripsi = $request->filled('deskripsi') ? $request->string('deskripsi')->toString() : null;
+        $umkm->whatsapp = Format::nomorWa($request->input('whatsapp'));
+        $umkm->whatsapp_disetujui = $request->boolean('disetujui');
+        $umkm->status = StatusTerbit::from($request->input('status') ?: ($umkm->exists ? $umkm->status->value : 'terbit'));
+        $umkm->contoh = false;
+        $this->isiFoto($umkm, $request, 'umkm');
+        $umkm->save();
 
-        DemoStore::simpan('umkm', [
-            'nama' => $valid['nama'], 'produk' => $valid['produk'], 'deskripsi' => $valid['deskripsi'] ?? null,
-            'whatsapp' => $valid['whatsapp'] ?? null, 'disetujui' => (bool) ($valid['disetujui'] ?? false),
-            'status' => DemoStore::item('umkm', $id)['status'] ?? 'terbit',
-        ], $id);
+        if ($fotoLama && $fotoLama !== $umkm->foto_path) {
+            UnggahBerkas::hapusGambar($fotoLama);
+        }
 
         return redirect()->route('admin.umkm')->with('toast', 'Perubahan berhasil disimpan.');
     }
 
-    public function umkmHapus(string $id): RedirectResponse
+    public function umkmHapus(int $id): RedirectResponse
     {
-        abort_if(DemoStore::item('umkm', $id) === null, 404);
-        DemoStore::hapus('umkm', $id);
+        $umkm = Umkm::query()->findOrFail($id);
+        $foto = $umkm->foto_path;
+        $umkm->delete();
+        UnggahBerkas::hapusGambar($foto);
 
         return redirect()->route('admin.umkm')->with('toast', 'UMKM berhasil dihapus.');
     }
 
-    /** @return list<string> */
-    private function dusun(): array
+    // ---- Pembantu -----------------------------------------------------------------------------
+
+    /**
+     * Foto + alt untuk model dengan kolom foto_path/foto_alt. Alt tetap wajib selama foto dipertahankan.
+     */
+    private function isiFoto(Komoditas|Umkm $model, Request $request, string $folder): void
     {
-        // TODO(backend): daftar dusun resmi dari data master desa (jumlah dusun: 6, perlu verifikasi).
-        return array_map(fn (int $n) => 'Dusun '.$n, range(1, 6));
+        if ($request->hasFile('foto')) {
+            $model->foto_path = UnggahBerkas::simpanGambar($request->file('foto'), $folder);
+            $model->foto_alt = $request->string('alt')->toString();
+        } elseif ($request->boolean('hapus_foto')) {
+            $model->foto_path = null;
+            $model->foto_alt = null;
+        } elseif ($model->foto_path && $request->filled('alt')) {
+            $model->foto_alt = $request->string('alt')->toString();
+        }
+    }
+
+    /** @return array<string, mixed> */
+    private function larikKomoditas(Komoditas $k): array
+    {
+        return [
+            'id' => $k->id, 'nama' => $k->nama, 'musim_panen' => $k->musim_panen, 'status' => $k->status->value,
+            'deskripsi' => $k->deskripsi, 'unggulan' => $k->unggulan, 'alt' => $k->foto_alt,
+            'foto_url' => UnggahBerkas::urlGambar($k->foto_path),
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function larikKelompok(KelompokTani $g): array
+    {
+        return [
+            'id' => $g->id, 'nama' => $g->nama, 'komoditas' => $g->komoditas?->nama ?? '—', 'komoditas_id' => $g->komoditas_id,
+            'dusun' => $g->dusun?->nama, 'dusun_id' => $g->dusun_id, 'ketua' => $g->ketua, 'kontak' => $g->kontak,
+            'disetujui' => $g->kontak_disetujui,
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function larikUmkm(Umkm $u): array
+    {
+        return [
+            'id' => $u->id, 'nama' => $u->nama, 'produk' => $u->produk, 'deskripsi' => $u->deskripsi, 'whatsapp' => $u->whatsapp,
+            'disetujui' => $u->whatsapp_disetujui, 'status' => $u->status->value, 'alt' => $u->foto_alt,
+            'foto_url' => UnggahBerkas::urlGambar($u->foto_path),
+        ];
     }
 }

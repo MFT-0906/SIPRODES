@@ -97,7 +97,7 @@
                         {{-- Di HP hanya 4 perangkat pertama tampil; sisanya dibuka lewat tombol "Lihat semua perangkat". --}}
                         <div @if ($loop->index >= 4) class="max-md:hidden" x-bind:class="{ 'max-md:block!': semua }" @endif>
                             <x-ui.card-official
-                                :name="$perangkat['name']" :position="$perangkat['position']" :photo="$perangkat['photo']"
+                                :name="$perangkat['name']" :position="$perangkat['position']" :photo="$perangkat['photo']" :photo-alt="$perangkat['photo_alt']"
                                 class="h-full"
                             />
                         </div>

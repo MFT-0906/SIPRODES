@@ -18,29 +18,35 @@ class PublicPageController extends Controller
 {
     private const BERITA_PER_HALAMAN = 4;
 
-    public function __construct(private readonly KontenPublik $konten) {}
+    /**
+     * Diambil per permintaan (scoped) agar data profil tidak basi pada instance controller yang dipakai ulang.
+     */
+    private function konten(): KontenPublik
+    {
+        return app(KontenPublik::class);
+    }
 
     public function home(): View
     {
         return view('pages.public.beranda', [
-            'content' => $this->konten->beranda(),
-            'statistik' => $this->konten->statistik(),
-            'identitas' => $this->konten->identitas(),
+            'content' => $this->konten()->beranda(),
+            'statistik' => $this->konten()->statistik(),
+            'identitas' => $this->konten()->identitas(),
         ]);
     }
 
     public function profil(): View
     {
         return view('pages.public.profil', [
-            'content' => $this->konten->profil(),
-            'identitas' => $this->konten->identitas(),
+            'content' => $this->konten()->profil(),
+            'identitas' => $this->konten()->identitas(),
         ]);
     }
 
     public function apbdes(Request $request): View
     {
         try {
-            $tersedia = $this->konten->tahunApbdes();
+            $tersedia = $this->konten()->tahunApbdes();
 
             if ($tersedia === []) {
                 return view('pages.public.apbdes-kosong');
@@ -56,7 +62,7 @@ class PublicPageController extends Controller
                 'pengantar' => 'Ringkasan Anggaran Pendapatan dan Belanja Desa (APBDes) Marga Agung beserta dokumen resminya. Seluruh angka bersumber dari dokumen APBDes yang telah ditetapkan.',
                 'tahunTersedia' => $tersedia,
                 'tahun' => $tahun,
-                'data' => $this->konten->apbdes($tahun),
+                'data' => $this->konten()->apbdes($tahun),
             ]);
         } catch (QueryException $e) {
             report($e);
@@ -68,7 +74,7 @@ class PublicPageController extends Controller
     public function potensi(Request $request): View
     {
         $kata = mb_substr(trim((string) $request->query('q', '')), 0, 100);
-        $content = $this->konten->potensi($kata);
+        $content = $this->konten()->potensi($kata);
 
         $umkm = Umkm::query()->terbit()
             ->cari(['nama', 'produk', 'deskripsi'], $kata)
@@ -76,7 +82,7 @@ class PublicPageController extends Controller
             ->paginate($content['umkm']['per_halaman'])
             ->withQueryString()
             ->fragment('umkm')
-            ->through(fn (Umkm $u) => $this->konten->umkm($u));
+            ->through(fn (Umkm $u) => $this->konten()->umkm($u));
 
         return view('pages.public.potensi', [
             'content' => $content,
@@ -134,8 +140,8 @@ class PublicPageController extends Controller
     public function kontak(): View
     {
         return view('pages.public.kontak', [
-            'identitas' => $this->konten->identitas(),
-            'statistik' => collect($this->konten->statistik())->keyBy('label'),
+            'identitas' => $this->konten()->identitas(),
+            'statistik' => collect($this->konten()->statistik())->keyBy('label'),
         ]);
     }
 }

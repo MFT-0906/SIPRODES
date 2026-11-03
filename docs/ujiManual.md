@@ -73,3 +73,17 @@
 - [ ] Ringkasan: angka berita terbit/draf, UMKM, pertanian, dan aspirasi baru cocok dengan isi database; masuk sebagai Staf yang hanya memegang modul Berita: kartu dan daftar Aspirasi serta UMKM tidak tampil.
 - [ ] Tampilan HP 390 px untuk daftar berita, form berita (editor, uploader), tabel agenda, dan Ringkasan tidak terpotong.
 - [ ] Catatan: perubahan status di halaman Aspirasi admin belum mengubah angka Ringkasan sampai Fase 9.
+
+## Fase 6 — Admin B: Profil, Struktur, Potensi
+
+- [ ] Profil → Sejarah: tempel naskah resmi (baris kosong = pisah paragraf), simpan; tampil di `/profil-desa` (paragraf pertama menjadi lead).
+- [ ] Profil → Visi & Misi: isi visi + beberapa misi, ubah urutan/hapus/tambah butir; setelah disimpan badge “Menunggu naskah resmi desa” hilang di publik.
+- [ ] Profil → Lokasi: isi alamat, koordinat, telepon, email. “Simpan Draf” tidak menayangkan apa pun; “Simpan & Terbitkan” + centang verifikasi menampilkan alamat/telepon/email/peta di Kontak, Profil, dan footer. Tautan telepon, email, dan Google Maps berfungsi.
+- [ ] Profil → Data Ringkas: ubah angka dan sumber; di publik tanda “±” hilang setelah dicentang “sudah diverifikasi”.
+- [ ] Struktur: tambah perangkat dengan foto persegi asli (JPG/PNG/WebP); foto non-persegi dan > 2 MB ditolak; ubah urutan dengan tombol panah (cek juga dengan keyboard); sembunyikan satu perangkat → hilang di publik; hapus → foto ikut terhapus di `storage/app/public/perangkat`.
+- [ ] Potensi Pertanian: tambah komoditas dengan foto + alt, tandai unggulan; tampil di Potensi dan Beranda hanya bila Terbit; draf tidak tampil.
+- [ ] Kelompok Tani: tambah dengan komoditas/dusun dari daftar; centang “disetujui” tanpa nomor ditolak; kontak tampil di publik hanya bila disetujui. **Konfirmasi ke desa**: bukti persetujuan kontak sudah ada sebelum dicentang.
+- [ ] UMKM: tambah usaha dengan WhatsApp `0812…` → tautan `wa.me/62812…` benar di publik; tanpa centang persetujuan nomor dan foto tidak tampil; foto asli (bukan foto AI/stok) dengan izin pemilik.
+- [ ] Hapus komoditas yang dipakai kelompok tani: kelompok tetap ada (komoditasnya kosong “—”).
+- [ ] Semua form di atas rapi di HP 390 px (uploader, daftar misi, tombol panah ≥ 44 px) dan galat validasi terbaca.
+- [ ] Daftar Dusun 1–6 dan jabatan di data master sudah sesuai data resmi (belum ada halaman kelola master; saat ini lewat seeder/database).

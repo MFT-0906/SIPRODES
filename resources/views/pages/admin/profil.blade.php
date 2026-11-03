@@ -77,14 +77,18 @@
                         <x-ui.field name="telepon" type="tel" label="Telepon kantor" :value="$d['telepon']" placeholder="(0721) …" />
                         <x-ui.field name="email" type="email" label="Email resmi" :value="$d['email']" placeholder="nama@desa.id" />
                     </div>
-                    {{-- TODO(backend): tampilkan peta sungguhan setelah koordinat tersimpan. --}}
                     <div class="flex min-h-64 flex-col items-center justify-center gap-2 rounded-[12px] border border-border bg-primary-soft p-6 text-center">
                         <x-ui.icon name="map-pin" class="size-7 text-primary" />
                         <p class="type-label text-primary">Pratinjau titik peta</p>
-                        <p class="type-body-sm text-muted">Muncul setelah koordinat diisi</p>
+                        @if ($petaUrl)
+                            <a href="{{ $petaUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center type-label text-primary hover:underline">Buka titik di Google Maps<span class="sr-only"> (tab baru)</span></a>
+                        @else
+                            <p class="type-body-sm text-muted">Muncul setelah koordinat diisi</p>
+                        @endif
                     </div>
                 </div>
                 <x-ui.checkbox name="terverifikasi" label="Data lokasi & kontak sudah diverifikasi pemerintah desa" :checked="$d['terverifikasi']" />
+                <p class="type-body-sm text-muted">Alamat, telepon, email, dan peta baru tampil di situs publik bila kotak ini dicentang dan disimpan lewat “Simpan &amp; Terbitkan”. “Simpan Draf” tidak menayangkannya.</p>
             @else
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-ui.field name="penduduk" label="Jumlah penduduk (jiwa)" required inputmode="numeric" :value="$d['penduduk']" />
@@ -99,7 +103,7 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <p class="type-body-sm text-muted">
                     @if (in_array($tab, ['sejarah', 'visi'], true))
-                        Terakhir diperbarui: — oleh —
+                        Terakhir diperbarui: {{ $diperbarui ?? '—' }}
                     @endif
                 </p>
                 <div class="flex flex-col-reverse gap-3 sm:flex-row">

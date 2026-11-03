@@ -56,9 +56,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('/struktur-perangkat', [AdminStrukturController::class, 'index'])->name('struktur');
             Route::post('/struktur-perangkat', [AdminStrukturController::class, 'store'])->name('struktur.store');
-            Route::put('/struktur-perangkat/{id}', [AdminStrukturController::class, 'update'])->name('struktur.update');
-            Route::delete('/struktur-perangkat/{id}', [AdminStrukturController::class, 'destroy'])->name('struktur.destroy');
-            Route::post('/struktur-perangkat/{id}/geser', [AdminStrukturController::class, 'geser'])->name('struktur.geser');
+            Route::put('/struktur-perangkat/{id}', [AdminStrukturController::class, 'update'])->whereNumber('id')->name('struktur.update');
+            Route::delete('/struktur-perangkat/{id}', [AdminStrukturController::class, 'destroy'])->whereNumber('id')->name('struktur.destroy');
+            Route::post('/struktur-perangkat/{id}/geser', [AdminStrukturController::class, 'geser'])->whereNumber('id')->name('struktur.geser');
         });
 
         Route::middleware('modul:apbdes')->group(function () {
@@ -73,18 +73,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('/potensi-pertanian', [AdminPotensiController::class, 'pertanian'])->name('pertanian');
             Route::post('/potensi-pertanian', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.store');
-            Route::put('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasSimpan'])->name('pertanian.update');
-            Route::delete('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasHapus'])->name('pertanian.destroy');
+            Route::put('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasSimpan'])->whereNumber('id')->name('pertanian.update');
+            Route::delete('/potensi-pertanian/{id}', [AdminPotensiController::class, 'komoditasHapus'])->whereNumber('id')->name('pertanian.destroy');
 
             Route::get('/kelompok-tani', [AdminPotensiController::class, 'kelompok'])->name('kelompok-tani');
             Route::post('/kelompok-tani', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.store');
-            Route::put('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokSimpan'])->name('kelompok-tani.update');
-            Route::delete('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokHapus'])->name('kelompok-tani.destroy');
+            Route::put('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokSimpan'])->whereNumber('id')->name('kelompok-tani.update');
+            Route::delete('/kelompok-tani/{id}', [AdminPotensiController::class, 'kelompokHapus'])->whereNumber('id')->name('kelompok-tani.destroy');
 
             Route::get('/umkm', [AdminPotensiController::class, 'umkm'])->name('umkm');
             Route::post('/umkm', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.store');
-            Route::put('/umkm/{id}', [AdminPotensiController::class, 'umkmSimpan'])->name('umkm.update');
-            Route::delete('/umkm/{id}', [AdminPotensiController::class, 'umkmHapus'])->name('umkm.destroy');
+            Route::put('/umkm/{id}', [AdminPotensiController::class, 'umkmSimpan'])->whereNumber('id')->name('umkm.update');
+            Route::delete('/umkm/{id}', [AdminPotensiController::class, 'umkmHapus'])->whereNumber('id')->name('umkm.destroy');
         });
 
         Route::middleware('modul:aspirasi')->group(function () {

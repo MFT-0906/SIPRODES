@@ -41,7 +41,7 @@ class Fase3OtorisasiTest extends TestCase
         }
 
         $this->post(route('admin.berita.store'), [])->assertForbidden();
-        $this->delete(route('admin.umkm.destroy', 'x'))->assertForbidden();
+        $this->delete(route('admin.umkm.destroy', 1))->assertForbidden();
         $this->get(route('admin.dashboard'))->assertOk();
     }
 

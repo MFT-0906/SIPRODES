@@ -61,15 +61,20 @@
                     @if ($ubah)
                         @method('put')
                     @endif
-                    {{-- TODO(backend): simpan foto; foto dan WhatsApp hanya tampil di publik bila persetujuan pemilik dicentang. --}}
-                    <x-ui.uploader name="foto" label="Foto produk" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" hint="Dengan izin pemilik usaha" />
+                    @if ($item['foto_url'] ?? null)
+                        <img src="{{ $item['foto_url'] }}" alt="{{ $item['alt'] }}" loading="lazy" class="max-h-40 rounded-[10px] border border-border object-cover">
+                        <x-ui.checkbox name="hapus_foto" label="Hapus foto saat disimpan" />
+                    @endif
+                    <x-ui.uploader name="foto" label="Foto produk" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" :hint="'Dengan izin pemilik usaha · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB'" />
                     @error('foto')
                         <p class="flex items-start gap-1.5 type-body-sm text-danger"><x-ui.icon name="alert" class="mt-0.5 size-4" /><span>{{ $message }}</span></p>
                     @enderror
+                    <x-ui.field name="alt" label="Teks alternatif foto" :value="$item['alt'] ?? null" help="Wajib diisi bila foto dipilih." />
                     <x-ui.field name="nama" label="Nama usaha" required :value="$item['nama'] ?? null" placeholder="Nama usaha" />
                     <x-ui.field name="produk" label="Produk" required :value="$item['produk'] ?? null" placeholder="Jenis produk" />
                     <x-ui.field name="deskripsi" label="Deskripsi" multiline :rows="4" :value="$item['deskripsi'] ?? null" placeholder="Deskripsi singkat…" />
                     <x-ui.field name="whatsapp" type="tel" label="Nomor WhatsApp" :value="$item['whatsapp'] ?? null" placeholder="08xx-xxxx-xxxx" />
+                    <x-ui.select name="status" label="Status" required :placeholder="null" :options="['terbit' => 'Terbit', 'draf' => 'Draf']" :selected="$item['status'] ?? 'terbit'" />
                     <x-ui.checkbox name="disetujui" label="Pemilik usaha menyetujui nomor WhatsApp dan foto ditampilkan di situs publik." :checked="$setuju" class="items-start" />
                     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                         <x-ui.button :href="route('admin.umkm')" variant="ghost">Batal</x-ui.button>

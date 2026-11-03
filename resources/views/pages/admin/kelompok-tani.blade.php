@@ -58,8 +58,8 @@
                         @method('put')
                     @endif
                     <x-ui.field name="nama" label="Nama kelompok" required :value="$item['nama'] ?? null" placeholder="Nama kelompok tani" />
-                    <x-ui.select name="komoditas" label="Komoditas" required placeholder="Pilih komoditas" :options="array_combine($komoditas, $komoditas)" :selected="$item['komoditas'] ?? null" />
-                    <x-ui.select name="dusun" label="Dusun" required placeholder="Pilih dusun" :options="array_combine($dusun, $dusun)" :selected="$item['dusun'] ?? null" />
+                    <x-ui.select name="komoditas" label="Komoditas" required placeholder="Pilih komoditas" :options="$komoditas" :selected="$item['komoditas_id'] ?? null" />
+                    <x-ui.select name="dusun" label="Dusun" required placeholder="Pilih dusun" :options="$dusun" :selected="$item['dusun_id'] ?? null" />
                     <x-ui.field name="ketua" label="Nama ketua" :value="$item['ketua'] ?? null" placeholder="Nama ketua kelompok" />
                     <x-ui.field name="kontak" type="tel" label="Nomor kontak" :value="$item['kontak'] ?? null" placeholder="08xx-xxxx-xxxx" help="Hanya tampil di publik jika disetujui." />
                     <x-ui.checkbox name="disetujui" label="Kontak disetujui untuk publikasi" :checked="$setuju" />

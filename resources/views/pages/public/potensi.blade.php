@@ -58,7 +58,7 @@
                         @forelse ($content['komoditas'] as $komoditas)
                             <x-public.card-komoditas
                                 :nama="$komoditas['nama']" :deskripsi="$komoditas['deskripsi']" :unggulan="$komoditas['unggulan']"
-                                :musim-panen="$komoditas['musim_panen']" :foto-keterangan="$komoditas['foto_keterangan']" :peluang="$komoditas['peluang']"
+                                :musim-panen="$komoditas['musim_panen']" :foto-keterangan="$komoditas['foto_keterangan']" :foto="$komoditas['foto']" :peluang="$komoditas['peluang']"
                             />
                         @empty
                             <p class="type-body text-muted md:col-span-2 lg:col-span-3">
@@ -128,7 +128,7 @@
                         @forelse ($umkm as $usaha)
                             <x-ui.card-umkm
                                 :name="$usaha['name']" :products="$usaha['products']" :description="$usaha['description']"
-                                :whatsapp="$usaha['whatsapp']" :whatsapp-approved="$usaha['whatsappApproved']"
+                                :whatsapp="$usaha['whatsapp']" :whatsapp-approved="$usaha['whatsappApproved']" :image="$usaha['image']" :image-alt="$usaha['imageAlt']"
                             />
                         @empty
                             <p class="type-body text-muted sm:col-span-2 lg:col-span-4">

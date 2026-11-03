@@ -2,61 +2,107 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\DemoContent;
-use App\Support\DemoStore;
+use App\Http\Requests\Admin\SimpanPerangkatRequest;
+use App\Models\Jabatan;
+use App\Models\PerangkatDesa;
+use App\Support\UnggahBerkas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * Kelola Struktur Perangkat Desa. Rute dilindungi middleware `modul:profil`.
+ */
 class AdminStrukturController extends Controller
 {
-    // TODO(backend): penyimpanan foto dan data ke database.
-
     public function index(Request $request): View
     {
-        $ubah = DemoStore::item('struktur', $request->query('ubah'));
+        $ubah = $request->filled('ubah') ? PerangkatDesa::query()->with('jabatan')->find($request->query('ubah')) : null;
 
         return view('pages.admin.struktur', [
-            'daftar' => DemoStore::daftar('struktur'),
-            'item' => $ubah,
-            'jabatan' => $this->jabatan(),
+            'daftar' => $this->urutan()->map(fn (PerangkatDesa $p) => $this->larik($p))->all(),
+            'item' => $ubah ? $this->larik($ubah) : null,
+            'jabatan' => Jabatan::query()->orderBy('urutan')->pluck('nama')->all(),
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(SimpanPerangkatRequest $request): RedirectResponse
     {
-        DemoStore::simpan('struktur', $this->data($request));
+        $perangkat = new PerangkatDesa;
+        $perangkat->urutan = ((int) PerangkatDesa::query()->max('urutan')) + 1;
+        $this->isi($perangkat, $request)->save();
 
         return $this->selesai('Perubahan berhasil disimpan.');
     }
 
-    public function update(Request $request, string $id): RedirectResponse
+    public function update(SimpanPerangkatRequest $request, int $id): RedirectResponse
     {
-        abort_if(DemoStore::item('struktur', $id) === null, 404);
+        $perangkat = PerangkatDesa::query()->findOrFail($id);
+        $fotoLama = $perangkat->foto_path;
+        $this->isi($perangkat, $request)->save();
 
-        DemoStore::simpan('struktur', $this->data($request), $id);
+        if ($fotoLama && $fotoLama !== $perangkat->foto_path) {
+            UnggahBerkas::hapusGambar($fotoLama);
+        }
 
         return $this->selesai('Perubahan berhasil disimpan.');
     }
 
-    public function destroy(string $id): RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
-        abort_if(DemoStore::item('struktur', $id) === null, 404);
-
-        DemoStore::hapus('struktur', $id);
+        $perangkat = PerangkatDesa::query()->findOrFail($id);
+        $foto = $perangkat->foto_path;
+        $perangkat->delete();
+        UnggahBerkas::hapusGambar($foto);
 
         return $this->selesai('Perangkat berhasil dihapus.');
     }
 
-    public function geser(Request $request, string $id): RedirectResponse
+    /**
+     * Menggeser satu langkah. Seluruh urutan dinomori ulang dalam satu transaksi agar tidak ada nilai kembar.
+     */
+    public function geser(Request $request, int $id): RedirectResponse
     {
-        abort_if(DemoStore::item('struktur', $id) === null, 404);
         $arah = $request->validate(['arah' => ['required', 'in:naik,turun']])['arah'];
 
-        DemoStore::geser('struktur', $id, $arah === 'naik' ? -1 : 1);
+        DB::transaction(function () use ($id, $arah) {
+            $daftar = PerangkatDesa::query()->orderBy('urutan')->orderBy('id')->lockForUpdate()->get()->values();
+            $posisi = $daftar->search(fn (PerangkatDesa $p) => $p->id === $id);
+            abort_if($posisi === false, 404);
+
+            $tujuan = $posisi + ($arah === 'naik' ? -1 : 1);
+            $daftar = $daftar->all();
+            if (isset($daftar[$tujuan])) {
+                [$daftar[$posisi], $daftar[$tujuan]] = [$daftar[$tujuan], $daftar[$posisi]];
+            }
+
+            foreach ($daftar as $i => $p) {
+                if ($p->urutan !== $i + 1) {
+                    $p->update(['urutan' => $i + 1]);
+                }
+            }
+        });
 
         return $this->selesai('Urutan berhasil diubah.');
+    }
+
+    private function isi(PerangkatDesa $perangkat, SimpanPerangkatRequest $request): PerangkatDesa
+    {
+        $perangkat->nama = $request->string('nama')->toString();
+        $perangkat->jabatan_id = Jabatan::query()->where('nama', $request->input('jabatan'))->value('id');
+        $perangkat->tampil = $request->boolean('tampil');
+        // Data yang diinput admin adalah data nyata, bukan contoh.
+        $perangkat->contoh = false;
+
+        if ($request->hasFile('foto')) {
+            $perangkat->foto_path = UnggahBerkas::simpanGambar($request->file('foto'), 'perangkat');
+        } elseif ($request->boolean('hapus_foto')) {
+            $perangkat->foto_path = null;
+        }
+
+        return $perangkat;
     }
 
     private function selesai(string $pesan): RedirectResponse
@@ -64,29 +110,21 @@ class AdminStrukturController extends Controller
         return redirect()->route('admin.struktur')->with('toast', $pesan);
     }
 
-    /** @return list<string> */
-    private function jabatan(): array
+    /** @return Collection<int, PerangkatDesa> */
+    private function urutan(): Collection
     {
-        // TODO(backend): daftar jabatan dari data master desa.
-        return collect(DemoContent::profil()['perangkat']['daftar'])->pluck('position')->unique()->values()->all();
+        return PerangkatDesa::query()->with('jabatan')->orderBy('urutan')->orderBy('id')->get();
     }
 
     /** @return array<string, mixed> */
-    private function data(Request $request): array
+    private function larik(PerangkatDesa $p): array
     {
-        $valid = $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-            'jabatan' => ['required', Rule::in($this->jabatan())],
-            'tampil' => ['nullable', 'boolean'],
-            // TODO(backend): periksa isi berkas, batas ukuran, dan simpan foto (rasio 1:1).
-            'foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png'],
-        ], [
-            'required' => ':attribute wajib diisi.',
-            'max' => ':attribute terlalu panjang (maksimal :max karakter).',
-            'in' => ':attribute tidak dikenal.',
-            'mimes' => 'Foto harus berformat JPG atau PNG.',
-        ], ['nama' => 'Nama lengkap', 'jabatan' => 'Jabatan']);
-
-        return ['nama' => $valid['nama'], 'jabatan' => $valid['jabatan'], 'tampil' => (bool) ($valid['tampil'] ?? false)];
+        return [
+            'id' => $p->id,
+            'nama' => $p->nama,
+            'jabatan' => $p->jabatan->nama,
+            'tampil' => $p->tampil,
+            'foto_url' => UnggahBerkas::urlGambar($p->foto_path),
+        ];
     }
 }

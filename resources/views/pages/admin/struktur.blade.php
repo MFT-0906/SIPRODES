@@ -68,8 +68,11 @@
                         @method('put')
                     @endif
 
-                    {{-- TODO(backend): simpan foto (rasio 1:1) dan tampilkan foto yang sudah ada. --}}
-                    <x-ui.uploader name="foto" label="Foto" accept="image/jpeg,image/png" accept-label="JPG atau PNG" hint="JPG/PNG, rasio 1:1" />
+                    @if ($item['foto_url'] ?? null)
+                        <img src="{{ $item['foto_url'] }}" alt="Foto {{ $item['nama'] }}" loading="lazy" class="size-24 rounded-full border border-border object-cover">
+                        <x-ui.checkbox name="hapus_foto" label="Hapus foto saat disimpan" />
+                    @endif
+                    <x-ui.uploader name="foto" label="Foto" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" :hint="'Rasio 1:1 · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB'" />
                     @error('foto')
                         <p class="flex items-start gap-1.5 type-body-sm text-danger"><x-ui.icon name="alert" class="mt-0.5 size-4" /><span>{{ $message }}</span></p>
                     @enderror
