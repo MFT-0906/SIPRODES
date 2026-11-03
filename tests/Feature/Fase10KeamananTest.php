@@ -69,6 +69,8 @@ class Fase10KeamananTest extends TestCase
 
         $this->assertStringContainsString("default-src 'self'", $csp);
         $this->assertStringContainsString("object-src 'none'", $csp);
+        $this->assertStringContainsString("img-src 'self' data: https://tile.openstreetmap.org https://server.arcgisonline.com;", $csp);
+        $this->assertStringNotContainsString('frame-src', $csp);
         $this->assertStringContainsString("frame-ancestors 'none'", $csp);
         $this->assertStringContainsString("form-action 'self'", $csp);
         $this->assertStringContainsString("base-uri 'self'", $csp);

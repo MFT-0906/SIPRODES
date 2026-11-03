@@ -132,6 +132,27 @@ class Fase4PublikDatabaseTest extends TestCase
         $this->get('/')->assertOk()->assertSee('Kontak Resmi');
     }
 
+    public function test_peta_interaktif_hanya_tampil_setelah_lokasi_diverifikasi(): void
+    {
+        ProfilDesa::factory()->create(['alamat' => 'Jl. Uji', 'lintang' => -5.320012, 'bujur' => 105.32339, 'kontak_terverifikasi' => false]);
+
+        foreach (['/profil-desa', '/kontak-lokasi'] as $url) {
+            $this->get($url)->assertOk()->assertDontSee('petaDesa', false)->assertDontSee('openstreetmap.org', false)
+                ->assertSee('Peta akan ditampilkan setelah lokasi diverifikasi');
+        }
+
+        ProfilDesa::query()->update(['kontak_terverifikasi' => true]);
+
+        foreach (['/profil-desa', '/kontak-lokasi'] as $url) {
+            $this->app->forgetScopedInstances();
+            $html = $this->get($url)->assertOk()->assertSee('x-data="petaDesa(', false)->assertSee('Peta lokasi kantor Desa Marga Agung')
+                ->assertSee('Lihat peta lebih besar')->assertSee('Peta interaktif membutuhkan JavaScript')->getContent();
+            $this->assertStringNotContainsString('<iframe', $html);
+            $this->assertMatchesRegularExpression('/petaDesa\(.{0,60}lat.{1,10}-5\.320012/', $html);
+            $this->assertStringContainsString('mlat=-5.3200120&amp;mlon=105.3233900', $html);
+        }
+    }
+
     public function test_kontak_kelompok_tani_dan_whatsapp_umkm_mengikuti_persetujuan(): void
     {
         KelompokTani::factory()->create(['nama' => 'Kelompok A', 'kontak' => '081111111111', 'kontak_disetujui' => false]);

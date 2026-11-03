@@ -130,13 +130,7 @@
                     @endif
                 </div>
 
-                <div class="flex h-[200px] flex-col items-center justify-center gap-2 rounded-card border border-border bg-primary-soft px-6 text-center text-primary md:h-[360px]">
-                    <x-ui.icon name="map-pin" class="size-8" />
-                    <p class="type-label">Peta lokasi desa</p>
-                    @unless ($petaTerverifikasi)
-                        <p class="type-body-sm max-w-xs text-muted">Peta akan ditampilkan setelah lokasi diverifikasi oleh pemerintah desa. Alamat tertulis tetap tersedia.</p>
-                    @endunless
-                </div>
+                <x-public.peta :peta="$peta" />
             </section>
         </div>
     </div>

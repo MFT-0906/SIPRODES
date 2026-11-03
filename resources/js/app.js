@@ -376,5 +376,59 @@ Alpine.data('rincianApbdes', (awal = {}) => ({
     },
 }));
 
+/**
+ * Peta lokasi desa (Leaflet) dengan pilihan "Peta" (OpenStreetMap) dan "Satelit" (Esri World Imagery).
+ * Leaflet dimuat hanya saat komponen ada di halaman (dynamic import), jadi halaman lain tidak terbebani.
+ * Atribusi kedua sumber ditampilkan di pojok peta sesuai syarat lisensi.
+ */
+Alpine.data('petaDesa', (config = {}) => ({
+    gagal: false,
+
+    async init() {
+        try {
+            const [{ default: L }, ikon, ikon2x, bayangan] = await Promise.all([
+                import('leaflet'),
+                import('leaflet/dist/images/marker-icon.png'),
+                import('leaflet/dist/images/marker-icon-2x.png'),
+                import('leaflet/dist/images/marker-shadow.png'),
+                import('leaflet/dist/leaflet.css'),
+            ]);
+
+            // Leaflet menebak lokasi gambar penanda dari nama berkas CSS; dengan bundler tebakan itu salah dan penanda
+            // tampil sebagai gambar rusak. Hapus penebak lalu tunjuk langsung ke gambar yang sudah dibundel Vite.
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({ iconUrl: ikon.default, iconRetinaUrl: ikon2x.default, shadowUrl: bayangan.default });
+
+            const peta = L.map(this.$refs.peta, {
+                center: [config.lat, config.lng],
+                zoom: config.zoom ?? 17,
+                scrollWheelZoom: false, // roda mouse tetap menggulir halaman; aktif setelah peta diklik
+                zoomControl: false,
+            });
+
+            L.control.zoom({ zoomInTitle: 'Perbesar', zoomOutTitle: 'Perkecil' }).addTo(peta);
+            peta.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener noreferrer">Leaflet</a>');
+
+            const jalan = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Kontributor OpenStreetMap</a>',
+            });
+            const satelit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 19,
+                attribution: 'Citra &copy; <a href="https://www.esri.com" target="_blank" rel="noopener noreferrer">Esri</a>, Maxar, Earthstar Geographics, dan komunitas pengguna GIS',
+            });
+
+            jalan.addTo(peta);
+            L.control.layers({ Peta: jalan, Satelit: satelit }, {}, { collapsed: false }).addTo(peta);
+            L.marker([config.lat, config.lng], { title: config.judul, alt: config.judul, keyboard: true }).addTo(peta).bindPopup(config.judul);
+
+            peta.once('focus', () => peta.scrollWheelZoom.enable());
+            peta.on('blur', () => peta.scrollWheelZoom.disable());
+        } catch (e) {
+            this.gagal = true;
+        }
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();
