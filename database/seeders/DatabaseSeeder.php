@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         // Data contoh tidak pernah dimuat di produksi.
         if (! app()->isProduction()) {
             $this->call(DataContohSeeder::class);
+            $this->call(DataDummyLengkapSeeder::class);
         }
     }
 }
