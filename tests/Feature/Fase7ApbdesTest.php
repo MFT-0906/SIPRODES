@@ -156,7 +156,7 @@ class Fase7ApbdesTest extends TestCase
         $kirim(UploadedFile::fake()->create('dokumen.exe', 10, 'application/x-msdownload'))->assertSessionHasErrors(['dokumen' => $pesan]);
         $kirim(UploadedFile::fake()->createWithContent('palsu.pdf', "<?php echo 'x';"))->assertSessionHasErrors('dokumen');
         $kirim(UploadedFile::fake()->createWithContent('gambar.pdf', "\x89PNG\r\n\x1a\n0000"))->assertSessionHasErrors('dokumen');
-        $kirim(UploadedFile::fake()->create('besar.pdf', 11 * 1024, 'application/pdf'))->assertSessionHasErrors(['dokumen' => 'Ukuran PDF maksimal 10 MB.']);
+        $kirim(UploadedFile::fake()->create('besar.pdf', 11 * 1024, 'application/pdf'))->assertSessionHasErrors(['dokumen' => 'Ditolak: ukuran berkas melebihi 10 MB. Pilih berkas lain.']);
         $kirim(UploadedFile::fake()->createWithContent('kosong.pdf', ''))->assertSessionHasErrors('dokumen');
 
         $this->assertSame(0, ApbdesPeriode::count());

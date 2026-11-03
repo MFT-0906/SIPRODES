@@ -80,7 +80,7 @@
                         <x-ui.checkbox name="hapus_gambar" label="Hapus gambar utama saat disimpan" />
                     @endif
                     <x-ui.uploader
-                        name="gambar" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP"
+                        name="gambar" :max-mb="\App\Support\UnggahBerkas::batasMb('gambar')" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP"
                         :hint="'JPG/PNG/WebP · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB · '.config('desa.unggahan.gambar_maks_piksel').' px'"
                     />
                     @error('gambar')

@@ -34,6 +34,8 @@ return [
     'unggahan' => [
         'gambar_maks_kb' => (int) env('UNGGAH_GAMBAR_MAKS_KB', 2048),
         'gambar_maks_piksel' => (int) env('UNGGAH_GAMBAR_MAKS_PIKSEL', 4000),
+        // Gambar yang lebih panjang dari ini dikecilkan saat disimpan (hemat bandwidth, NFR-01).
+        'gambar_sisi_panjang' => (int) env('UNGGAH_GAMBAR_SISI_PANJANG', 1920),
         'gambar_mimetypes' => ['image/jpeg', 'image/png', 'image/webp'],
         'pdf_maks_kb' => (int) env('UNGGAH_PDF_MAKS_KB', 10240),
     ],

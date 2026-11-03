@@ -99,3 +99,15 @@
 - [ ] Pembiayaan: pastikan cara pengisian “pembiayaan netto” (satu angka) cukup untuk dokumen APBDes desa; bila perlu rincian penerimaan/pengeluaran, kabari agar skemanya diperluas.
 - [ ] Di server produksi tes unduhan PDF besar (± 10 MB) lewat HTTPS dan di HP; pastikan batas `upload_max_filesize` dan `post_max_size` PHP ≥ 12 MB.
 - [ ] Tampilan HP 390 px: editor rincian (kolom anggaran, tombol hapus ≥ 44 px), daftar dokumen, dan halaman publik APBDes tidak terpotong.
+
+## Fase 8 — Unggahan berkas & gambar
+
+- [ ] Jalankan `php artisan storage:link` di server (atau `composer setup` di lingkungan baru); gambar yang diunggah dapat dibuka lewat `/storage/...` dan folder `public/storage` menunjuk ke `storage/app/public`.
+- [ ] Unggah foto asli dari HP (JPG besar ± 3–5 MB dengan EXIF/lokasi) — bila lebih dari 2 MB ditolak dengan pesan “Ditolak: ukuran berkas melebihi 2 MB”; kecilkan lalu unggah ulang: tersimpan, posisi (potret/lanskap) benar, dan ukurannya ≤ 1920 px.
+- [ ] Unduh gambar hasil unggahan dari situs publik dan periksa propertinya: tidak ada data lokasi (GPS) dan kamera di metadata.
+- [ ] Coba unggah: berkas `.php`/`.exe`/`.svg`, PDF yang diganti nama menjadi `.jpg`, gambar rusak, dan PNG yang diganti `.jpg` — yang berbahaya ditolak, yang sah tersimpan dengan ekstensi sesuai isi.
+- [ ] Pesan galat dan batas MB di uploader (sebelum kirim) sama dengan pesan dari server.
+- [ ] Di folder `storage/app/public/*` semua nama berkas acak (tanpa nama asli). Coba menaruh `tes.php` di folder itu dan akses lewat `/storage/.../tes.php`: tidak dijalankan (Apache memakai `.htaccess`; **Nginx perlu aturan tambahan** — lihat panduan rilis Fase 11).
+- [ ] Ganti foto, lalu hapus data: berkas lama hilang dari folder penyimpanan (periksa `berita/`, `perangkat/`, `komoditas/`, `umkm/`).
+- [ ] Atur `upload_max_filesize` ≥ 12M, `post_max_size` ≥ 14M, `memory_limit` ≥ 256M di server; uji unggah gambar 4000 × 3000 px (harus sukses atau ditolak dengan pesan wajar, bukan halaman galat).
+- [ ] Setelah semua modul dicoba, buka folder penyimpanan dan pastikan tidak ada berkas yatim yang menumpuk.

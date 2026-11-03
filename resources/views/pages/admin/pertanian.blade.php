@@ -85,7 +85,7 @@
                             <img src="{{ $item['foto_url'] }}" alt="{{ $item['alt'] }}" loading="lazy" class="max-h-40 rounded-[10px] border border-border object-cover">
                             <x-ui.checkbox name="hapus_foto" label="Hapus foto saat disimpan" />
                         @endif
-                        <x-ui.uploader name="foto" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" :hint="'Foto asli yang disetujui desa · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB'" />
+                        <x-ui.uploader name="foto" :max-mb="\App\Support\UnggahBerkas::batasMb('gambar')" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" :hint="'Foto asli yang disetujui desa · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB'" />
                         <x-ui.field name="alt" label="Teks alternatif foto" :value="$item['alt'] ?? null" help="Wajib diisi bila foto dipilih." />
                     </div>
                     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

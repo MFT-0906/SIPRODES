@@ -172,7 +172,7 @@ class AdminPotensiController extends Controller
     private function isiFoto(Komoditas|Umkm $model, Request $request, string $folder): void
     {
         if ($request->hasFile('foto')) {
-            $model->foto_path = UnggahBerkas::simpanGambar($request->file('foto'), $folder);
+            $model->foto_path = UnggahBerkas::simpanGambar($request->file('foto'), $folder, 'foto');
             $model->foto_alt = $request->string('alt')->toString();
         } elseif ($request->boolean('hapus_foto')) {
             $model->foto_path = null;

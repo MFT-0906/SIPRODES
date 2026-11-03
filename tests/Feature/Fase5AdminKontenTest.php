@@ -228,9 +228,9 @@ class Fase5AdminKontenTest extends TestCase
     public function test_gambar_ditolak_bila_terlalu_besar_salah_tipe_atau_dimensi_berlebih(): void
     {
         $this->post(route('admin.berita.store'), $this->dataBerita(['gambar' => UploadedFile::fake()->image('besar.jpg')->size(3000), 'alt' => 'x']))
-            ->assertSessionHasErrors(['gambar' => 'Ukuran gambar maksimal 2 MB.']);
+            ->assertSessionHasErrors(['gambar' => 'Ditolak: ukuran berkas melebihi 2 MB. Pilih berkas lain.']);
         $this->post(route('admin.berita.store'), $this->dataBerita(['gambar' => UploadedFile::fake()->create('dokumen.jpg', 10, 'application/pdf'), 'alt' => 'x']))
-            ->assertSessionHasErrors(['gambar' => 'Gambar harus berformat JPG, PNG, atau WebP.']);
+            ->assertSessionHasErrors(['gambar' => 'Ditolak: hanya JPG, PNG, atau WebP yang diizinkan. Pilih berkas lain.']);
         $this->post(route('admin.berita.store'), $this->dataBerita(['gambar' => UploadedFile::fake()->image('lebar.jpg', 4100, 100), 'alt' => 'x']))
             ->assertSessionHasErrors('gambar');
 

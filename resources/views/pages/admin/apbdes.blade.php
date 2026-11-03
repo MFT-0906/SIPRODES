@@ -135,7 +135,7 @@
 
                         <div class="flex flex-col gap-3 rounded-[10px] border border-dashed border-border p-4">
                             <p class="type-label-sm text-muted">Tambah dokumen baru (opsional)</p>
-                            <x-ui.uploader name="dokumen" accept="application/pdf" accept-label="PDF" :hint="'Hanya PDF · maks. '.round(config('desa.unggahan.pdf_maks_kb') / 1024).' MB · isi berkas diperiksa di server'" />
+                            <x-ui.uploader name="dokumen" :max-mb="\App\Support\UnggahBerkas::batasMb('pdf')" accept="application/pdf" accept-label="PDF" :hint="'Hanya PDF · maks. '.round(config('desa.unggahan.pdf_maks_kb') / 1024).' MB · isi berkas diperiksa di server'" />
                             @error('dokumen')
                                 <p class="flex items-start gap-1.5 type-body-sm text-danger"><x-ui.icon name="alert" class="mt-0.5 size-4" /><span>{{ $message }}</span></p>
                             @enderror

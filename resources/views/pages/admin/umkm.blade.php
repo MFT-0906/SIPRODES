@@ -65,7 +65,7 @@
                         <img src="{{ $item['foto_url'] }}" alt="{{ $item['alt'] }}" loading="lazy" class="max-h-40 rounded-[10px] border border-border object-cover">
                         <x-ui.checkbox name="hapus_foto" label="Hapus foto saat disimpan" />
                     @endif
-                    <x-ui.uploader name="foto" label="Foto produk" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" :hint="'Dengan izin pemilik usaha · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB'" />
+                    <x-ui.uploader name="foto" :max-mb="\App\Support\UnggahBerkas::batasMb('gambar')" label="Foto produk" accept="image/jpeg,image/png,image/webp" accept-label="JPG, PNG, atau WebP" :hint="'Dengan izin pemilik usaha · maks. '.round(config('desa.unggahan.gambar_maks_kb') / 1024, 1).' MB'" />
                     @error('foto')
                         <p class="flex items-start gap-1.5 type-body-sm text-danger"><x-ui.icon name="alert" class="mt-0.5 size-4" /><span>{{ $message }}</span></p>
                     @enderror

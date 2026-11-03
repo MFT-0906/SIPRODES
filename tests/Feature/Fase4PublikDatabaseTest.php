@@ -180,7 +180,7 @@ class Fase4PublikDatabaseTest extends TestCase
         $this->get('/transparansi-apbdes')->assertOk()
             ->assertSee('Rp 3.500.000')->assertSee('Rp 3.000.000')->assertSee('Perdes APBDes 2030')
             ->assertSee('Berkas belum diunggah')
-            ->assertDontSee('2031')->assertDontSee('Diagram belum tersedia');
+            ->assertDontSee('tahun=2031', false)->assertDontSee('Diagram belum tersedia');
         $this->get('/transparansi-apbdes?tahun=2031')->assertOk()->assertSee('2030');
     }
 

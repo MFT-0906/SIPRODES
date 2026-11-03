@@ -97,7 +97,7 @@ class AdminStrukturController extends Controller
         $perangkat->contoh = false;
 
         if ($request->hasFile('foto')) {
-            $perangkat->foto_path = UnggahBerkas::simpanGambar($request->file('foto'), 'perangkat');
+            $perangkat->foto_path = UnggahBerkas::simpanGambar($request->file('foto'), 'perangkat', 'foto');
         } elseif ($request->boolean('hapus_foto')) {
             $perangkat->foto_path = null;
         }
