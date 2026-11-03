@@ -2,7 +2,7 @@
 
 @php
     // Logo sementara (ikon pada kotak kuning). TODO: ganti dengan logo resmi desa setelah dikonfirmasi.
-    $identitas = \App\Support\DemoContent::identitas();
+    $identitas = app(\App\Support\KontenPublik::class)->identitas();
     $gelap = $tone === 'gelap';
 @endphp
 

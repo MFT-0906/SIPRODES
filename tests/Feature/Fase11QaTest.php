@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\DataContohSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\Concerns\MasukSebagaiAdmin;
@@ -10,6 +11,12 @@ use Tests\TestCase;
 class Fase11QaTest extends TestCase
 {
     use MasukSebagaiAdmin, RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(DataContohSeeder::class);
+    }
 
     public function test_setiap_img_di_template_punya_alt_dan_lazy_loading(): void
     {

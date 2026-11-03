@@ -2,10 +2,20 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\DataContohSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class PublicPagesTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(DataContohSeeder::class);
+    }
+
     public function test_semua_halaman_publik_dapat_dibuka(): void
     {
         foreach (['/', '/profil-desa', '/transparansi-apbdes', '/potensi-desa', '/berita', '/berita/gotong-royong-lingkungan-bersih', '/ruang-aspirasi', '/kontak-lokasi'] as $url) {

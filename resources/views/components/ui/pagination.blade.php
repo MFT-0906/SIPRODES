@@ -1,7 +1,6 @@
 @props(['paginator' => null, 'current' => 1, 'last' => 1])
 
 @php
-    // TODO(backend): kirim paginator Laravel; tanpa itu komponen memakai parameter ?page= pada URL saat ini.
     $current = $paginator ? $paginator->currentPage() : $current;
     $last = $paginator ? $paginator->lastPage() : $last;
     $url = fn (int $page) => $paginator ? $paginator->url($page) : request()->fullUrlWithQuery(['page' => $page]);

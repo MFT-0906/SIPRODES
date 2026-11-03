@@ -46,3 +46,16 @@
 - [ ] Tombol "Kirim tautan atur ulang kata sandi" (ikon gembok): email terkirim; klik dua kali berturut-turut menampilkan pesan "coba lagi dalam satu menit".
 - [ ] Modal Tambah/Ubah Akun tampil baik di HP 390 px (daftar modul tidak terpotong, tombol ≥ 44 px) dan galat validasi (email ganda, username salah) tampil di dalam modal.
 - [ ] **Konfirmasi ke desa**: matriks izin (Staf hanya modul yang ditugaskan; Akun khusus Super Admin) sudah sesuai kebijakan.
+
+## Fase 4 — Halaman publik membaca database
+
+- [ ] Jalankan `php artisan migrate:fresh --seed` lalu buka semua halaman publik di browser (desktop dan HP 390 px): Beranda, Profil, APBDes, Potensi, Berita, Detail Berita, Kontak, Aspirasi. Tidak ada tampilan rusak.
+- [ ] Data masih berlabel contoh/“Menunggu data resmi”: tidak ada yang tampak sebagai data resmi sebelum diganti.
+- [ ] Hapus semua baris `berita`/`agenda`/`umkm` di database (atau pakai database kosong): Beranda, Berita, Potensi, APBDes menampilkan keadaan kosong yang rapi (tanpa galat).
+- [ ] Ubah satu berita ke status `draf` langsung di database: hilang dari Beranda, daftar, pencarian, dan detailnya 404 — tanpa menunggu cache.
+- [ ] Isi `profil_desa.alamat/telepon/email/jam_layanan/lintang/bujur` tanpa mencentang `kontak_terverifikasi`: tidak tampil di footer, Profil, Kontak. Centang: tampil, tautan telepon/email/peta berfungsi.
+- [ ] Pencarian Potensi: ketik kata kunci (mis. nama usaha di halaman 2 UMKM) → ditemukan; pindah tab Pertanian ⇄ UMKM tetap bekerja, dan setelah mencari, tab terakhir tetap terbuka; tautan paginasi UMKM mempertahankan kata kunci.
+- [ ] Pencarian berita dengan tanda kutip, `%`, atau `_` tidak menimbulkan galat.
+- [ ] Matikan MySQL sebentar lalu buka `/transparansi-apbdes`: tampil “Data APBDes gagal dimuat” (bukan halaman galat teknis); halaman lain menampilkan halaman 500 desa tanpa detail teknis (`APP_DEBUG=false`).
+- [ ] Ukur waktu muat Beranda/Berita di MySQL dengan data lebih banyak (≥ 100 berita): masih cepat (< 3 dtk, NFR-01).
+- [ ] Nilai teks bawaan di Beranda/Profil/Potensi (hero, pengantar, ajakan) sudah disetujui desa — teks ini masih tertulis di `KontenPublik`, belum bisa diubah dari admin.

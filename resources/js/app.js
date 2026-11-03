@@ -206,13 +206,10 @@ Alpine.data('sectionNav', (ids = []) => ({
 
 /**
  * Katalog Potensi Desa: tab Pertanian/UMKM (pola tablist ARIA, dapat dioperasikan dengan panah/Home/End)
- * dan pencarian langsung pada kartu yang sedang dimuat. Item pencarian bertanda data-cari.
- * TODO(backend): pencarian lintas halaman perlu dilakukan di server (parameter ?q=).
+ * Pencarian dilakukan di server (parameter ?q=) lewat formulir GET; tab aktif ikut dikirim.
  */
 Alpine.data('katalog', (awal = 'pertanian', daftarTab = ['pertanian', 'umkm']) => ({
     tab: awal,
-    q: '',
-    kosong: {},
 
     init() {
         const dariHash = window.location.hash.replace('#', '');
@@ -220,9 +217,6 @@ Alpine.data('katalog', (awal = 'pertanian', daftarTab = ['pertanian', 'umkm']) =
         if (daftarTab.includes(dariHash)) {
             this.tab = dariHash;
         }
-
-        this.$watch('q', () => this.$nextTick(() => this.hitung()));
-        this.$watch('tab', () => this.$nextTick(() => this.hitung()));
     },
 
     pilih(nama, fokus = false) {
@@ -249,19 +243,6 @@ Alpine.data('katalog', (awal = 'pertanian', daftarTab = ['pertanian', 'umkm']) =
         }
     },
 
-    cocok(teks) {
-        const kata = this.q.trim().toLowerCase();
-
-        return kata === '' || (teks ?? '').includes(kata);
-    },
-
-    hitung() {
-        daftarTab.forEach((nama) => {
-            const item = [...document.querySelectorAll(`#panel-${nama} [data-cari]`)];
-
-            this.kosong[nama] = item.length > 0 && item.every((el) => getComputedStyle(el).display === 'none');
-        });
-    },
 }));
 
 /**

@@ -2,10 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Models\Agenda;
+use App\Models\ApbdesPeriode;
+use App\Models\Berita;
+use Database\Seeders\DataContohSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class Fase7StatusTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(DataContohSeeder::class);
+    }
+
     public function test_halaman_404_memakai_tampilan_desa(): void
     {
         $this->get('/halaman-yang-tidak-ada')
@@ -28,20 +42,43 @@ class Fase7StatusTest extends TestCase
         $this->assertStringNotContainsString('Stack trace', $html);
     }
 
-    public function test_parameter_demo_diabaikan_di_luar_lokal(): void
+    public function test_parameter_demo_tidak_lagi_berpengaruh_di_lingkungan_mana_pun(): void
     {
-        $this->get('/berita?demo=memuat')->assertOk()->assertDontSee('Memuat berita');
-        $this->get('/transparansi-apbdes?demo=gagal')->assertOk()->assertDontSee('gagal dimuat');
+        foreach (['production', 'local'] as $lingkungan) {
+            $this->app->detectEnvironment(fn () => $lingkungan);
+
+            $this->get('/berita?demo=kosong')->assertOk()->assertDontSee('Belum ada berita yang dipublikasikan');
+            $this->get('/berita?demo=memuat')->assertOk()->assertDontSee('Memuat berita');
+            $this->get('/transparansi-apbdes?demo=gagal')->assertOk()->assertDontSee('gagal dimuat');
+        }
     }
 
-    public function test_keadaan_contoh_di_lokal(): void
+    public function test_keadaan_kosong_berita_dan_agenda(): void
     {
-        $this->app->detectEnvironment(fn () => 'local');
+        Berita::query()->delete();
+        Agenda::query()->delete();
 
-        $this->get('/berita?demo=kosong')->assertOk()
-            ->assertSee('Belum ada berita yang dipublikasikan')->assertSee('Lihat Profil Desa');
-        $this->get('/berita?demo=memuat')->assertOk()->assertSee('Memuat berita');
-        $this->get('/transparansi-apbdes?demo=gagal')->assertOk()
-            ->assertSee('Data APBDes gagal dimuat')->assertSee('Coba lagi');
+        $this->get('/berita')->assertOk()
+            ->assertSee('Belum ada berita yang dipublikasikan')->assertSee('Lihat Profil Desa')
+            ->assertSee('Belum ada agenda mendatang');
+        $this->get('/')->assertOk()->assertSee('Belum ada berita yang dipublikasikan');
+    }
+
+    public function test_keadaan_kosong_apbdes_bila_belum_ada_periode_terbit(): void
+    {
+        ApbdesPeriode::query()->delete();
+
+        $this->get('/transparansi-apbdes')->assertOk()->assertSee('Data APBDes belum dipublikasikan');
+    }
+
+    public function test_apbdes_gagal_dimuat_saat_database_bermasalah(): void
+    {
+        Schema::drop('apbdes_rincian');
+        Schema::drop('apbdes_dokumen');
+        Schema::drop('apbdes_periode');
+
+        $this->get('/transparansi-apbdes')->assertOk()
+            ->assertSee('Data APBDes gagal dimuat')->assertSee('Coba lagi')
+            ->assertDontSee('SQLSTATE');
     }
 }

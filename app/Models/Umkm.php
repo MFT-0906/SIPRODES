@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatusTerbit;
+use App\Models\Concerns\DapatDicari;
 use App\Models\Concerns\MemilikiStatusTerbit;
 use Database\Factories\UmkmFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 class Umkm extends Model
 {
     /** @use HasFactory<UmkmFactory> */
-    use HasFactory, MemilikiStatusTerbit;
+    use DapatDicari, HasFactory, MemilikiStatusTerbit;
 
     protected $table = 'umkm';
 

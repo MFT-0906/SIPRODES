@@ -1,5 +1,5 @@
 @php
-    $identitas = \App\Support\DemoContent::identitas();
+    $identitas = app(\App\Support\KontenPublik::class)->identitas();
 @endphp
 
 <div role="region" aria-label="Wilayah administrasi" class="border-b border-border bg-background">

@@ -15,6 +15,15 @@ return [
 
     'nama' => env('DESA_NAMA', 'Desa Marga Agung'),
 
+    // Wilayah administrasi untuk header, footer, dan halaman kontak.
+    'wilayah' => [
+        'sebutan' => 'Pemerintah Desa',
+        'nama' => 'Marga Agung',
+        'lengkap' => 'Kecamatan Jati Agung, Kabupaten Lampung Selatan, Provinsi Lampung.',
+        'strip' => 'Kecamatan Jati Agung · Kabupaten Lampung Selatan · Provinsi Lampung',
+        'strip_pendek' => 'Kec. Jati Agung · Kab. Lampung Selatan · Lampung',
+    ],
+
     // Super Admin pertama (AdminAwalSeeder). Kata sandi acak dicetak sekali ke konsol.
     'admin' => [
         'email' => env('ADMIN_EMAIL'),

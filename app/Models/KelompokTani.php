@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DapatDicari;
 use Database\Factories\KelompokTaniFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class KelompokTani extends Model
 {
     /** @use HasFactory<KelompokTaniFactory> */
-    use HasFactory;
+    use DapatDicari, HasFactory;
 
     protected $table = 'kelompok_tani';
 

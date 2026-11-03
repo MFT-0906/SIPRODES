@@ -2,160 +2,140 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\DemoContent;
-use Carbon\Carbon;
+use App\Models\Agenda;
+use App\Models\Berita;
+use App\Models\Umkm;
+use App\Support\KontenPublik;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * Halaman publik. Semua data dibaca dari database dan hanya konten berstatus `terbit`
+ * yang boleh keluar (lihat KontenPublik dan scope terbit()).
+ */
 class PublicPageController extends Controller
 {
-    // TODO(backend): ganti DemoContent dengan data dari database.
+    private const BERITA_PER_HALAMAN = 4;
+
+    public function __construct(private readonly KontenPublik $konten) {}
 
     public function home(): View
     {
         return view('pages.public.beranda', [
-            'content' => DemoContent::beranda(),
-            'statistik' => DemoContent::statistik(),
-            'identitas' => DemoContent::identitas(),
+            'content' => $this->konten->beranda(),
+            'statistik' => $this->konten->statistik(),
+            'identitas' => $this->konten->identitas(),
         ]);
     }
 
     public function profil(): View
     {
         return view('pages.public.profil', [
-            'content' => DemoContent::profil(),
-            'identitas' => DemoContent::identitas(),
+            'content' => $this->konten->profil(),
+            'identitas' => $this->konten->identitas(),
         ]);
     }
 
     public function apbdes(Request $request): View
     {
-        // Contoh keadaan gagal memuat, hanya di lokal: /transparansi-apbdes?demo=gagal
-        if ($this->demo($request) === 'gagal') {
+        try {
+            $tersedia = $this->konten->tahunApbdes();
+
+            if ($tersedia === []) {
+                return view('pages.public.apbdes-kosong');
+            }
+
+            // Tahun yang tidak dikenal (atau draf) kembali ke tahun terbaru, bukan error.
+            $tahun = (int) $request->query('tahun', $tersedia[0]);
+            if (! in_array($tahun, $tersedia, true)) {
+                $tahun = $tersedia[0];
+            }
+
+            return view('pages.public.apbdes', [
+                'pengantar' => 'Ringkasan Anggaran Pendapatan dan Belanja Desa (APBDes) Marga Agung beserta dokumen resminya. Seluruh angka bersumber dari dokumen APBDes yang telah ditetapkan.',
+                'tahunTersedia' => $tersedia,
+                'tahun' => $tahun,
+                'data' => $this->konten->apbdes($tahun),
+            ]);
+        } catch (QueryException $e) {
+            report($e);
+
             return view('pages.public.apbdes-gagal');
         }
-
-        $content = DemoContent::apbdes();
-        $tersedia = array_keys($content['tahun']);
-
-        // Tahun yang tidak dikenal kembali ke tahun bawaan, bukan error.
-        $tahun = (int) $request->query('tahun', $content['tahun_default']);
-        if (! in_array($tahun, $tersedia, true)) {
-            $tahun = $content['tahun_default'];
-        }
-
-        return view('pages.public.apbdes', [
-            'pengantar' => $content['pengantar'],
-            'tahunTersedia' => $tersedia,
-            'tahun' => $tahun,
-            'data' => $content['tahun'][$tahun],
-        ]);
     }
 
     public function potensi(Request $request): View
     {
-        $content = DemoContent::potensi();
+        $kata = mb_substr(trim((string) $request->query('q', '')), 0, 100);
+        $content = $this->konten->potensi($kata);
 
-        $umkm = collect($content['umkm']['daftar']);
-        $paginator = new LengthAwarePaginator(
-            $umkm->forPage((int) $request->query('page', 1), $content['umkm']['per_halaman'])->values(),
-            $umkm->count(),
-            $content['umkm']['per_halaman'],
-            (int) $request->query('page', 1),
-            ['path' => $request->url(), 'query' => $request->except('page')],
-        );
+        $umkm = Umkm::query()->terbit()
+            ->cari(['nama', 'produk', 'deskripsi'], $kata)
+            ->orderBy('nama')
+            ->paginate($content['umkm']['per_halaman'])
+            ->withQueryString()
+            ->fragment('umkm')
+            ->through(fn (Umkm $u) => $this->konten->umkm($u));
 
         return view('pages.public.potensi', [
             'content' => $content,
-            'umkm' => $paginator,
+            'umkm' => $umkm,
+            'kata' => $kata,
+            'tabAwal' => in_array($request->query('tab'), ['pertanian', 'umkm'], true) ? $request->query('tab') : 'pertanian',
         ]);
     }
 
     public function berita(Request $request): View
     {
-        // Hanya berita berstatus terbit yang boleh tampil di situs publik.
-        $demo = $this->demo($request);
-        $terbit = $demo === 'kosong' ? collect() : $this->beritaTerbit();
-        $kategori = $terbit->pluck('category')->unique()->sort()->values();
+        $kategori = Berita::query()->terbit()->distinct()->orderBy('kategori')->pluck('kategori');
 
         $aktif = $request->query('kategori');
-        if (! $kategori->contains($aktif)) {
-            $aktif = null;
-        }
-        $kata = trim((string) $request->query('q', ''));
+        $aktif = is_string($aktif) && $kategori->contains($aktif) ? $aktif : null;
+        $kata = mb_substr(trim((string) $request->query('q', '')), 0, 100);
 
-        $hasil = $terbit
-            ->when($aktif, fn ($c) => $c->where('category', $aktif))
-            ->when($kata !== '', fn ($c) => $c->filter(
-                fn (array $b) => str_contains(mb_strtolower($b['title'].' '.$b['excerpt']), mb_strtolower($kata))
-            ))
-            ->values();
-
-        $perHalaman = 4;
-        $halaman = max(1, (int) $request->query('page', 1));
-        $berita = new LengthAwarePaginator(
-            $hasil->forPage($halaman, $perHalaman)->values(),
-            $hasil->count(),
-            $perHalaman,
-            $halaman,
-            ['path' => $request->url(), 'query' => $request->except('page')],
-        );
-
-        $hariIni = Carbon::today();
-        // Agenda draf tidak boleh tampil di situs publik.
-        $agenda = collect(DemoContent::agenda())->where('status', 'terbit');
+        $berita = Berita::query()->terbit()
+            ->when($aktif, fn ($q) => $q->where('kategori', $aktif))
+            ->cari(['judul', 'ringkasan'], $kata)
+            ->orderByDesc('tanggal')->orderByDesc('id')
+            ->paginate(self::BERITA_PER_HALAMAN)
+            ->withQueryString()
+            ->through(fn (Berita $b) => KontenPublik::berita($b));
 
         return view('pages.public.berita', [
             'berita' => $berita,
             'kategori' => $kategori,
             'aktif' => $aktif,
             'kata' => $kata,
-            'adaBerita' => $terbit->isNotEmpty(),
-            'memuat' => $demo === 'memuat',
-            'agendaMendatang' => $agenda->filter(fn ($a) => Carbon::parse($a['tanggal'])->gte($hariIni))->sortBy('tanggal')->values()->all(),
-            'agendaLewat' => $agenda->filter(fn ($a) => Carbon::parse($a['tanggal'])->lt($hariIni))->sortByDesc('tanggal')->values()->all(),
+            'adaBerita' => $kategori->isNotEmpty(),
+            'agendaMendatang' => Agenda::query()->terbit()->mendatang()->orderBy('tanggal')->orderBy('waktu')->get()
+                ->map(fn (Agenda $a) => KontenPublik::agenda($a))->all(),
+            'agendaLewat' => Agenda::query()->terbit()->lewat()->orderByDesc('tanggal')->limit(10)->get()
+                ->map(fn (Agenda $a) => KontenPublik::agenda($a))->all(),
         ]);
     }
 
     public function beritaShow(string $slug): View
     {
-        $terbit = $this->beritaTerbit();
-        $artikel = $terbit->firstWhere('slug', $slug);
-
-        // Draf atau slug yang tidak ada tidak boleh dapat dibuka publik.
-        abort_if($artikel === null, 404);
+        // Draf atau slug yang tidak ada tidak boleh dapat dibuka publik (404).
+        $artikel = KontenPublik::berita(Berita::query()->terbit()->where('slug', $slug)->firstOrFail());
 
         $kata = str_word_count(strip_tags(collect($artikel['isi'])->pluck(1)->implode(' ')));
 
         return view('pages.public.berita-detail', [
             'artikel' => $artikel,
             'menitBaca' => max(1, (int) ceil($kata / 200)),
-            'lainnya' => $terbit->where('slug', '!=', $slug)->take(3)->values()->all(),
+            'lainnya' => Berita::query()->terbit()->where('slug', '!=', $slug)
+                ->orderByDesc('tanggal')->orderByDesc('id')->limit(3)->get()
+                ->map(fn (Berita $b) => KontenPublik::berita($b))->all(),
         ]);
     }
 
     public function kontak(): View
     {
         return view('pages.public.kontak', [
-            'identitas' => DemoContent::identitas(),
-            'statistik' => collect(DemoContent::statistik())->keyBy('label'),
+            'identitas' => $this->konten->identitas(),
+            'statistik' => collect($this->konten->statistik())->keyBy('label'),
         ]);
-    }
-
-    /**
-     * Keadaan contoh (?demo=kosong|memuat|gagal) untuk meninjau tampilan; hanya aktif di lingkungan lokal.
-     */
-    private function demo(Request $request): ?string
-    {
-        $demo = $request->query('demo');
-
-        return app()->environment('local') && in_array($demo, ['kosong', 'memuat', 'gagal'], true) ? $demo : null;
-    }
-
-    /** @return \Illuminate\Support\Collection<int, array<string, mixed>> */
-    private function beritaTerbit(): \Illuminate\Support\Collection
-    {
-        return collect(DemoContent::berita())->where('status', 'terbit')->sortByDesc('tanggal')->values();
     }
 }

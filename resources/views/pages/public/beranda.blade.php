@@ -74,6 +74,7 @@
 
             <div class="grid gap-6 lg:grid-cols-2">
                 @php $unggulan = $content['potensi']['unggulan']; @endphp
+                @if ($unggulan)
                 <article class="flex flex-col overflow-hidden rounded-card bg-primary-dark">
                     <x-ui.image-placeholder :caption="$unggulan['foto_keterangan']" class="h-[220px]" />
                     <div class="flex flex-1 flex-col items-start gap-3 p-6 lg:p-7">
@@ -86,16 +87,19 @@
                         </a>
                     </div>
                 </article>
+                @endif
 
                 <div class="flex flex-col gap-4">
                     <h3 class="type-h3 text-text">Usaha warga (UMKM)</h3>
                     <div class="grid content-start gap-4 sm:grid-cols-2">
-                        @foreach ($content['potensi']['umkm'] as $usaha)
+                        @forelse ($content['potensi']['umkm'] as $usaha)
                             <x-ui.card-umkm
                                 :name="$usaha['name']" :products="$usaha['products']" :description="$usaha['description']"
                                 :whatsapp="$usaha['whatsapp']" :whatsapp-approved="$usaha['whatsappApproved']"
                             />
-                        @endforeach
+                        @empty
+                            <p class="type-body text-muted sm:col-span-2">Belum ada usaha warga yang dipublikasikan.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -118,12 +122,14 @@
                     </a>
                 </div>
                 <div class="grid gap-4 md:grid-cols-2 lg:gap-5">
-                    @foreach ($content['berita'] as $berita)
+                    @forelse ($content['berita'] as $berita)
                         <x-ui.card-news
                             :title="$berita['title']" :excerpt="$berita['excerpt']" :date="$berita['date']"
                             :category="$berita['category']" :href="route('berita.show', $berita['slug'])"
                         />
-                    @endforeach
+                    @empty
+                        <p class="type-body text-muted md:col-span-2">Belum ada berita yang dipublikasikan.</p>
+                    @endforelse
                 </div>
             </div>
 
@@ -135,12 +141,14 @@
                     </a>
                 </div>
                 <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-1 lg:gap-4">
-                    @foreach ($content['agenda'] as $agenda)
+                    @forelse ($content['agenda'] as $agenda)
                         <x-ui.card-agenda
                             :day="$agenda['day']" :month="$agenda['month']" :title="$agenda['title']"
                             :time="$agenda['time']" :location="$agenda['location']"
                         />
-                    @endforeach
+                    @empty
+                        <p class="type-body text-muted md:col-span-2 lg:col-span-1">Belum ada agenda mendatang.</p>
+                    @endforelse
                 </div>
             </div>
         </div>

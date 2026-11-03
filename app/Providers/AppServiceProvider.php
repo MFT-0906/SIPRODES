@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Enums\Modul;
 use App\Models\User;
 use App\Support\DemoStore;
+use App\Support\KontenPublik;
 use App\Support\Navigation;
 use App\Support\Peran;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -20,7 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Satu instance per permintaan agar profil desa dibaca sekali.
+        $this->app->scoped(KontenPublik::class);
     }
 
     /**

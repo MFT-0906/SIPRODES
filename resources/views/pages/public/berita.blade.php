@@ -43,17 +43,7 @@
                 <section aria-labelledby="daftar-berita-judul" class="flex flex-col gap-6">
                     <h2 id="daftar-berita-judul" class="sr-only">Daftar berita</h2>
 
-                    @if ($memuat)
-                        {{-- Keadaan memuat: kerangka kartu (animasi mati bila reduced-motion). --}}
-                        <div role="status" aria-busy="true" class="flex flex-col gap-6">
-                            <p class="type-body-sm text-muted">Memuat berita…</p>
-                            <div class="grid gap-4 md:grid-cols-2 md:gap-6">
-                                @for ($i = 0; $i < 6; $i++)
-                                    <x-ui.skeleton-card />
-                                @endfor
-                            </div>
-                        </div>
-                    @elseif ($berita->count())
+                    @if ($berita->count())
                         <div class="grid gap-4 md:grid-cols-2 md:gap-6">
                             @foreach ($berita as $item)
                                 <x-ui.card-news

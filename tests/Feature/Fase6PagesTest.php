@@ -2,10 +2,20 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\DataContohSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class Fase6PagesTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(DataContohSeeder::class);
+    }
+
     public function test_daftar_berita_hanya_menampilkan_yang_terbit(): void
     {
         $this->get('/berita')

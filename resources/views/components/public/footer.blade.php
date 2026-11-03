@@ -1,5 +1,5 @@
 @php
-    $identitas = \App\Support\DemoContent::identitas();
+    $identitas = app(\App\Support\KontenPublik::class)->identitas();
     // Kontak resmi hanya tampil setelah diverifikasi pemerintah desa.
     $kontak = collect($identitas['kontak'])->filter(fn ($k) => $k['verified'] && filled($k['value']));
     $tautan = \App\Support\Navigation::footer();

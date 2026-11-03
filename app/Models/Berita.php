@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\StatusTerbit;
+use App\Models\Concerns\DapatDicari;
 use App\Models\Concerns\MemilikiStatusTerbit;
 use Database\Factories\BeritaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Berita extends Model
 {
     /** @use HasFactory<BeritaFactory> */
-    use HasFactory, MemilikiStatusTerbit;
+    use DapatDicari, HasFactory, MemilikiStatusTerbit;
 
     protected $table = 'berita';
 

@@ -18,7 +18,7 @@
         </div>
     </section>
 
-    <div class="bg-surface" x-data="katalog('pertanian')">
+    <div class="bg-surface" x-data="katalog(@js($tabAwal))">
         <div class="container-page flex flex-col gap-8 pb-14 pt-8 lg:gap-10 lg:pb-20 lg:pt-12">
             {{-- Tab dan pencarian --}}
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -36,26 +36,35 @@
                     @endforeach
                 </div>
 
-                <x-ui.search name="q" label="Cari komoditas atau usaha" placeholder="Cari komoditas atau usaha…" x-model="q" class="md:w-[360px]" />
+                {{-- Pencarian di server (semua halaman), mempertahankan tab yang sedang dibuka. --}}
+                <form method="get" action="{{ route('potensi') }}" role="search" class="md:w-[360px]">
+                    <input type="hidden" name="tab" x-bind:value="tab" value="{{ $tabAwal }}">
+                    <x-ui.search name="q" label="Cari komoditas atau usaha" placeholder="Cari komoditas atau usaha…" :value="$kata" />
+                </form>
             </div>
 
-            <p x-show="q.trim() !== '' && kosong[tab]" x-cloak class="type-body text-muted" role="status">
-                Tidak ada hasil untuk “<span x-text="q"></span>” pada halaman ini.
-            </p>
+            @if ($kata !== '')
+                <p class="type-body text-muted" role="status">
+                    Hasil pencarian untuk “{{ $kata }}”.
+                    <a href="{{ route('potensi', ['tab' => $tabAwal]) }}" class="text-primary hover:underline">Hapus pencarian</a>
+                </p>
+            @endif
 
             {{-- Panel Pertanian --}}
             <div id="panel-pertanian" role="tabpanel" aria-labelledby="tab-pertanian" tabindex="0" x-show="tab === 'pertanian'" x-cloak class="flex flex-col gap-10">
                 <section aria-labelledby="komoditas-judul" class="flex flex-col gap-5">
                     <h2 id="komoditas-judul" class="type-h2 text-text">Pertanian</h2>
                     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-                        @foreach ($content['komoditas'] as $komoditas)
+                        @forelse ($content['komoditas'] as $komoditas)
                             <x-public.card-komoditas
                                 :nama="$komoditas['nama']" :deskripsi="$komoditas['deskripsi']" :unggulan="$komoditas['unggulan']"
                                 :musim-panen="$komoditas['musim_panen']" :foto-keterangan="$komoditas['foto_keterangan']" :peluang="$komoditas['peluang']"
-                                data-cari="{{ mb_strtolower($komoditas['nama'].' '.$komoditas['deskripsi']) }}"
-                                x-show="cocok($el.dataset.cari)"
                             />
-                        @endforeach
+                        @empty
+                            <p class="type-body text-muted md:col-span-2 lg:col-span-3">
+                                {{ $kata !== '' ? 'Tidak ada komoditas yang cocok dengan pencarian.' : 'Belum ada komoditas yang dipublikasikan.' }}
+                            </p>
+                        @endforelse
                     </div>
                 </section>
 
@@ -79,9 +88,9 @@
                                 </tr>
                             </thead>
                             <tbody class="max-md:block">
-                                @foreach ($kelompok['daftar'] as $item)
+                                @forelse ($kelompok['daftar'] as $item)
                                     <tr
-                                        role="row" data-cari="{{ mb_strtolower($item['nama'].' '.$item['komoditas']) }}" x-show="cocok($el.dataset.cari)"
+                                        role="row"
                                         class="border-t border-border type-body-sm text-text max-md:flex max-md:flex-col max-md:gap-1 max-md:px-4 max-md:py-3.5"
                                     >
                                         <td role="cell" class="px-6 py-3.5 type-label max-md:p-0">{{ $item['nama'] }}</td>
@@ -92,7 +101,13 @@
                                             {{ $item['kontak_disetujui'] && $item['kontak'] ? $item['kontak'] : 'Belum disetujui untuk publikasi' }}
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr role="row" class="border-t border-border type-body-sm text-muted max-md:block max-md:px-4 max-md:py-3.5">
+                                        <td role="cell" colspan="4" class="px-6 py-3.5 max-md:p-0">
+                                            {{ $kata !== '' ? 'Tidak ada kelompok tani yang cocok dengan pencarian.' : 'Belum ada kelompok tani yang dipublikasikan.' }}
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -110,14 +125,16 @@
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-                        @foreach ($umkm as $usaha)
+                        @forelse ($umkm as $usaha)
                             <x-ui.card-umkm
                                 :name="$usaha['name']" :products="$usaha['products']" :description="$usaha['description']"
                                 :whatsapp="$usaha['whatsapp']" :whatsapp-approved="$usaha['whatsappApproved']"
-                                data-cari="{{ mb_strtolower($usaha['name'].' '.$usaha['products'].' '.$usaha['description']) }}"
-                                x-show="cocok($el.dataset.cari)"
                             />
-                        @endforeach
+                        @empty
+                            <p class="type-body text-muted sm:col-span-2 lg:col-span-4">
+                                {{ $kata !== '' ? 'Tidak ada usaha yang cocok dengan pencarian.' : 'Belum ada usaha warga yang dipublikasikan.' }}
+                            </p>
+                        @endforelse
                     </div>
 
                     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
