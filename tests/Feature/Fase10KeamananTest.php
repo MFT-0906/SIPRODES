@@ -98,7 +98,7 @@ class Fase10KeamananTest extends TestCase
         $this->assertStringContainsString('max-age=31536000', $this->get('https://localhost/')->headers->get('Strict-Transport-Security'));
     }
 
-    public function test_server_dev_vite_diizinkan_csp_hanya_saat_berkas_hot_ada(): void
+    public function test_csp_tidak_dikirim_saat_server_dev_vite_aktif(): void
     {
         $hot = storage_path('framework/testing/vite-hot-uji');
         File::ensureDirectoryExists(dirname($hot));
@@ -106,9 +106,9 @@ class Fase10KeamananTest extends TestCase
         Vite::useHotFile($hot);
 
         try {
-            $csp = $this->get('/')->headers->get('Content-Security-Policy');
-            $this->assertStringContainsString('http://[::1]:5173', $csp);
-            $this->assertStringContainsString('ws://[::1]:5173', $csp);
+            $respons = $this->get('/');
+            $this->assertNull($respons->headers->get('Content-Security-Policy'));
+            $this->assertSame('DENY', $respons->headers->get('X-Frame-Options'));
         } finally {
             File::delete($hot);
         }

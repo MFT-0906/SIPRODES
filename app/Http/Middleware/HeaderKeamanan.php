@@ -26,8 +26,13 @@ class HeaderKeamanan
             'Referrer-Policy' => 'strict-origin-when-cross-origin',
             'Permissions-Policy' => 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
             'Cross-Origin-Opener-Policy' => 'same-origin',
-            'Content-Security-Policy' => $this->csp(),
         ];
+
+        // Saat server dev Vite aktif (berkas public/hot), CSP tidak dikirim: sintaks CSP tidak mendukung alamat IPv6
+        // seperti http://[::1]:5173 di banyak peramban, sehingga CSS/JS dev terblokir. CSP penuh berlaku di produksi.
+        if ($this->originVite() === null) {
+            $header['Content-Security-Policy'] = $this->csp();
+        }
 
         if ($request->isSecure()) {
             $header['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
