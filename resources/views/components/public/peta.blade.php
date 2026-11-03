@@ -26,7 +26,7 @@
             </noscript>
         </div>
         <figcaption class="flex flex-wrap items-center justify-between gap-2 type-label-sm text-muted">
-            <span>Pilih “Peta” atau “Satelit” di pojok peta. Klik peta lalu gunakan roda mouse untuk memperbesar.</span>
+            <span>Tampilan satelit dengan label jalan. Klik peta lalu gunakan roda mouse untuk memperbesar.</span>
             <a href="{{ $peta['osm_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-primary hover:underline">Lihat peta lebih besar<span class="sr-only"> (membuka tab baru)</span></a>
         </figcaption>
     </figure>

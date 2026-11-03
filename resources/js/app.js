@@ -377,7 +377,7 @@ Alpine.data('rincianApbdes', (awal = {}) => ({
 }));
 
 /**
- * Peta lokasi desa (Leaflet) dengan pilihan "Peta" (OpenStreetMap) dan "Satelit" (Esri World Imagery).
+ * Peta lokasi desa (Leaflet): citra satelit Esri World Imagery dengan label jalan dan tempat (Esri Reference).
  * Leaflet dimuat hanya saat komponen ada di halaman (dynamic import), jadi halaman lain tidak terbebani.
  * Atribusi kedua sumber ditampilkan di pojok peta sesuai syarat lisensi.
  */
@@ -409,17 +409,18 @@ Alpine.data('petaDesa', (config = {}) => ({
             L.control.zoom({ zoomInTitle: 'Perbesar', zoomOutTitle: 'Perkecil' }).addTo(peta);
             peta.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener noreferrer">Leaflet</a>');
 
-            const jalan = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Kontributor OpenStreetMap</a>',
-            });
             const satelit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 maxZoom: 19,
                 attribution: 'Citra &copy; <a href="https://www.esri.com" target="_blank" rel="noopener noreferrer">Esri</a>, Maxar, Earthstar Geographics, dan komunitas pengguna GIS',
             });
 
-            jalan.addTo(peta);
-            L.control.layers({ Peta: jalan, Satelit: satelit }, {}, { collapsed: false }).addTo(peta);
+            // Label jalan dan nama tempat (Esri Reference) ditumpuk di atas citra satelit, seperti mode "hybrid".
+            const labelJalan = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
+            const labelTempat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
+            const satelitBerlabel = L.layerGroup([satelit, labelJalan, labelTempat]);
+
+            // Hanya satu tampilan: satelit berlabel (tanpa pilihan peta jalan).
+            satelitBerlabel.addTo(peta);
             L.marker([config.lat, config.lng], { title: config.judul, alt: config.judul, keyboard: true }).addTo(peta).bindPopup(config.judul);
 
             peta.once('focus', () => peta.scrollWheelZoom.enable());

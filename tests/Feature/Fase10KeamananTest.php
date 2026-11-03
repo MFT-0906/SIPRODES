@@ -69,7 +69,7 @@ class Fase10KeamananTest extends TestCase
 
         $this->assertStringContainsString("default-src 'self'", $csp);
         $this->assertStringContainsString("object-src 'none'", $csp);
-        $this->assertStringContainsString("img-src 'self' data: https://tile.openstreetmap.org https://server.arcgisonline.com;", $csp);
+        $this->assertStringContainsString("img-src 'self' data: https://server.arcgisonline.com;", $csp);
         $this->assertStringNotContainsString('frame-src', $csp);
         $this->assertStringContainsString("frame-ancestors 'none'", $csp);
         $this->assertStringContainsString("form-action 'self'", $csp);
@@ -307,14 +307,15 @@ class Fase10KeamananTest extends TestCase
         $this->get(route('admin.akun.index'))->assertForbidden();
     }
 
-    public function test_log_hanya_menampilkan_30_terakhir(): void
+    public function test_log_dipaginasi_20_per_halaman_terbaru_dulu(): void
     {
         $this->masukSebagaiAdmin();
         foreach (range(1, 35) as $i) {
             LogAktivitas::factory()->create(['aksi' => 'masuk', 'keterangan' => 'Entri nomor '.$i]);
         }
 
-        $this->get(route('admin.akun.index'))->assertSee('Entri nomor 35')->assertSee('Entri nomor 6')->assertDontSee('Entri nomor 5<')->assertDontSee('Entri nomor 1<');
+        $this->get(route('admin.akun.index'))->assertSee('Entri nomor 35')->assertSee('Entri nomor 16')->assertDontSee('Entri nomor 15<', false)->assertSee('halaman_log=2', false);
+        $this->get(route('admin.akun.index', ['halaman_log' => 2]))->assertSee('Entri nomor 15')->assertSee('Entri nomor 1<', false)->assertDontSee('Entri nomor 35');
     }
 
     // ---- Data master ----

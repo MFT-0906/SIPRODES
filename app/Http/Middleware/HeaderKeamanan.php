@@ -56,8 +56,8 @@ class HeaderKeamanan
             "default-src 'self'",
             "script-src 'self' 'unsafe-eval'".$dev,
             "style-src 'self' 'unsafe-inline'".$dev,
-            // Gambar peta (Leaflet): ubin OpenStreetMap dan citra satelit Esri. Tidak ada frame eksternal yang diizinkan.
-            "img-src 'self' data: https://tile.openstreetmap.org https://server.arcgisonline.com",
+            // Gambar peta (Leaflet): hanya ubin citra satelit dan label Esri. Tidak ada frame eksternal yang diizinkan.
+            "img-src 'self' data: https://server.arcgisonline.com",
             "font-src 'self' data:".$dev,
             "connect-src 'self'".$dev,
             "object-src 'none'",

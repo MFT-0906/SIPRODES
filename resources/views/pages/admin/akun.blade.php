@@ -80,10 +80,22 @@
         <section aria-labelledby="log-judul" class="rounded-[14px] border border-border bg-surface">
             <div class="flex flex-col gap-1 p-5">
                 <h2 id="log-judul" class="type-h3 text-text">Log Aktivitas</h2>
-                <p class="type-body-sm text-muted">30 tindakan sensitif terakhir. Kata sandi, NIK, dan isi aspirasi tidak pernah dicatat.</p>
+                <p class="type-body-sm text-muted">Tindakan sensitif terbaru, 20 per halaman. Kata sandi, NIK, dan isi aspirasi tidak pernah dicatat. Entri lama dihapus otomatis sesuai masa simpan.</p>
             </div>
+            <form method="get" action="{{ route('admin.akun.index') }}#log-judul" role="search" class="flex flex-col gap-3 px-5 pb-4 sm:flex-row sm:items-end">
+                <div class="sm:w-72">
+                    <x-ui.select name="aksi" label="Jenis aksi" placeholder="Semua aksi" :options="$labelAksi" :selected="$filterAksi" />
+                </div>
+                <div class="flex-1 sm:max-w-sm">
+                    <x-ui.search name="qlog" id="qlog" label="Cari keterangan log" placeholder="Cari keterangan…" :value="$kataLog" />
+                </div>
+                <x-ui.button type="submit" variant="secondary">Terapkan</x-ui.button>
+                @if ($filterAksi || $kataLog !== '')
+                    <x-ui.button :href="route('admin.akun.index').'#log-judul'" variant="ghost">Hapus filter</x-ui.button>
+                @endif
+            </form>
             @if ($log->isEmpty())
-                <p class="border-t border-border px-5 py-6 type-body text-muted">Belum ada aktivitas tercatat.</p>
+                <p class="border-t border-border px-5 py-6 type-body text-muted">{{ $filterAksi || $kataLog !== '' ? 'Tidak ada aktivitas yang cocok dengan filter.' : 'Belum ada aktivitas tercatat.' }}</p>
             @else
                 <ul>
                     @foreach ($log as $baris)
@@ -95,6 +107,7 @@
                         </li>
                     @endforeach
                 </ul>
+                <x-ui.pagination :paginator="$log" class="p-3" />
             @endif
         </section>
 

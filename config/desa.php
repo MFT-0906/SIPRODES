@@ -52,6 +52,13 @@ return [
         'masa_simpan_bulan' => (int) env('ASPIRASI_MASA_SIMPAN_BULAN', 24),
         // Waktu isi minimum formulir (detik) untuk anti-spam.
         'waktu_isi_minimum_detik' => (int) env('ASPIRASI_WAKTU_MINIMUM', 3),
+        // true: saat anonimisasi, isi pesan juga diganti teks netral (bukan hanya nama dan NIK).
+        'hapus_pesan_saat_anonim' => (bool) env('ASPIRASI_HAPUS_PESAN', false),
+    ],
+
+    // Audit log (Fase 10): entri lebih tua dari ini dihapus oleh perintah log:bersihkan (0 = tidak pernah dihapus).
+    'log' => [
+        'masa_simpan_bulan' => (int) env('LOG_AKTIVITAS_MASA_SIMPAN_BULAN', 24),
     ],
 
     // Atur ulang kata sandi & pembatasan login (Fase 2).
