@@ -182,8 +182,8 @@ class KontenPublik
             'fakta_sumber' => $profil->sumber_data ?: 'Sumber belum dicantumkan · perlu verifikasi desa',
             'visi_misi' => [
                 'resmi' => $visiAda && $misi !== [] && $profil->visi_misi_resmi,
-                'visi' => $visiAda ? $profil->visi : '“Visi resmi Desa Marga Agung”',
-                'misi' => $misi !== [] ? $misi : ['Butir misi 1', 'Butir misi 2', 'Butir misi 3', 'Butir misi 4'],
+                'visi' => $visiAda ? $profil->visi : null,
+                'misi' => $misi,
             ],
             'perangkat' => [
                 'resmi' => $perangkat->isNotEmpty() && $perangkat->every(fn (PerangkatDesa $p) => ! $p->contoh),

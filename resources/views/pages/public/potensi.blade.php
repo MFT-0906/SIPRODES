@@ -5,6 +5,8 @@
 
 @php
     $kelompok = $content['kelompok_tani'];
+    // Kolom Kontak hanya ditampilkan bila ada kelompok yang kontaknya sudah disetujui untuk dipublikasikan.
+    $adaKontak = collect($kelompok['daftar'])->contains(fn (array $k) => $k['kontak_disetujui'] && filled($k['kontak']));
     $tabs = [['pertanian', 'Pertanian', 'sprout'], ['umkm', 'UMKM', 'store']];
 @endphp
 
@@ -84,7 +86,9 @@
                                     <th role="columnheader" scope="col" class="px-6 py-3.5 text-left font-medium">NAMA KELOMPOK</th>
                                     <th role="columnheader" scope="col" class="w-[260px] px-3 py-3.5 text-left font-medium">KOMODITAS</th>
                                     <th role="columnheader" scope="col" class="w-[220px] px-3 py-3.5 text-left font-medium">DUSUN</th>
-                                    <th role="columnheader" scope="col" class="w-[240px] py-3.5 pl-3 pr-6 text-left font-medium">KONTAK</th>
+                                    @if ($adaKontak)
+                                        <th role="columnheader" scope="col" class="w-[240px] py-3.5 pl-3 pr-6 text-left font-medium">KONTAK</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody class="max-md:block">
@@ -96,14 +100,16 @@
                                         <td role="cell" class="px-6 py-3.5 type-label max-md:p-0">{{ $item['nama'] }}</td>
                                         <td role="cell" data-label="Komoditas" class="px-3 py-3.5 max-md:p-0 max-md:before:text-muted max-md:before:content-[attr(data-label)_':_']">{{ $item['komoditas'] }}</td>
                                         <td role="cell" data-label="Dusun" class="px-3 py-3.5 max-md:p-0 max-md:before:text-muted max-md:before:content-[attr(data-label)_':_']">{{ $item['dusun'] ?: '—' }}</td>
-                                        <td role="cell" data-label="Kontak" class="py-3.5 pl-3 pr-6 text-muted max-md:p-0 max-md:before:content-[attr(data-label)_':_']">
-                                            {{-- Kontak hanya tampil bila sudah disetujui untuk dipublikasikan. --}}
-                                            {{ $item['kontak_disetujui'] && $item['kontak'] ? $item['kontak'] : 'Belum disetujui untuk publikasi' }}
-                                        </td>
+                                        @if ($adaKontak)
+                                            <td role="cell" data-label="Kontak" class="py-3.5 pl-3 pr-6 text-muted max-md:p-0 max-md:before:content-[attr(data-label)_':_']">
+                                                {{-- Kontak hanya tampil bila sudah disetujui untuk dipublikasikan. --}}
+                                                {{ $item['kontak_disetujui'] && $item['kontak'] ? $item['kontak'] : 'Belum disetujui untuk publikasi' }}
+                                            </td>
+                                        @endif
                                     </tr>
                                 @empty
                                     <tr role="row" class="border-t border-border type-body-sm text-muted max-md:block max-md:px-4 max-md:py-3.5">
-                                        <td role="cell" colspan="4" class="px-6 py-3.5 max-md:p-0">
+                                        <td role="cell" colspan="{{ $adaKontak ? 4 : 3 }}" class="px-6 py-3.5 max-md:p-0">
                                             {{ $kata !== '' ? 'Tidak ada kelompok tani yang cocok dengan pencarian.' : 'Belum ada kelompok tani yang dipublikasikan.' }}
                                         </td>
                                     </tr>
@@ -111,6 +117,9 @@
                             </tbody>
                         </table>
                     </div>
+                    @unless ($adaKontak)
+                        <p class="type-body-sm text-muted">Kontak kelompok tani akan ditampilkan setelah disetujui oleh masing-masing kelompok.</p>
+                    @endunless
                 </section>
             </div>
 
@@ -137,12 +146,15 @@
                         @endforelse
                     </div>
 
-                    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <p class="type-body-sm text-muted">
-                            Menampilkan {{ $umkm->firstItem() ?? 0 }}–{{ $umkm->lastItem() ?? 0 }} dari {{ $umkm->total() }} UMKM
-                        </p>
-                        <x-ui.pagination :paginator="$umkm" />
-                    </div>
+                    {{-- Hitungan dan paginasi hanya bermakna bila ada hasil; tanpa hasil, keterangan di atas sudah cukup. --}}
+                    @if ($umkm->total() > 0)
+                        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <p class="type-body-sm text-muted">
+                                Menampilkan {{ $umkm->firstItem() }}–{{ $umkm->lastItem() }} dari {{ $umkm->total() }} UMKM
+                            </p>
+                            <x-ui.pagination :paginator="$umkm" />
+                        </div>
+                    @endif
                 </section>
             </div>
 

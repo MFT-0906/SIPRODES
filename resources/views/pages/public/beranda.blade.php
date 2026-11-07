@@ -15,7 +15,7 @@
                 <div class="flex flex-col gap-3 pt-2 lg:flex-row lg:flex-wrap">
                     <x-ui.button :href="route('apbdes')" icon="file">Lihat APBDes</x-ui.button>
                     <x-ui.button :href="route('aspirasi.create')" variant="accent" icon="message">Sampaikan aspirasi</x-ui.button>
-                    <div class="hidden lg:block">
+                    <div class="hidden lg:-ml-3.5 lg:block">
                         <x-ui.button :href="route('profil')" variant="ghost" icon="arrow-right">Jelajahi profil desa</x-ui.button>
                     </div>
                 </div>
@@ -28,24 +28,35 @@
         </div>
     </section>
 
-    {{-- Data singkat desa --}}
-    <section aria-labelledby="ringkasan-judul" class="bg-surface">
-        <div class="container-page flex flex-col gap-6 pb-6 pt-10 lg:pt-14">
-            <h2 id="ringkasan-judul" class="type-h2 md:type-h1 text-text">Data singkat desa</h2>
-            <div class="grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-6">
+    {{-- Data singkat desa: pita warna penuh agar bagian ini terpisah dari "Layanan informasi" di bawahnya. --}}
+    <section aria-labelledby="ringkasan-judul" class="bg-primary">
+        <div class="container-page flex flex-col gap-6 py-10 lg:gap-8 lg:py-14">
+            <h2 id="ringkasan-judul" class="type-h2 md:type-h1 text-surface">Data singkat desa</h2>
+            @php
+                // Bila semua angka bersumber sama, sumbernya ditulis sekali di bawah deret angka, bukan diulang di tiap angka.
+                $sumberStatistik = collect($statistik)->pluck('source')->unique();
+                $sumberTunggal = $sumberStatistik->count() === 1 ? $sumberStatistik->first() : null;
+            @endphp
+            <dl class="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 lg:gap-x-8">
                 @foreach ($statistik as $stat)
-                    <x-ui.card-stat
-                        :label="$stat['label']" :value="$stat['value']" :source="$stat['source']"
-                        class="shadow-[0_8px_12px_rgb(15_51_33/0.06)]"
-                    />
+                    <div class="flex min-w-0 flex-col gap-1">
+                        <dt class="type-label text-primary-soft">{{ $stat['label'] }}</dt>
+                        <dd class="type-h2 sm:type-h1 tabular-nums text-surface">{{ $stat['value'] }}</dd>
+                        @unless ($sumberTunggal)
+                            <dd class="type-label-sm text-primary-soft">{{ $stat['source'] }}</dd>
+                        @endunless
+                    </div>
                 @endforeach
-            </div>
+            </dl>
+            @if ($sumberTunggal)
+                <p class="type-label-sm text-primary-soft">{{ preg_match('/^sumber\b/i', $sumberTunggal) ? $sumberTunggal : 'Sumber: '.$sumberTunggal }}</p>
+            @endif
         </div>
     </section>
 
     {{-- Layanan informasi --}}
     <section aria-labelledby="layanan-judul" class="bg-surface">
-        <div class="container-page flex flex-col gap-6 pb-12 pt-8 lg:gap-8 lg:pb-[72px]">
+        <div class="container-page flex flex-col gap-6 pb-12 pt-10 lg:gap-8 lg:pb-[72px] lg:pt-14">
             <h2 id="layanan-judul" class="type-h2 md:type-h1 text-text">Layanan informasi</h2>
             <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5 lg:gap-5">
                 @foreach ($content['akses'] as $item)

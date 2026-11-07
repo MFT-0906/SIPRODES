@@ -62,7 +62,7 @@
                     <x-ui.card-stat label="Pembiayaan Netto" :value="Format::rupiah($ringkasan['pembiayaan'])" :source="$sumber" />
                 </div>
 
-                <div class="grid gap-4 lg:grid-cols-2 lg:gap-6">
+                <div class="grid gap-4 lg:grid-cols-2 lg:items-start lg:gap-6">
                     <x-public.tabel-anggaran
                         id="tabel-pendapatan" judul="Pendapatan desa" total-label="Jumlah Pendapatan"
                         :rows="$data['pendapatan']['rows']" :total="$data['pendapatan']['total']"
@@ -144,7 +144,7 @@
                     </article>
                 @empty
                     <x-ui.empty-state
-                        heading="h3" icon="file"
+                        heading="h3" icon="file" ringkas
                         :title="'Dokumen APBDes tahun '.$tahun.' belum tersedia'"
                         description="Dokumen akan ditampilkan setelah diunggah oleh perangkat desa."
                     />

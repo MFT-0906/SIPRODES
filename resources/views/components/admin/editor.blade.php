@@ -32,7 +32,7 @@
                 <button
                     type="button" aria-label="{{ $nama }}" title="{{ $nama }}"
                     x-on:click="terapkan({{ Js::from($jenis) }}, {{ Js::from($awal) }}, {{ Js::from($akhir) }}, {{ Js::from($contoh) }})"
-                    class="min-h-11 rounded-[6px] px-2.5 type-label text-text hover:bg-primary-soft"
+                    class="min-h-11 min-w-11 rounded-[6px] px-2.5 type-label text-text hover:bg-primary-soft"
                 >{{ $teks }}</button>
             @endforeach
         </div>

@@ -11,6 +11,7 @@
             <p class="type-body max-w-[560px] text-muted">Mohon maaf, halaman belum dapat ditampilkan. Silakan coba lagi beberapa saat lagi.</p>
             <div class="mt-2 flex flex-col gap-3 sm:flex-row">
                 <x-ui.button :href="route('home')" icon="home">Kembali ke Beranda</x-ui.button>
+                <x-ui.button :href="route('kontak')" variant="secondary" icon="phone">Hubungi Desa</x-ui.button>
             </div>
         </div>
     </section>

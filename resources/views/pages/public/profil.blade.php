@@ -22,7 +22,7 @@
 
     {{-- Navigasi bagian --}}
     <nav aria-label="Bagian profil" x-data="sectionNav(['sejarah', 'visi-misi', 'struktur', 'lokasi'])" class="border-b border-border bg-surface">
-        <div class="container-page flex gap-2 overflow-x-auto py-5">
+        <div class="container-page flex flex-wrap gap-2 py-5">
             @foreach ([['sejarah', 'Sejarah'], ['visi-misi', 'Visi dan Misi'], ['struktur', 'Struktur Pemerintahan'], ['lokasi', 'Lokasi']] as [$id, $label])
                 <x-ui.chip
                     href="#{{ $id }}" class="shrink-0"
@@ -53,7 +53,7 @@
                             </div>
                         @endforeach
                     </dl>
-                    <p class="type-label-sm text-muted">{{ $content['fakta_sumber'] }}</p>
+                    <p class="type-label-sm text-muted">{{ preg_match('/^sumber\b/i', $content['fakta_sumber']) ? $content['fakta_sumber'] : 'Sumber: '.$content['fakta_sumber'] }}</p>
                 </aside>
             </section>
 
@@ -65,23 +65,40 @@
                         <x-ui.badge tone="peringatan">Menunggu naskah resmi desa</x-ui.badge>
                     @endunless
                 </div>
-                <div class="grid gap-6 lg:grid-cols-2">
-                    <div class="flex flex-col gap-3 rounded-card bg-primary p-6 lg:p-8">
-                        <p class="type-label-sm text-accent-soft">VISI</p>
-                        <p class="type-h2 text-surface">{{ $content['visi_misi']['visi'] }}</p>
+                @if (blank($content['visi_misi']['visi']) && $content['visi_misi']['misi'] === [])
+                    {{-- Belum ada naskah sama sekali: keterangan jujur, bukan visi dan misi penampung. --}}
+                    <x-ui.empty-state
+                        icon="building" heading="h3"
+                        title="Naskah visi dan misi belum tersedia"
+                        description="Visi dan misi akan ditampilkan setelah naskah resminya disahkan dan diverifikasi oleh pemerintah desa."
+                    />
+                @else
+                    <div class="grid gap-6 lg:grid-cols-2">
+                        <div class="flex flex-col gap-3 rounded-card bg-primary p-6 lg:p-8">
+                            <p class="type-label-sm text-accent-soft">VISI</p>
+                            @if (filled($content['visi_misi']['visi']))
+                                <p class="type-h2 text-surface">{{ $content['visi_misi']['visi'] }}</p>
+                            @else
+                                <p class="type-body text-primary-soft">Naskah visi belum tersedia.</p>
+                            @endif
+                        </div>
+                        <div class="flex flex-col gap-4 rounded-[14px] border border-border bg-surface p-6 lg:p-8">
+                            <p class="type-label-sm text-primary">MISI</p>
+                            @if ($content['visi_misi']['misi'] !== [])
+                                <ol class="flex flex-col gap-4">
+                                    @foreach ($content['visi_misi']['misi'] as $misi)
+                                        <li class="flex items-start gap-3">
+                                            <span class="flex size-7 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft type-label text-primary">{{ $loop->iteration }}</span>
+                                            <span class="type-body text-text">{{ $misi }}</span>
+                                        </li>
+                                    @endforeach
+                                </ol>
+                            @else
+                                <p class="type-body text-muted">Naskah misi belum tersedia.</p>
+                            @endif
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-4 rounded-[14px] border border-border bg-surface p-6 lg:p-8">
-                        <p class="type-label-sm text-primary">MISI</p>
-                        <ol class="flex flex-col gap-4">
-                            @foreach ($content['visi_misi']['misi'] as $misi)
-                                <li class="flex items-start gap-3">
-                                    <span class="flex size-7 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft type-label text-primary">{{ $loop->iteration }}</span>
-                                    <span class="type-body text-text">{{ $misi }}</span>
-                                </li>
-                            @endforeach
-                        </ol>
-                    </div>
-                </div>
+                @endif
             </section>
 
             {{-- Struktur pemerintahan --}}
