@@ -4,12 +4,16 @@
 @endphp
 
 <header
-    x-data="{ open: false }"
+    x-data="{ open: false, gulir: false }"
+    x-init="gulir = window.scrollY > 8"
     x-on:keydown.escape.window="open = false"
     x-on:resize.window="if (window.innerWidth >= 1024) open = false"
-    class="on-dark bg-primary"
+    x-on:scroll.window.passive="gulir = window.scrollY > 8"
+    x-bind:class="gulir && 'shadow-[0_6px_20px_rgb(20_73_26/0.25)]'"
+    class="on-dark sticky top-0 z-40 bg-primary transition-shadow duration-300"
 >
-    <div class="container-page flex items-center justify-between py-2.5 lg:py-[18px]">
+    {{-- Header lengket: saat halaman digulir, tingginya sedikit mengecil dan muncul bayangan. --}}
+    <div class="container-page flex items-center justify-between py-2.5 transition-[padding] duration-300 lg:py-[18px]" x-bind:class="gulir && 'lg:py-2.5!'">
         <x-public.logo tone="gelap" />
 
         {{-- Navigasi desktop (>= 1024 px) --}}

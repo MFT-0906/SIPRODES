@@ -7,12 +7,12 @@
     {{-- Hero --}}
     <section aria-labelledby="hero-judul" class="bg-background">
         <div class="container-page flex flex-col gap-6 py-8 md:flex-row md:items-center md:gap-10 md:py-10 lg:gap-16 lg:py-[72px]">
-            <div class="order-2 flex min-w-0 flex-col gap-4 md:order-1 md:flex-1 lg:gap-5">
-                <p class="type-label text-primary">{{ $content['hero']['eyebrow'] }}</p>
-                <h1 id="hero-judul" class="type-display text-text">{{ $content['hero']['judul'] }}</h1>
-                <p class="type-body text-muted lg:type-body-lg">{{ $content['hero']['deskripsi'] }}</p>
+            <div class="pembuka order-2 flex min-w-0 flex-col gap-4 md:order-1 md:flex-1 lg:gap-5">
+                <p class="type-label text-primary" style="--urutan: 0">{{ $content['hero']['eyebrow'] }}</p>
+                <h1 id="hero-judul" class="type-display text-text" style="--urutan: 1">{{ $content['hero']['judul'] }}</h1>
+                <p class="type-body text-muted lg:type-body-lg" style="--urutan: 2">{{ $content['hero']['deskripsi'] }}</p>
 
-                <div class="flex flex-col gap-3 pt-2 lg:flex-row lg:flex-wrap">
+                <div class="flex flex-col gap-3 pt-2 lg:flex-row lg:flex-wrap" style="--urutan: 3">
                     <x-ui.button :href="route('apbdes')" icon="file">Lihat APBDes</x-ui.button>
                     <x-ui.button :href="route('aspirasi.create')" variant="accent" icon="message">Sampaikan aspirasi</x-ui.button>
                     <div class="hidden lg:-ml-3.5 lg:block">
@@ -21,9 +21,13 @@
                 </div>
             </div>
 
-            {{-- TODO: ganti dengan foto asli desa yang telah disetujui (bukan foto AI/stok). --}}
+            {{-- Foto asli desa yang telah disetujui ditampilkan bila ada; sebelum itu tampil ilustrasi ladang jagung (bukan foto AI/stok). --}}
             <div class="order-1 md:order-2 md:w-[320px] md:shrink-0 lg:w-[480px] xl:w-[576px]">
-                <x-ui.image-placeholder caption="Foto desa" class="h-[190px] rounded-card md:h-[280px] lg:h-[400px]" />
+                @if ($content['hero']['foto'])
+                    <img src="{{ $content['hero']['foto'] }}" alt="Pemandangan Desa Marga Agung" loading="lazy" class="h-[220px] w-full rounded-card object-cover md:h-[280px] lg:h-[400px]">
+                @else
+                    <x-public.ilustrasi-ladang class="h-[220px] rounded-card md:h-[280px] lg:h-[400px]" />
+                @endif
             </div>
         </div>
     </section>
@@ -37,11 +41,15 @@
                 $sumberStatistik = collect($statistik)->pluck('source')->unique();
                 $sumberTunggal = $sumberStatistik->count() === 1 ? $sumberStatistik->first() : null;
             @endphp
-            <dl class="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 lg:gap-x-8">
+            <dl x-data x-muncul class="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 lg:gap-x-8">
                 @foreach ($statistik as $stat)
-                    <div class="flex min-w-0 flex-col gap-1">
+                    <div class="bertahap flex min-w-0 flex-col gap-1 border-l-2 border-accent/70 pl-3 lg:pl-4" style="--urutan: {{ $loop->index }}">
                         <dt class="type-label text-primary-soft">{{ $stat['label'] }}</dt>
-                        <dd class="type-h2 sm:type-h1 tabular-nums text-surface">{{ $stat['value'] }}</dd>
+                        {{-- Angka asli untuk pembaca layar; versi beranimasi hanya visual. --}}
+                        <dd class="type-h2 sm:type-h1 tabular-nums text-surface">
+                            <span class="sr-only">{{ $stat['value'] }}</span>
+                            <span aria-hidden="true" x-data="hitungNaik(@js($stat['value']))" x-text="tampil">{{ $stat['value'] }}</span>
+                        </dd>
                         @unless ($sumberTunggal)
                             <dd class="type-label-sm text-primary-soft">{{ $stat['source'] }}</dd>
                         @endunless
@@ -58,12 +66,13 @@
     <section aria-labelledby="layanan-judul" class="bg-surface">
         <div class="container-page flex flex-col gap-6 pb-12 pt-10 lg:gap-8 lg:pb-[72px] lg:pt-14">
             <h2 id="layanan-judul" class="type-h2 md:type-h1 text-text">Layanan informasi</h2>
-            <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5 lg:gap-5">
+            <div x-data x-muncul class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5 lg:gap-5">
                 @foreach ($content['akses'] as $item)
                     <x-ui.card-quick
                         :title="$item['title']" :description="$item['description']" :icon="$item['icon']" :href="route($item['route'])"
                         :row="$loop->last"
-                        :class="$loop->last ? 'max-md:col-span-2' : ''"
+                        :class="'bertahap '.($loop->last ? 'max-md:col-span-2' : '')"
+                        :style="'--urutan: '.$loop->index"
                     />
                 @endforeach
             </div>
@@ -83,7 +92,7 @@
                 </div>
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div x-data x-muncul class="grid gap-6 lg:grid-cols-2">
                 @php $unggulan = $content['potensi']['unggulan']; @endphp
                 @if ($unggulan)
                 <article class="flex flex-col overflow-hidden rounded-card bg-primary-dark">
@@ -136,9 +145,10 @@
                         <x-ui.icon name="arrow-right" class="size-[18px]" />
                     </a>
                 </div>
-                <div class="grid gap-4 md:grid-cols-2 lg:gap-5">
+                <div x-data x-muncul class="grid gap-4 md:grid-cols-2 lg:gap-5">
                     @forelse ($content['berita'] as $berita)
                         <x-ui.card-news
+                            class="bertahap" :style="'--urutan: '.$loop->index"
                             :title="$berita['title']" :excerpt="$berita['excerpt']" :date="$berita['date']"
                             :category="$berita['category']" :href="route('berita.show', $berita['slug'])"
                         />
@@ -155,9 +165,10 @@
                         Semua <x-ui.icon name="chevron-right" class="size-4" />
                     </a>
                 </div>
-                <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-1 lg:gap-4">
+                <div x-data x-muncul class="grid gap-3 md:grid-cols-2 lg:grid-cols-1 lg:gap-4">
                     @forelse ($content['agenda'] as $agenda)
                         <x-ui.card-agenda
+                            class="bertahap" :style="'--urutan: '.$loop->index" :relatif="$agenda['relatif'] ?? null"
                             :day="$agenda['day']" :month="$agenda['month']" :title="$agenda['title']"
                             :time="$agenda['time']" :location="$agenda['location']"
                         />
@@ -172,7 +183,7 @@
     {{-- Ajakan Ruang Aspirasi --}}
     <section aria-labelledby="aspirasi-judul" class="bg-background">
         <div class="container-page pb-12 pt-10 lg:pb-[72px] lg:pt-14">
-            <div class="flex flex-col gap-5 rounded-[20px] border border-border bg-surface p-6 md:flex-row md:items-center md:gap-6 md:px-12 md:py-10">
+            <div x-data x-muncul class="flex flex-col gap-5 rounded-[20px] border border-border bg-surface p-6 md:flex-row md:items-center md:gap-6 md:px-12 md:py-10">
                 <span class="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
                     <x-ui.icon name="message" class="size-[26px]" />
                 </span>

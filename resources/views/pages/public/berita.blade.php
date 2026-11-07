@@ -75,7 +75,7 @@
 
                     @forelse ($agendaMendatang as $agenda)
                         @php [$hari, $bulan] = Format::hariBulan($agenda['tanggal']); @endphp
-                        <x-ui.card-agenda :day="$hari" :month="$bulan" :title="$agenda['title']" :time="$agenda['time']" :location="$agenda['location']" />
+                        <x-ui.card-agenda :day="$hari" :month="$bulan" :title="$agenda['title']" :time="$agenda['time']" :location="$agenda['location']" :relatif="$agenda['relatif'] ?? null" />
                     @empty
                         <p class="type-body text-muted">Belum ada agenda mendatang.</p>
                     @endforelse
@@ -89,7 +89,7 @@
                             <div class="flex flex-col gap-3 p-4 pt-1">
                                 @foreach ($agendaLewat as $agenda)
                                     @php [$hari, $bulan] = Format::hariBulan($agenda['tanggal']); @endphp
-                                    <x-ui.card-agenda :day="$hari" :month="$bulan" :title="$agenda['title']" :time="$agenda['time']" :location="$agenda['location']" />
+                                    <x-ui.card-agenda :day="$hari" :month="$bulan" :title="$agenda['title']" :time="$agenda['time']" :location="$agenda['location']" :relatif="$agenda['relatif'] ?? null" />
                                 @endforeach
                             </div>
                         </details>
