@@ -1,4 +1,4 @@
-@props(['tone' => 'gelap', 'caption' => null, 'href' => null]) {{-- gelap: untuk header hijau; terang: untuk latar terang; caption/href menggantikan teks "Pemerintah Desa" dan tautan beranda --}}
+@props(['tone' => 'gelap', 'caption' => null, 'href' => null, 'tanpaCaption' => false]) {{-- gelap: untuk header hijau; terang: untuk latar terang; caption/href menggantikan teks "Pemerintah Desa" dan tautan beranda; tanpaCaption: hanya satu baris "Desa {nama}" --}}
 
 @php
     // Logo sementara (ikon pada kotak kuning). TODO: ganti dengan logo resmi desa setelah dikonfirmasi.
@@ -11,7 +11,9 @@
         <x-ui.icon name="sprout" class="size-6" />
     </span>
     <span class="flex flex-col leading-[1.4]">
-        <span class="type-label-sm {{ $gelap ? 'text-primary-soft' : 'text-muted' }}">{{ $caption ?? $identitas['sebutan'] }}</span>
-        <span class="type-h3 {{ $gelap ? 'text-surface' : 'text-text' }}">{{ $identitas['nama'] }}</span>
+        @unless ($tanpaCaption)
+            <span class="type-label-sm {{ $gelap ? 'text-primary-soft' : 'text-muted' }}">{{ $caption ?? $identitas['sebutan'] }}</span>
+        @endunless
+        <span class="type-h3 {{ $gelap ? 'text-surface' : 'text-text' }}">{{ $tanpaCaption ? 'Desa '.$identitas['nama'] : $identitas['nama'] }}</span>
     </span>
 </a>

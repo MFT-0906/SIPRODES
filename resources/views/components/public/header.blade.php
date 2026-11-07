@@ -14,7 +14,7 @@
 >
     {{-- Header lengket: saat halaman digulir, tingginya sedikit mengecil dan muncul bayangan. --}}
     <div class="container-page flex items-center justify-between py-2.5 transition-[padding] duration-300 lg:py-[18px]" x-bind:class="gulir && 'lg:py-2.5!'">
-        <x-public.logo tone="gelap" />
+        <x-public.logo tone="gelap" tanpa-caption />
 
         {{-- Navigasi desktop (>= 1024 px) --}}
         <nav aria-label="Navigasi utama" class="hidden items-center gap-1 lg:flex">
@@ -55,7 +55,7 @@
         class="fixed inset-0 z-50 flex flex-col bg-background lg:hidden"
     >
         <div class="flex items-center justify-between bg-primary px-4 py-2.5">
-            <x-public.logo tone="gelap" />
+            <x-public.logo tone="gelap" tanpa-caption />
             <button
                 type="button" x-on:click="open = false" autofocus aria-label="Tutup menu"
                 class="flex size-11 items-center justify-center rounded-[10px] bg-primary-dark text-surface"
