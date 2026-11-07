@@ -147,7 +147,7 @@ class KontenPublik
                 ->map(function (Agenda $a) {
                     [$hari, $bulan] = Format::hariBulan($a->tanggal);
 
-                    return ['day' => $hari, 'month' => $bulan, 'title' => $a->judul, 'time' => $this->waktu($a), 'location' => $a->lokasi ?: null];
+                    return ['day' => $hari, 'month' => $bulan, 'title' => $a->judul, 'time' => $this->waktu($a), 'location' => $a->lokasi ?: null, 'relatif' => self::relatif($a)];
                 })->all(),
             'aspirasi' => [
                 'judul' => 'Ada pertanyaan, keluhan, atau saran?',
@@ -349,7 +349,24 @@ class KontenPublik
             'title' => $a->judul,
             'time' => (new self)->waktu($a),
             'location' => $a->lokasi ?: null,
+            'relatif' => self::relatif($a),
         ];
+    }
+
+    /**
+     * Penanda jarak waktu untuk agenda dekat: "Hari ini", "Besok", atau "N hari lagi" (sampai 7 hari).
+     * Agenda yang lebih jauh tidak diberi penanda agar penanda tetap bermakna.
+     */
+    public static function relatif(Agenda $a): ?string
+    {
+        $selisih = (int) now()->startOfDay()->diffInDays($a->tanggal->copy()->startOfDay(), false);
+
+        return match (true) {
+            $selisih === 0 => 'Hari ini',
+            $selisih === 1 => 'Besok',
+            $selisih > 1 && $selisih <= 7 => $selisih.' hari lagi',
+            default => null,
+        };
     }
 
     private function waktu(Agenda $a): string

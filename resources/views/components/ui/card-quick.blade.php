@@ -1,10 +1,10 @@
 @props(['title', 'description', 'href', 'icon' => 'wallet', 'row' => false]) {{-- row: di layar HP tampil mendatar dengan panah (mis. akses Ruang Aspirasi) --}}
 
 <a href="{{ $href }}" {{ $attributes->class([
-    'flex flex-col items-start gap-3 rounded-card border border-border bg-surface p-5 transition-colors hover:border-primary',
+    'group flex flex-col items-start gap-3 rounded-card border border-border bg-surface p-5 transition-colors hover:border-primary',
     'max-md:flex-row max-md:items-center max-md:gap-3.5 max-md:p-4' => $row,
 ]) }}>
-    <span class="flex size-11 shrink-0 items-center justify-center rounded-[10px] bg-primary-soft text-primary">
+    <span class="flex size-11 shrink-0 items-center justify-center rounded-[10px] bg-primary-soft text-primary transition-[background-color,color,transform] duration-300 group-hover:-rotate-6 group-hover:bg-primary group-hover:text-accent">
         <x-ui.icon :name="$icon" class="size-[22px]" />
     </span>
     <span class="flex min-w-0 flex-1 flex-col gap-3 {{ $row ? 'max-md:gap-0.5' : '' }}">

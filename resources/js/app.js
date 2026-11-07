@@ -431,5 +431,100 @@ Alpine.data('petaDesa', (config = {}) => ({
     },
 }));
 
+/*
+ * Gerak saat digulir. Tanpa dependensi tambahan: IntersectionObserver bawaan peramban.
+ * Pengguna yang memilih "kurangi gerak" langsung melihat keadaan akhir tanpa animasi.
+ */
+const kurangiGerak = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const saatTerlihat = (el, callback, ambang = 0.2) => {
+    if (kurangiGerak() || !('IntersectionObserver' in window)) {
+        callback();
+
+        return;
+    }
+
+    const pengamat = new IntersectionObserver((entri) => {
+        if (entri.some((e) => e.isIntersecting)) {
+            pengamat.disconnect();
+            callback();
+        }
+    }, { threshold: ambang, rootMargin: '0px 0px -40px 0px' });
+
+    pengamat.observe(el);
+};
+
+// x-muncul: elemen muncul halus saat masuk layar. Bagian dalamnya bisa ikut beranimasi lewat [data-muncul="tampil"].
+Alpine.directive('muncul', (el) => {
+    if (kurangiGerak()) {
+        el.dataset.muncul = 'tampil';
+
+        return;
+    }
+
+    el.dataset.muncul = 'siap';
+    saatTerlihat(el, () => requestAnimationFrame(() => { el.dataset.muncul = 'tampil'; }));
+});
+
+/**
+ * Angka yang menghitung naik saat terlihat, mis. "± 4.492 jiwa". Awalan dan satuan dipertahankan;
+ * teks asli tetap ada di HTML sehingga pembaca layar dan mesin pencari membaca angka sebenarnya.
+ */
+Alpine.data('hitungNaik', (teks = '') => ({
+    tampil: teks,
+
+    init() {
+        const cocok = String(teks).match(/^(\D*?)(\d[\d.]*)(.*)$/);
+        if (!cocok || kurangiGerak()) {
+            return;
+        }
+
+        const [, awalan, angkaTeks, akhiran] = cocok;
+        const target = parseInt(angkaTeks.replace(/\./g, ''), 10);
+        this.tampil = awalan + '0' + akhiran;
+
+        saatTerlihat(this.$el, () => {
+            const mulai = performance.now();
+            const durasi = 1400;
+            const langkah = (sekarang) => {
+                const t = Math.min((sekarang - mulai) / durasi, 1);
+                const nilai = Math.round(target * (1 - (1 - t) ** 4));
+                this.tampil = awalan + nilai.toLocaleString('id-ID') + akhiran;
+                if (t < 1) {
+                    requestAnimationFrame(langkah);
+                } else {
+                    this.tampil = teks;
+                }
+            };
+            requestAnimationFrame(langkah);
+        }, 0.5);
+    },
+}));
+
+/**
+ * Diagram donat belanja per bidang. Busur digambar di server (Blade); komponen ini hanya mengatur
+ * bagian yang disorot (arahkan kursor, ketuk, atau fokus keyboard pada keterangan) dan teks di tengah donat.
+ */
+Alpine.data('donatAnggaran', (bagian = [], bawaan = {}) => ({
+    bagian,
+    aktif: null,
+
+    get sorot() {
+        return this.aktif === null ? bawaan : this.bagian[this.aktif];
+    },
+
+    pilih(i) {
+        this.aktif = i;
+    },
+
+    lepas() {
+        this.aktif = null;
+    },
+
+    redup(i) {
+        return this.aktif !== null && this.aktif !== i;
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();
