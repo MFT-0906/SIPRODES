@@ -6,7 +6,7 @@
         <x-public.logo tone="terang" caption="Dashboard Admin" :href="route('admin.dashboard')" />
     </div>
 
-    <nav aria-label="Menu admin" class="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto p-3">
+    <nav aria-label="Menu admin" class="petunjuk-gulir flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto p-3">
         @foreach ($menu as $grup)
             <p class="pb-1 pl-3 pt-2.5 type-label-sm uppercase text-muted">{{ $grup['label'] }}</p>
             @foreach ($grup['items'] as $item)

@@ -60,9 +60,10 @@
                     </section>
                 @else
                     {{-- Catatan privasi ringkas untuk HP (versi lengkap ada di bawah formulir). --}}
-                    <x-ui.alert tone="info" title="Privasi Anda" class="lg:hidden">
-                        Pesan hanya dibaca perangkat desa yang berwenang dan tidak ditampilkan ke publik. NIK tidak wajib.
-                    </x-ui.alert>
+                    <p class="flex items-start gap-3 rounded-[12px] bg-primary-soft p-3.5 type-body-sm text-text lg:hidden">
+                        <x-ui.icon name="shield" class="mt-0.5 size-5 text-primary" />
+                        <span>Pesan hanya dibaca perangkat desa yang berwenang dan tidak ditampilkan ke publik. NIK tidak wajib.</span>
+                    </p>
 
                     <form
                         method="post" action="{{ route('aspirasi.store') }}" novalidate

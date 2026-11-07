@@ -149,3 +149,83 @@
 - [ ] Matikan MySQL sebentar: halaman publik menampilkan halaman galat desa (bukan jejak teknis); nyalakan lagi dan situs pulih sendiri.
 - [ ] Minta satu-dua perangkat desa mencoba memakai admin tanpa panduan; catat hal yang membingungkan.
 - [ ] Semua keputusan desa di `docs/laporanBE.md` §5 sudah dikonfirmasi atau sengaja memakai nilai bawaan.
+
+## Perapian tampilan — peta, menu samping admin, bilah editor
+
+- [ ] Buka **Profil Desa** dan **Kontak & Lokasi** di Chrome, Firefox, dan Safari (iOS): atribusi "Leaflet | Citra © Esri…" terbaca jelas di atas citra satelit yang terang maupun gelap; tombol + dan − berukuran besar dan mudah ditekan dengan jempol.
+- [ ] Di HP 390 px, geser dan perbesar peta dengan dua jari; pastikan kontrol zoom tidak menutupi penanda lokasi.
+- [ ] Masuk admin di laptop dengan layar pendek (tinggi sekitar 700–800 px): bayangan tipis muncul di dasar menu samping bila masih ada item di bawah; gulir menu sampai "Data Master" dan "Akun & Hak Akses" tampil penuh; bayangan di dasar hilang saat sudah di ujung.
+- [ ] Buka laci menu admin di HP: bayangan gulir tampil wajar dan tidak menimpa teks menu.
+- [ ] Tambah/Ubah Berita: ketuk tombol B, I, H2, Daftar, Daftar bernomor, dan Tautan dengan jempol di HP; tidak ada yang meleset, dan bilah format membungkus rapi ke baris kedua tanpa menggeser halaman.
+
+## Perapian tampilan — visi-misi, kartu kontak, halaman 403
+
+- [ ] **Profil Desa → Visi dan misi** di database yang masih kosong: tampil keterangan "Naskah visi dan misi belum tersedia" dan lencana "Menunggu naskah resmi desa", tanpa "Butir misi 1–4". Isi hanya visi (admin → Profil → Visi & Misi) lalu muat ulang: visi tampil dan misi berketerangan "Naskah misi belum tersedia"; isi keduanya dan centang naskah resmi: lencana hilang.
+- [ ] **Kontak & Lokasi** sebelum data diverifikasi: dua kartu saja ("Telepon dan email resmi" dan "Formulir daring"). Setelah admin memverifikasi kontak dan mengisi telepon serta email: kartu telepon dan email tampil terpisah dengan tombol "Telepon" dan "Kirim email" yang bekerja di HP. Isi telepon saja: tidak ada kartu email kosong.
+- [ ] Buat satu akun **Staf** dengan satu modul (mis. Berita), masuk, lalu ketik langsung `/admin/apbdes` di bilah alamat: tampil halaman "Akses tidak diizinkan" di dalam kerangka admin dengan menu samping hanya berisi modul milik Staf, dan tombol "Ke Ringkasan" berfungsi. Ulangi di HP 390 px (menu laci tetap bisa dibuka).
+- [ ] Keluar dari admin lalu buka `/admin/apbdes`: diarahkan ke halaman masuk (bukan halaman 403).
+- [ ] **Konfirmasi ke desa**: nomor telepon, email resmi, jam layanan kantor, serta naskah visi dan misi yang sah (data ini belum ada, tidak dikarang).
+
+## Perapian tampilan — poles kecil, catatan berulang, ritme Beranda
+
+- [ ] **Beranda** di Chrome, Firefox, dan Safari (iOS), layar lebar dan HP: pita hijau "Data singkat desa" terbaca jelas (putih di atas hijau), sumber angka tertulis sekali di bawah deret angka, dan "Layanan informasi" tampak terpisah di bawahnya. **Putuskan bersama desa apakah pita hijau ini diterima**, karena menyimpang dari desain Figma (kartu putih).
+- [ ] Beranda di 1024–1280 px: tombol "Jelajahi profil desa" sejajar dengan paragraf; catat bila turun ke baris kedua dan apakah itu mengganggu.
+- [ ] **Profil Desa** di HP 360–390 px: keempat tab (Sejarah, Visi dan Misi, Struktur Pemerintahan, Lokasi) terlihat tanpa menggeser; ketuk tiap tab dan pastikan halaman menggulir ke bagian yang benar serta tab aktif berganti saat menggulir.
+- [ ] **Kontak & Lokasi**: tombol "Buka di Google Maps" berada di dasar kartu Kantor desa di desktop dan tidak terpotong di HP.
+- [ ] **Berita**: kotak pilihan kategori dan kotak pencarian sejajar di dasar pada layar ≥ 1024 px; di HP tersusun bertumpuk tanpa celah janggal.
+- [ ] **Potensi Desa → Kelompok tani**: selama belum ada kontak yang disetujui, tidak ada kolom Kontak dan hanya satu catatan di bawah tabel. Di admin, setujui satu kontak kelompok tani (centang "Kontak disetujui untuk dipublikasikan") lalu muat ulang halaman publik: kolom Kontak muncul, kelompok lain berketerangan "Belum disetujui untuk publikasi". Periksa juga tampilan HP (kartu bertumpuk).
+- [ ] **Transparansi APBDes** pilih tahun tanpa dokumen: keadaan kosong arsip berukuran ringkas dan tidak menimpa konten di bawahnya.
+- [ ] **Ruang Aspirasi** di HP: kotak "Isi Pesan" tidak punya pegangan ubah ukuran; di laptop pegangan masih ada dan hanya bisa menarik ke bawah.
+- [ ] Jika Anda menjalankan `npm run dev`, hentikan dengan **Ctrl+C** (bukan dimatikan paksa) agar berkas `public/hot` dihapus Vite; bila berkas itu tertinggal, halaman tampil tanpa gaya.
+
+## Perapian tampilan — halaman Profil Desa
+
+- [ ] **Profil Desa → Sejarah**: kotak "Fakta singkat" menutup dengan "Sumber: …"; bila admin menulis sumber yang sudah diawali kata "Sumber", kata itu tidak muncul dua kali.
+- [ ] **Profil Desa → Lokasi** dan **Kontak & Lokasi**: keterangan di bawah peta berbunyi "Gunakan tombol + dan − untuk memperbesar peta."; di laptop, klik peta lalu gulir dengan roda mouse tetap bisa memperbesar, dan di HP cubit dua jari bekerja.
+- [ ] **Konfirmasi ke desa**: foto dan nama resmi perangkat desa (masih data contoh).
+
+## Perapian tampilan — halaman Kontak & Lokasi
+
+- [ ] Di HP, ketuk tombol "Buka di Google Maps" dan tautan "Lihat peta lebih besar": keduanya membuka tab baru dengan lokasi yang benar (Google Maps dan OpenStreetMap).
+- [ ] **Konfirmasi ke desa**: telepon, email, dan jam layanan kantor. Selama belum diisi dan diverifikasi, halaman menampilkan satu kartu keterangan (bukan kartu kosong).
+
+## Perapian tampilan — halaman Ruang Aspirasi
+
+- [ ] Di HP, buka **Ruang Aspirasi**: catatan privasi ringkas di atas formulir berwarna hijau dengan ikon perisai; peringatan kuning di dalam formulir tetap ada; kotak "Privasi Anda" lengkap muncul di bawah formulir.
+- [ ] Kirim satu aspirasi sungguhan dari HP: kartu "Aspirasi berhasil dikirim" tampil dan dibaca pembaca layar; pesan itu muncul di admin dengan status Baru. Kirim formulir kosong: ringkasan galat dan pesan per kolom tampil.
+- [ ] Kirim lebih dari 5 aspirasi dalam 10 menit dari satu jaringan: tampil halaman "Terlalu banyak permintaan" dengan keterangan yang ramah.
+- [ ] **Konfirmasi ke desa**: apakah NIK dikumpulkan (`ASPIRASI_NIK`), masa simpan 24 bulan, dan kebijakan balasan.
+
+## Perapian tampilan — halaman Transparansi APBDes
+
+- [ ] Buka **Transparansi APBDes** di laptop: tabel Pendapatan dan Belanja berdampingan; tabel yang barisnya lebih sedikit lebih pendek dan tidak menyisakan ruang kosong di dalam kartu. Di HP, tabel menjadi kartu bertumpuk dengan tombol "Lihat rincian lengkap".
+- [ ] Ganti tahun lewat pemilih (2026, 2025, 2024): angka, tabel, dan diagram berganti; unduh satu dokumen PDF dan pastikan berkas terbuka.
+- [ ] Hapus sementara semua periode APBDes di database percobaan (jangan di produksi): halaman menampilkan "Data APBDes belum dipublikasikan" tanpa jejak galat.
+
+## Perapian tampilan — halaman Potensi Desa
+
+- [ ] Buka **Potensi Desa → UMKM** di HP: kartu bertumpuk, tombol WhatsApp hanya pada usaha yang kontaknya disetujui dan membuka WhatsApp dengan nomor yang benar.
+- [ ] Cari kata yang tidak ada (mis. "zzzxyz") di tab UMKM dan Pertanian: tampil "Tidak ada ... yang cocok dengan pencarian." tanpa baris "Menampilkan 0–0 dari 0 UMKM"; tautan "Hapus pencarian" mengembalikan daftar penuh pada tab yang sama.
+- [ ] Pindah tab dengan keyboard (panah kiri/kanan pada tab) dan dengan sentuhan; tab yang dipilih tetap aktif setelah pencarian dikirim.
+- [ ] **Konfirmasi ke desa**: foto resmi komoditas dan produk UMKM (izin pemilik), serta kontak kelompok tani yang boleh dipublikasikan.
+
+## Perapian tampilan — halaman Berita & Agenda
+
+- [ ] Di laptop, buka **Berita & Agenda** dan gulir daftar berita: kolom "Agenda desa" ikut menempel di atas layar dan tidak menimpa teks lain; di layar pendek (tinggi sekitar 700 px) kolom agenda bisa digulir sendiri sampai "Agenda yang telah lewat" terjangkau.
+- [ ] Buka "Agenda yang telah lewat" dengan keyboard (Tab, lalu Enter atau Spasi): bagian itu terbuka dan fokusnya terlihat jelas, tidak terpotong di tepi kolom.
+- [ ] Di HP dan tablet, kolom agenda tetap di bawah daftar berita dan tidak menempel.
+- [ ] Filter kategori dan pencarian: pilih kategori, cari kata, lalu hapus filter; daftar dan paginasi menyesuaikan.
+- [ ] **Konfirmasi ke desa**: foto sampul berita asli (kini penampung).
+
+## Perapian tampilan — admin: dialog, laci menu, tautan atas
+
+- [ ] Di laptop dengan jendela peramban pendek (tinggi sekitar 600–650 px) dan di HP, buka **Akun & Hak Akses → Tambah Akun**: gulir dialog sampai tombol "Buat Akun" terlihat dan bisa ditekan; klik di area gelap di luar dialog menutupnya; tombol Esc juga menutup.
+- [ ] Ulangi di **Berita → ikon hapus** (dialog "Hapus berita ini?") dan di Agenda: dialog tampil di tengah, fokus berada di dalamnya, Batal menutupnya tanpa menghapus.
+- [ ] Di HP, buka laci menu admin lewat tombol menu, tekan Tab berulang: fokus tetap di dalam laci; Esc menutupnya dan fokus kembali ke tombol menu.
+- [ ] Di HP, tombol "Lihat situs publik" (ikon mata) di bilah atas mudah ditekan dan membuka situs publik di tab baru.
+
+## Perapian tampilan — tipografi, ringkasan Staf, halaman 500
+
+- [ ] Di HP, judul besar (Beranda, Profil, APBDes) terpatah seimbang tanpa satu kata menggantung sendirian; angka pada kartu statistik dan tabel APBDes rata dan sejajar.
+- [ ] Masuk sebagai akun **Staf** dengan satu-dua modul: di bawah sapaan Ringkasan tertulis "Modul Anda: …" dan menu samping cocok dengan daftar itu. Buat Staf tanpa modul: tertulis "Belum ada modul yang ditugaskan kepada Anda. Hubungi Super Admin desa." Masuk sebagai Super Admin: baris itu tidak ada.
+- [ ] Di server percobaan (bukan produksi), picu galat 500 sengaja: halaman "Terjadi gangguan pada situs" menampilkan tombol "Kembali ke Beranda" dan "Hubungi Desa", tanpa jejak teknis.

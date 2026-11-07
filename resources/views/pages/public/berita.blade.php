@@ -20,7 +20,7 @@
     <div class="bg-surface">
         <div class="container-page flex flex-col gap-8 pb-14 pt-8 lg:gap-12 lg:pb-20 lg:pt-10">
             {{-- Filter kategori dan pencarian --}}
-            <form method="get" action="{{ route('berita.index') }}" role="search" class="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+            <form method="get" action="{{ route('berita.index') }}" role="search" class="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-6">
                 <div class="flex flex-col gap-3 w-full lg:w-[250px] lg:shrink-0">
                     <x-ui.select
                         name="kategori"
@@ -69,7 +69,8 @@
                 </section>
 
                 {{-- Agenda --}}
-                <aside aria-labelledby="agenda-judul" class="flex flex-col gap-4">
+                {{-- Di layar lebar agenda ikut menempel saat daftar berita panjang digulir; tingginya dibatasi agar bagian bawahnya tetap terjangkau. --}}
+                <aside aria-labelledby="agenda-judul" class="flex flex-col gap-4 lg:sticky lg:top-6 lg:-mx-2 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:px-2">
                     <h2 id="agenda-judul" class="type-h2 text-text">Agenda desa</h2>
 
                     @forelse ($agendaMendatang as $agenda)

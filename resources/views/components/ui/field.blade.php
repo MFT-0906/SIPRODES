@@ -47,7 +47,7 @@
             @if ($error) aria-invalid="true" @endif
             @if ($clientValidated) x-bind:aria-invalid="err[{{ $key }}] || {{ $error ? 'true' : 'false' }} ? 'true' : null" x-bind:class="err[{{ $key }}] ? 'border-danger! shadow-[0_0_0_1px_var(--color-danger)]!' : ''" @endif
             @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
-            {{ $attributes->class([$control, 'min-h-30 resize-y']) }}
+            {{ $attributes->class([$control, 'min-h-30 resize-y max-lg:resize-none']) }}
         >{{ $value }}</textarea>
     @else
         <input

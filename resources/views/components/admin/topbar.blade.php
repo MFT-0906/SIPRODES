@@ -19,7 +19,7 @@
     <div class="flex shrink-0 items-center gap-3">
         <a
             href="{{ route('home') }}" target="_blank" rel="noopener"
-            class="flex min-h-11 items-center gap-1.5 rounded-control border border-border px-3 py-2 type-label text-text hover:bg-background"
+            class="flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-control border border-border px-3 py-2 type-label text-text hover:bg-background"
         >
             <x-ui.icon name="eye" class="size-4" />
             <span class="sr-only sm:not-sr-only">Lihat situs publik</span>

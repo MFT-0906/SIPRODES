@@ -10,6 +10,13 @@
     $peta = $identitas['peta'];
     $petaTerverifikasi = $peta['verified'] && filled($peta['url']);
     $wilayah = $statistik['Jumlah dusun']['value'].' · luas ±'.$statistik['Luas wilayah']['value'];
+
+    // Hanya saluran yang sudah diverifikasi yang mendapat kartu sendiri. Bila telepon dan email sama-sama belum
+    // tersedia, keduanya digabung menjadi satu kartu keterangan agar halaman tidak berisi kartu kosong berulang.
+    $adaTelepon = $tersedia('telepon');
+    $adaEmail = $tersedia('email');
+    $jumlahKartu = ($adaTelepon ? 1 : 0) + ($adaEmail ? 1 : 0) + ($adaTelepon || $adaEmail ? 0 : 1) + 1;
+    $kolomKartu = [1 => 'md:grid-cols-1', 2 => 'md:grid-cols-2', 3 => 'md:grid-cols-3'][$jumlahKartu];
 @endphp
 
 @section('content')
@@ -25,31 +32,33 @@
     <div class="bg-surface">
         <div class="container-page flex flex-col gap-6 pb-14 pt-8 lg:gap-8 lg:pb-20 lg:pt-12">
             {{-- Saluran kontak --}}
-            <ul class="grid gap-4 md:grid-cols-3 lg:gap-6">
-                <li class="flex flex-col items-start gap-3 rounded-[14px] border border-border bg-surface p-6">
-                    <span class="flex size-12 items-center justify-center rounded-[12px] bg-primary-soft text-primary"><x-ui.icon name="phone" class="size-6" /></span>
-                    @if ($tersedia('telepon'))
+            <ul class="grid gap-4 {{ $kolomKartu }} lg:gap-6">
+                @if ($adaTelepon)
+                    <li class="flex flex-col items-start gap-3 rounded-[14px] border border-border bg-surface p-6">
+                        <span class="flex size-12 items-center justify-center rounded-[12px] bg-primary-soft text-primary"><x-ui.icon name="phone" class="size-6" /></span>
                         <h2 class="type-h3 text-text">{{ $kontak['telepon']['value'] }}</h2>
                         @if ($tersedia('jam_layanan'))
                             <p class="type-body-sm text-muted">{{ $kontak['jam_layanan']['value'] }}</p>
                         @endif
                         <x-ui.button :href="'tel:'.preg_replace('/[^\d+]/', '', $kontak['telepon']['value'])" variant="secondary" icon="phone" class="mt-auto w-full">Telepon</x-ui.button>
-                    @else
-                        <h2 class="type-h3 text-text">Telepon kantor desa</h2>
-                        <p class="type-body-sm text-muted">Nomor resmi akan ditampilkan setelah diverifikasi oleh pemerintah desa.</p>
-                    @endif
-                </li>
+                    </li>
+                @endif
 
-                <li class="flex flex-col items-start gap-3 rounded-[14px] border border-border bg-surface p-6">
-                    <span class="flex size-12 items-center justify-center rounded-[12px] bg-primary-soft text-primary"><x-ui.icon name="mail" class="size-6" /></span>
-                    @if ($tersedia('email'))
+                @if ($adaEmail)
+                    <li class="flex flex-col items-start gap-3 rounded-[14px] border border-border bg-surface p-6">
+                        <span class="flex size-12 items-center justify-center rounded-[12px] bg-primary-soft text-primary"><x-ui.icon name="mail" class="size-6" /></span>
                         <h2 class="type-h3 break-all text-text">{{ $kontak['email']['value'] }}</h2>
                         <x-ui.button :href="'mailto:'.$kontak['email']['value']" variant="secondary" icon="mail" class="mt-auto w-full">Kirim email</x-ui.button>
-                    @else
-                        <h2 class="type-h3 text-text">Email resmi desa</h2>
-                        <p class="type-body-sm text-muted">Alamat email resmi akan ditampilkan setelah diverifikasi oleh pemerintah desa.</p>
-                    @endif
-                </li>
+                    </li>
+                @endif
+
+                @unless ($adaTelepon || $adaEmail)
+                    <li class="flex flex-col items-start gap-3 rounded-[14px] border border-border bg-surface p-6">
+                        <span class="flex size-12 items-center justify-center rounded-[12px] bg-primary-soft text-primary"><x-ui.icon name="phone" class="size-6" /></span>
+                        <h2 class="type-h3 text-text">Telepon dan email resmi</h2>
+                        <p class="type-body-sm text-muted">Nomor telepon dan alamat email resmi akan ditampilkan setelah diverifikasi oleh pemerintah desa. Sementara itu, gunakan formulir daring.</p>
+                    </li>
+                @endunless
 
                 <li class="flex flex-col items-start gap-3 rounded-[14px] border border-border bg-surface p-6">
                     <span class="flex size-12 items-center justify-center rounded-[12px] bg-primary-soft text-primary"><x-ui.icon name="message" class="size-6" /></span>
@@ -94,7 +103,7 @@
                     </div>
 
                     @if ($petaTerverifikasi)
-                        <x-ui.button :href="$peta['url']" icon="map-pin" target="_blank" rel="noopener noreferrer" class="w-full">
+                        <x-ui.button :href="$peta['url']" icon="map-pin" target="_blank" rel="noopener noreferrer" class="mt-auto w-full">
                             Buka di Google Maps<span class="sr-only"> (membuka tab baru)</span>
                         </x-ui.button>
                     @endif

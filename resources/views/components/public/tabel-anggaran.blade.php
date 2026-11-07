@@ -30,8 +30,8 @@
                     class="border-t border-border type-body-sm text-text max-md:grid max-md:grid-cols-[1fr_auto] max-md:gap-x-4 max-md:gap-y-0.5 max-md:px-4 max-md:py-3 {{ $adaLipat && $loop->index >= $batasHp ? 'max-md:hidden' : '' }}"
                 >
                     <td role="cell" class="px-6 py-3.5 max-md:col-span-2 max-md:p-0 max-md:type-label">{{ $baris['uraian'] }}</td>
-                    <td role="cell" class="px-3 py-3.5 text-right max-md:p-0 max-md:text-left">{{ Format::rupiah($baris['anggaran']) }}</td>
-                    <td role="cell" class="py-3.5 pl-3 pr-6 text-right max-md:p-0 max-md:text-muted">{{ $persen($baris['anggaran']) }}</td>
+                    <td role="cell" class="px-3 py-3.5 text-right tabular-nums max-md:p-0 max-md:text-left">{{ Format::rupiah($baris['anggaran']) }}</td>
+                    <td role="cell" class="py-3.5 pl-3 pr-6 text-right tabular-nums max-md:p-0 max-md:text-muted">{{ $persen($baris['anggaran']) }}</td>
                 </tr>
             @endforeach
 
@@ -41,8 +41,8 @@
                 class="border-t border-border bg-primary-soft type-label text-text max-md:grid max-md:grid-cols-[1fr_auto] max-md:gap-x-4 max-md:px-4 max-md:py-3 {{ $adaLipat ? 'max-md:hidden' : '' }}"
             >
                 <td role="cell" class="px-6 py-3.5 max-md:col-span-2 max-md:p-0">{{ $totalLabel }}</td>
-                <td role="cell" class="px-3 py-3.5 text-right max-md:p-0 max-md:text-left">{{ Format::rupiah($total) }}</td>
-                <td role="cell" class="py-3.5 pl-3 pr-6 text-right max-md:p-0 max-md:text-muted">100%</td>
+                <td role="cell" class="px-3 py-3.5 text-right tabular-nums max-md:p-0 max-md:text-left">{{ Format::rupiah($total) }}</td>
+                <td role="cell" class="py-3.5 pl-3 pr-6 text-right tabular-nums max-md:p-0 max-md:text-muted">100%</td>
             </tr>
         </tbody>
     </table>

@@ -146,6 +146,13 @@
         -webkit-font-smoothing: antialiased;
     }
 
+    /* Judul dipatahkan seimbang agar tidak menyisakan satu kata sendirian di baris terakhir. */
+    h1,
+    h2,
+    h3 {
+        text-wrap: balance;
+    }
+
     /* Cincin fokus global; di latar gelap (mis. header hijau) berganti ke aksen agar tetap terlihat. */
     :focus-visible {
         outline: 3px solid var(--color-primary);
@@ -227,4 +234,41 @@
 
 .isi-berita strong {
     font-weight: 700;
+}
+
+/*
+ * Peta Leaflet. Gaya bawaan Leaflet dimuat belakangan (dynamic import), jadi selektor di sini sengaja
+ * dibuat lebih spesifik agar tetap menang: atribusi berkontras cukup (≥ 4,5:1) dan kontrol zoom
+ * berukuran 44 px sesuai aturan target sentuh. Teks atribusi tetap tampil karena disyaratkan lisensi.
+ */
+.leaflet-container .leaflet-control.leaflet-control-attribution {
+    background: rgb(255 255 255 / 0.92);
+    color: var(--color-text);
+}
+
+.leaflet-container .leaflet-control.leaflet-control-attribution a {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.leaflet-container .leaflet-bar.leaflet-control-zoom a {
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    font-size: 24px;
+}
+
+/*
+ * Bayangan petunjuk gulir tanpa JavaScript: bayangan tipis muncul di tepi atas/bawah hanya bila masih ada
+ * isi yang tersembunyi. Dipakai pada menu samping admin agar item yang terpotong tidak tampak janggal.
+ */
+.petunjuk-gulir {
+    background:
+        linear-gradient(var(--color-surface) 30%, rgb(255 255 255 / 0)) center top,
+        linear-gradient(rgb(255 255 255 / 0), var(--color-surface) 70%) center bottom,
+        radial-gradient(farthest-side at 50% 0, rgb(15 51 33 / 0.16), rgb(15 51 33 / 0)) center top,
+        radial-gradient(farthest-side at 50% 100%, rgb(15 51 33 / 0.16), rgb(15 51 33 / 0)) center bottom;
+    background-repeat: no-repeat;
+    background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+    background-attachment: local, local, scroll, scroll;
 }

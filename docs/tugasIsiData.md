@@ -14,23 +14,23 @@ Daftar tugas untuk mengisi konten lewat halaman admin (`/admin`) sebelum data re
 ## A. Bisa dikerjakan sekarang
 
 ### A1. Lokasi dan alamat — Profil → Lokasi & Geografis
-- [ ] Cari kantor Desa Marga Agung di Google Maps, klik kanan titik kantor, salin koordinat.
-- [ ] Isi **Lintang** (contoh bentuk: `-5.xxxxx`) dan **Bujur** (contoh bentuk: `105.xxxxx`).
-- [ ] Isi **Alamat kantor desa** sesuai papan nama atau surat resmi.
-- [ ] Klik **Simpan Draf** (bukan Terbitkan). Kotak "sudah diverifikasi" **jangan dicentang** dulu.
-- [ ] Periksa tautan "Buka titik di Google Maps" di halaman itu: titik harus jatuh di kantor desa.
-- [ ] Setelah desa membenarkan, centang verifikasi lalu **Simpan & Terbitkan**. Cek `/kontak-lokasi` dan footer.
+- [x] Cari kantor Desa Marga Agung di Google Maps, klik kanan titik kantor, salin koordinat.
+- [x] Isi **Lintang** (contoh bentuk: `-5.xxxxx`) dan **Bujur** (contoh bentuk: `105.xxxxx`).
+- [x] Isi **Alamat kantor desa** sesuai papan nama atau surat resmi.
+- [x] Klik **Simpan Draf** (bukan Terbitkan). Kotak "sudah diverifikasi" **jangan dicentang** dulu.
+- [x] Periksa tautan "Buka titik di Google Maps" di halaman itu: titik harus jatuh di kantor desa.
+- [x] Setelah desa membenarkan, centang verifikasi lalu **Simpan & Terbitkan**. Cek `/kontak-lokasi` dan footer. *(Sudah diterbitkan; konfirmasi alamat dan kode pos ke desa tetap diperlukan.)*
 
 ### A2. Sejarah desa — Profil → Sejarah
-- [ ] Rapikan naskah dari proposal (transmigrasi bedol desa dari Kaligesik, Srumbung, Magelang ke Jati Agung, Lampung Selatan).
-- [ ] Gunakan baris kosong untuk memisah paragraf (paragraf pertama menjadi lead di publik).
-- [ ] Jangan menambah fakta atau tahun yang belum ada sumbernya.
-- [ ] Simpan, lalu cek tampilan di `/profil-desa`.
+- [x] Rapikan naskah dari proposal (transmigrasi bedol desa dari Kaligesik, Srumbung, Magelang ke Jati Agung, Lampung Selatan).
+- [x] Gunakan baris kosong untuk memisah paragraf (paragraf pertama menjadi lead di publik).
+- [x] Jangan menambah fakta atau tahun yang belum ada sumbernya.
+- [x] Simpan, lalu cek tampilan di `/profil-desa`. *(Naskah berisi tiga paragraf dari fakta proposal saja; tahun dan tokoh belum ada sumbernya, jadi belum ditambahkan.)*
 
 ### A3. Data ringkas — Profil → Data Ringkas
-- [ ] Biarkan angka awal (± 4.492 jiwa, 1.309 KK, 1.050 ha, 6 dusun) bila belum ada koreksi.
-- [ ] Isi **Sumber data** dengan jelas, mis. "Survei awal 2026 (proposal); menunggu verifikasi desa".
-- [ ] **Jangan** centang "sudah diverifikasi" sampai desa mengonfirmasi (tanda "±" akan hilang setelah dicentang).
+- [x] Biarkan angka awal (± 4.492 jiwa, 1.309 KK, 1.050 ha, 6 dusun) bila belum ada koreksi. *(Terisi: 4.492 jiwa, 1.309 KK, 1.050 ha, 6 dusun, mata pencaharian Petani.)*
+- [x] Isi **Sumber data** dengan jelas, mis. "Survei awal 2026 (proposal); menunggu verifikasi desa".
+- [x] **Jangan** centang "sudah diverifikasi" sampai desa mengonfirmasi (tanda "±" akan hilang setelah dicentang).
 
 ### A4. Berita dan agenda asli — Berita, Agenda
 - [ ] Tulis 2–3 berita dari kegiatan yang benar-benar Anda ketahui atau dokumentasikan.
@@ -41,9 +41,9 @@ Daftar tugas untuk mengisi konten lewat halaman admin (`/admin`) sebelum data re
 - [ ] Hapus atau ubah berita/agenda **contoh** yang masih ada (berlabel contoh) agar tidak tercampur data nyata.
 
 ### A5. Komoditas — Potensi Pertanian
-- [ ] Ubah komoditas **Jagung**: deskripsi umum yang benar, tandai **unggulan**.
+- [x] Ubah komoditas **Jagung**: deskripsi umum yang benar, tandai **unggulan**. *(Terisi: deskripsi umum netral, unggulan; musim panen kosong.)*
 - [ ] Unggah foto jagung asli + alt. **Musim panen** kosongkan bila belum dikonfirmasi petani.
-- [ ] Simpan sebagai Terbit bila sudah yakin, atau Draf bila belum.
+- [x] Simpan sebagai Terbit bila sudah yakin, atau Draf bila belum. *(Disimpan sebagai Draf; terbitkan setelah foto asli diunggah.)*
 
 ### A6. Akun admin — Akun & Hak Akses
 - [ ] Buat akun untuk perangkat desa yang akan mengelola konten (email aktif, peran Staf).
@@ -51,7 +51,7 @@ Daftar tugas untuk mengisi konten lewat halaman admin (`/admin`) sebelum data re
 - [ ] Pastikan email undangan sampai dan penerima bisa membuat kata sandi sendiri.
 
 ### A7. Data master — Data Master (Super Admin)
-- [ ] Ubah nama dusun dan jabatan **hanya bila** Anda sudah tahu nama resminya. Bila belum, biarkan nilai bawaan (Dusun 1–6 dan 8 jabatan).
+- [x] Ubah nama dusun dan jabatan **hanya bila** Anda sudah tahu nama resminya. Bila belum, biarkan nilai bawaan (Dusun 1–6 dan 8 jabatan). *(Nilai bawaan sudah terisi: Dusun 1–6 dan 8 jabatan; ganti ke nama resmi setelah daftar dari desa ada.)*
 
 ---
 

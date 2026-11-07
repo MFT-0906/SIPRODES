@@ -16,11 +16,23 @@
         ['Tambah UMKM', 'store', route('admin.umkm'), Modul::Potensi],
         ['Perbarui struktur perangkat', 'users', route('admin.struktur'), Modul::Profil],
     ])->filter(fn (array $p) => Gate::allows('akses-modul', $p[3]));
+
+    // Staf diberi tahu modul apa saja yang ditugaskan kepadanya, agar jelas mengapa menu lain tidak ada.
+    $modulSaya = collect(Modul::untukStaf())
+        ->filter(fn (Modul $modul) => Gate::allows('akses-modul', $modul))
+        ->map(fn (Modul $modul) => $modul->label())
+        ->values()
+        ->all();
+    $deskripsi = match (true) {
+        $peranLabel !== 'Staf' => 'Ringkasan konten situs, dihitung dari data terbaru.',
+        $modulSaya === [] => 'Belum ada modul yang ditugaskan kepada Anda. Hubungi Super Admin desa.',
+        default => 'Modul Anda: '.implode(', ', $modulSaya).'.',
+    };
 @endphp
 
 @section('content')
     <div class="flex flex-col gap-6">
-        <x-admin.page-header :title="'Selamat datang, '.$pengguna['name']" description="Ringkasan konten situs, dihitung dari data terbaru.">
+        <x-admin.page-header :title="'Selamat datang, '.$pengguna['name']" :description="$deskripsi">
             @can('akses-modul', Modul::Berita)
                 <x-ui.button :href="route('admin.berita.create')" icon="plus">Tambah Berita</x-ui.button>
             @endcan
