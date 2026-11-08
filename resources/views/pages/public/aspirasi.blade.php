@@ -31,13 +31,7 @@
 
 @section('content')
     {{-- Judul halaman --}}
-    <section class="bg-background">
-        <div class="container-page flex flex-col gap-3 py-8 lg:py-10">
-            <x-ui.breadcrumb :items="[['label' => 'Beranda', 'href' => route('home')], ['label' => 'Ruang Aspirasi']]" />
-            <h1 class="type-h1 text-text">Ruang Aspirasi Warga</h1>
-            <p class="type-body max-w-[760px] text-muted">Sampaikan pertanyaan, keluhan, atau saran kepada Pemerintah Desa Marga Agung.</p>
-        </div>
-    </section>
+    <x-public.kepala-halaman jejak="Ruang Aspirasi" judul="Ruang Aspirasi Warga" pengantar="Sampaikan pertanyaan, keluhan, atau saran kepada Pemerintah Desa Marga Agung." />
 
     <div class="bg-surface">
         <div class="container-page grid gap-8 pb-14 pt-8 lg:grid-cols-[minmax(0,1fr)_620px] lg:gap-12 lg:pb-20 lg:pt-10">

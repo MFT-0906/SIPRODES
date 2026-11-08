@@ -12,13 +12,7 @@
 
 @section('content')
     {{-- Judul halaman --}}
-    <section class="bg-background">
-        <div class="container-page flex flex-col gap-3 py-8 lg:py-10">
-            <x-ui.breadcrumb :items="[['label' => 'Beranda', 'href' => route('home')], ['label' => 'Profil Desa']]" />
-            <h1 class="type-h1 text-text">Profil Desa Marga Agung</h1>
-            <p class="type-body max-w-[760px] text-muted">{{ $content['pengantar'] }}</p>
-        </div>
-    </section>
+    <x-public.kepala-halaman jejak="Profil Desa" judul="Profil Desa Marga Agung" :pengantar="$content['pengantar']" />
 
     {{-- Navigasi bagian --}}
     <nav aria-label="Bagian profil" x-data="sectionNav(['sejarah', 'visi-misi', 'struktur', 'lokasi'])" class="border-b border-border bg-surface">
