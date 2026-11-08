@@ -17,9 +17,15 @@
     @endphp
     <section aria-labelledby="hero-judul" class="on-dark relative isolate overflow-hidden bg-primary-dark text-surface">
         @if ($content['hero']['foto'])
-            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full object-cover opacity-[0.16] mix-blend-luminosity">
+            {{-- Foto desa sebagai latar samar (sedikit diburamkan agar teks tetap mudah dibaca). --}}
+            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] opacity-70 blur-[1.5px] grayscale-[25%]">
         @endif
-        <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.16),transparent_70%),linear-gradient(180deg,#14491a_0%,#0f3a14_100%)]"></div>
+        <div @class([
+            'absolute inset-0 -z-10',
+            'bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.16),transparent_70%),linear-gradient(180deg,#14491a_0%,#0f3a14_100%)]' => ! $content['hero']['foto'],
+            // Dengan foto: lapisan hijau tembus pandang, lebih pekat di sisi kiri tempat teks berada.
+            'bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.14),transparent_70%),linear-gradient(90deg,rgb(15_58_20/0.95)_0%,rgb(20_73_26/0.82)_45%,rgb(20_73_26/0.55)_100%)]' => $content['hero']['foto'],
+        ])></div>
         <x-public.latar-kontur class="absolute inset-0 -z-10 size-full" />
 
         <div class="container-page grid gap-10 pb-28 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-14 lg:gap-16 lg:pb-40 lg:pt-20">
@@ -66,7 +72,7 @@
             {{-- Kartu visual: foto asli desa bila ada, sebelum itu ilustrasi ladang jagung (bukan foto AI/stok). --}}
             <div class="relative">
                 <div class="overflow-hidden rounded-[22px] shadow-[0_30px_60px_rgb(0_0_0/0.35)] ring-1 ring-surface/15">
-                    @if ($content['hero']['foto'])
+                    @if ($content['hero']['foto'] && $content['hero']['foto_tajam'])
                         <img src="{{ $content['hero']['foto'] }}" alt="Pemandangan Desa Marga Agung" loading="lazy" class="h-[260px] w-full object-cover md:h-[360px] lg:h-[460px]">
                     @else
                         <x-public.ilustrasi-ladang class="h-[260px] md:h-[360px] lg:h-[460px]" />
