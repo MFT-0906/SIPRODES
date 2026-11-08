@@ -148,7 +148,7 @@
         background-color: var(--color-background);
         scroll-behavior: smooth;
         /* Header publik lengket: tautan jangkar (#...) tidak tertutup header. */
-        scroll-padding-top: 88px;
+        scroll-padding-top: 96px;
         -webkit-text-size-adjust: 100%;
     }
 

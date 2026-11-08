@@ -17,7 +17,6 @@
     >Lewati ke konten</a>
 
     <x-public.header />
-    <x-public.region-strip />
 
     <main id="konten" tabindex="-1" class="flex-1 focus:outline-none">
         @yield('content')

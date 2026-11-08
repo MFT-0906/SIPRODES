@@ -28,7 +28,8 @@
             'bg-[linear-gradient(180deg,rgb(20_73_26/0.8)_0%,rgb(20_73_26/0.72)_100%)] md:bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.1),transparent_70%),linear-gradient(90deg,rgb(20_73_26/0.86)_0%,rgb(27_94_32/0.62)_50%,rgb(27_94_32/0.3)_100%)]' => $content['hero']['foto'],
         ])></div>
 
-        <div class="container-page grid gap-10 pb-28 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-14 lg:gap-16 lg:pb-40 lg:pt-20">
+        {{-- Ruang atas ditambah setinggi header, karena di beranda header melayang di atas hero. --}}
+        <div class="container-page grid gap-10 pb-28 pt-[140px] md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-[164px] lg:gap-16 lg:pb-40 lg:pt-[188px]">
             <div class="pembuka flex min-w-0 flex-col gap-5 [text-shadow:0_1px_14px_rgb(0_0_0/0.28)]">
                 <p class="inline-flex w-fit items-center gap-2 rounded-pill border border-surface/25 bg-surface/5 px-3.5 py-1.5 type-label-sm text-surface/90 backdrop-blur-sm" style="--urutan: 0">
                     <span class="size-2 rounded-full bg-accent" aria-hidden="true"></span>
