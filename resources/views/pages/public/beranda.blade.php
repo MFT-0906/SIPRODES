@@ -18,17 +18,18 @@
     <section aria-labelledby="hero-judul" class="on-dark relative isolate overflow-hidden bg-primary-dark text-surface">
         @if ($content['hero']['foto'])
             {{-- Foto desa sebagai latar samar (sedikit diburamkan agar teks tetap mudah dibaca). --}}
-            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] opacity-70 blur-[1.5px] grayscale-[25%]">
+            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[1px]">
         @endif
         <div @class([
             'absolute inset-0 -z-10',
             'bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.16),transparent_70%),linear-gradient(180deg,#14491a_0%,#0f3a14_100%)]' => ! $content['hero']['foto'],
             // Dengan foto: lapisan hijau tembus pandang, lebih pekat di sisi kiri tempat teks berada.
-            'bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.14),transparent_70%),linear-gradient(90deg,rgb(15_58_20/0.95)_0%,rgb(20_73_26/0.82)_45%,rgb(20_73_26/0.55)_100%)]' => $content['hero']['foto'],
+            // Di HP teks memenuhi lebar layar, jadi lapisannya rata; di layar lebar menipis ke kanan.
+            'bg-[linear-gradient(180deg,rgb(20_73_26/0.8)_0%,rgb(20_73_26/0.72)_100%)] md:bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.1),transparent_70%),linear-gradient(90deg,rgb(20_73_26/0.86)_0%,rgb(27_94_32/0.62)_50%,rgb(27_94_32/0.3)_100%)]' => $content['hero']['foto'],
         ])></div>
 
         <div class="container-page grid gap-10 pb-28 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-14 lg:gap-16 lg:pb-40 lg:pt-20">
-            <div class="pembuka flex min-w-0 flex-col gap-5">
+            <div class="pembuka flex min-w-0 flex-col gap-5 [text-shadow:0_1px_14px_rgb(0_0_0/0.28)]">
                 <p class="inline-flex w-fit items-center gap-2 rounded-pill border border-surface/25 bg-surface/5 px-3.5 py-1.5 type-label-sm text-surface/90 backdrop-blur-sm" style="--urutan: 0">
                     <span class="size-2 rounded-full bg-accent" aria-hidden="true"></span>
                     {{ $content['hero']['eyebrow'] }}
@@ -42,7 +43,7 @@
                 </h1>
                 <p class="max-w-[60ch] type-body text-surface/80 lg:type-body-lg" style="--urutan: 2">{{ $content['hero']['deskripsi'] }}</p>
 
-                <div class="flex flex-col gap-3 pt-1 sm:flex-row sm:flex-wrap" style="--urutan: 3">
+                <div class="flex flex-col gap-3 pt-1 [text-shadow:none] sm:flex-row sm:flex-wrap" style="--urutan: 3">
                     <x-ui.button :href="route('aspirasi.create')" variant="accent" icon="message">Sampaikan aspirasi</x-ui.button>
                     <x-ui.button :href="route('apbdes')" variant="terang" icon="file">Lihat APBDes</x-ui.button>
                 </div>
