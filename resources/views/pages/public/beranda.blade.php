@@ -4,74 +4,110 @@
 @section('description', $content['hero']['deskripsi'])
 
 @section('content')
-    {{-- Hero --}}
-    <section aria-labelledby="hero-judul" class="bg-background">
-        <div class="container-page flex flex-col gap-6 py-8 md:flex-row md:items-center md:gap-10 md:py-10 lg:gap-16 lg:py-[72px]">
-            <div class="pembuka order-2 flex min-w-0 flex-col gap-4 md:order-1 md:flex-1 lg:gap-5">
-                <p class="type-label text-primary" style="--urutan: 0">{{ $content['hero']['eyebrow'] }}</p>
-                <h1 id="hero-judul" class="type-display text-text" style="--urutan: 1">{{ $content['hero']['judul'] }}</h1>
-                <p class="type-body text-muted lg:type-body-lg" style="--urutan: 2">{{ $content['hero']['deskripsi'] }}</p>
+    {{--
+        Hero: latar hijau tua dengan garis kontur peta dan titik berdenyut, foto desa samar di belakang bila ada.
+        Data singkat desa ikut di dalam hero; kartu layanan di bawahnya menumpang di tepi bawah hero.
+    --}}
+    @php
+        $namaDesa = config('desa.nama');
+        $judulHero = $content['hero']['judul'];
+        $awalJudul = str_ends_with($judulHero, $namaDesa) ? trim(substr($judulHero, 0, -strlen($namaDesa))) : null;
+        $sumberStatistik = collect($statistik)->pluck('source')->unique();
+        $sumberTunggal = $sumberStatistik->count() === 1 ? $sumberStatistik->first() : null;
+    @endphp
+    <section aria-labelledby="hero-judul" class="on-dark relative isolate overflow-hidden bg-primary-dark text-surface">
+        @if ($content['hero']['foto'])
+            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full object-cover opacity-[0.16] mix-blend-luminosity">
+        @endif
+        <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.16),transparent_70%),linear-gradient(180deg,#14491a_0%,#0f3a14_100%)]"></div>
+        <x-public.latar-kontur class="absolute inset-0 -z-10 size-full" />
 
-                <div class="flex flex-col gap-3 pt-2 lg:flex-row lg:flex-wrap" style="--urutan: 3">
-                    <x-ui.button :href="route('apbdes')" icon="file">Lihat APBDes</x-ui.button>
+        <div class="container-page grid gap-10 pb-28 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-14 lg:gap-16 lg:pb-40 lg:pt-20">
+            <div class="pembuka flex min-w-0 flex-col gap-5">
+                <p class="inline-flex w-fit items-center gap-2 rounded-pill border border-surface/25 bg-surface/5 px-3.5 py-1.5 type-label-sm text-surface/90 backdrop-blur-sm" style="--urutan: 0">
+                    <span class="size-2 rounded-full bg-accent" aria-hidden="true"></span>
+                    {{ $content['hero']['eyebrow'] }}
+                </p>
+                <h1 id="hero-judul" class="type-display text-surface lg:text-[56px] lg:leading-[1.08]" style="--urutan: 1">
+                    @if ($awalJudul)
+                        {{ $awalJudul }} <span class="block text-accent">{{ $namaDesa }}</span>
+                    @else
+                        {{ $judulHero }}
+                    @endif
+                </h1>
+                <p class="max-w-[60ch] type-body text-surface/80 lg:type-body-lg" style="--urutan: 2">{{ $content['hero']['deskripsi'] }}</p>
+
+                <div class="flex flex-col gap-3 pt-1 sm:flex-row sm:flex-wrap" style="--urutan: 3">
                     <x-ui.button :href="route('aspirasi.create')" variant="accent" icon="message">Sampaikan aspirasi</x-ui.button>
-                    <div class="hidden lg:-ml-3.5 lg:block">
-                        <x-ui.button :href="route('profil')" variant="ghost" icon="arrow-right">Jelajahi profil desa</x-ui.button>
-                    </div>
+                    <x-ui.button :href="route('apbdes')" variant="terang" icon="file">Lihat APBDes</x-ui.button>
+                </div>
+
+                {{-- Data singkat desa --}}
+                <div class="mt-2 flex flex-col gap-3 border-t border-surface/15 pt-5" style="--urutan: 4">
+                    <h2 class="sr-only">Data singkat desa</h2>
+                    <dl x-data x-muncul class="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 md:grid-cols-2 lg:gap-x-8 xl:grid-cols-4">
+                        @foreach ($statistik as $stat)
+                            <div class="bertahap flex min-w-0 flex-col-reverse gap-0.5" style="--urutan: {{ $loop->index }}">
+                                <dt class="type-label-sm text-surface/70">{{ $stat['label'] }}</dt>
+                                {{-- Angka asli untuk pembaca layar; versi beranimasi hanya visual. --}}
+                                <dd class="type-h3 whitespace-nowrap tabular-nums text-surface xl:type-h2">
+                                    <span class="sr-only">{{ $stat['value'] }}</span>
+                                    <span aria-hidden="true" x-data="hitungNaik(@js($stat['value']))" x-text="tampil">{{ $stat['value'] }}</span>
+                                </dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                    @if ($sumberTunggal)
+                        <p class="type-label-sm text-surface/60">{{ preg_match('/^sumber\b/i', $sumberTunggal) ? $sumberTunggal : 'Sumber: '.$sumberTunggal }}</p>
+                    @endif
                 </div>
             </div>
 
-            {{-- Foto asli desa yang telah disetujui ditampilkan bila ada; sebelum itu tampil ilustrasi ladang jagung (bukan foto AI/stok). --}}
-            <div class="order-1 md:order-2 md:w-[320px] md:shrink-0 lg:w-[480px] xl:w-[576px]">
-                @if ($content['hero']['foto'])
-                    <img src="{{ $content['hero']['foto'] }}" alt="Pemandangan Desa Marga Agung" loading="lazy" class="h-[220px] w-full rounded-card object-cover md:h-[280px] lg:h-[400px]">
-                @else
-                    <x-public.ilustrasi-ladang class="h-[220px] rounded-card md:h-[280px] lg:h-[400px]" />
-                @endif
+            {{-- Kartu visual: foto asli desa bila ada, sebelum itu ilustrasi ladang jagung (bukan foto AI/stok). --}}
+            <div class="relative">
+                <div class="overflow-hidden rounded-[22px] shadow-[0_30px_60px_rgb(0_0_0/0.35)] ring-1 ring-surface/15">
+                    @if ($content['hero']['foto'])
+                        <img src="{{ $content['hero']['foto'] }}" alt="Pemandangan Desa Marga Agung" loading="lazy" class="h-[260px] w-full object-cover md:h-[360px] lg:h-[460px]">
+                    @else
+                        <x-public.ilustrasi-ladang class="h-[260px] md:h-[360px] lg:h-[460px]" />
+                    @endif
+                </div>
+
+                {{-- Kartu lokasi melayang di sudut kiri atas --}}
+                <div class="kartu-melayang absolute -left-4 -top-5 hidden max-w-[260px] items-center gap-3 rounded-[14px] border border-surface/15 bg-primary-dark/85 p-3.5 pr-5 shadow-[0_16px_40px_rgb(0_0_0/0.35)] backdrop-blur-md sm:flex lg:-left-10 lg:-top-7">
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-accent text-text">
+                        <x-ui.icon name="map-pin" class="size-5" />
+                    </span>
+                    <span class="flex min-w-0 flex-col">
+                        <span class="type-label-sm text-surface/70">Lokasi desa</span>
+                        <span class="type-label text-surface">Kec. Jati Agung, Lampung Selatan</span>
+                    </span>
+                </div>
+
+                {{-- Bilah tautan profil di bagian bawah kartu --}}
+                <a href="{{ route('profil') }}" class="group absolute inset-x-3 bottom-3 flex items-center gap-3.5 rounded-[14px] border border-surface/15 bg-primary-dark/80 p-3 pr-4 backdrop-blur-md transition-colors hover:bg-primary-dark/95 md:inset-x-4 md:bottom-4 md:p-3.5">
+                    <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-primary transition-transform duration-300 group-hover:scale-110">
+                        <x-ui.icon name="arrow-right" class="size-5" />
+                    </span>
+                    <span class="flex min-w-0 flex-col">
+                        <span class="type-label-sm text-accent">Profil desa</span>
+                        <span class="type-label text-surface">Kenali sejarah, visi misi, dan perangkat desa</span>
+                    </span>
+                </a>
             </div>
         </div>
     </section>
 
-    {{-- Data singkat desa: pita warna penuh agar bagian ini terpisah dari "Layanan informasi" di bawahnya. --}}
-    <section aria-labelledby="ringkasan-judul" class="bg-primary">
-        <div class="container-page flex flex-col gap-6 py-10 lg:gap-8 lg:py-14">
-            <h2 id="ringkasan-judul" class="type-h2 md:type-h1 text-surface">Data singkat desa</h2>
-            @php
-                // Bila semua angka bersumber sama, sumbernya ditulis sekali di bawah deret angka, bukan diulang di tiap angka.
-                $sumberStatistik = collect($statistik)->pluck('source')->unique();
-                $sumberTunggal = $sumberStatistik->count() === 1 ? $sumberStatistik->first() : null;
-            @endphp
-            <dl x-data x-muncul class="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 lg:gap-x-8">
-                @foreach ($statistik as $stat)
-                    <div class="bertahap flex min-w-0 flex-col gap-1 border-l-2 border-accent/70 pl-3 lg:pl-4" style="--urutan: {{ $loop->index }}">
-                        <dt class="type-label text-primary-soft">{{ $stat['label'] }}</dt>
-                        {{-- Angka asli untuk pembaca layar; versi beranimasi hanya visual. --}}
-                        <dd class="type-h2 sm:type-h1 tabular-nums text-surface">
-                            <span class="sr-only">{{ $stat['value'] }}</span>
-                            <span aria-hidden="true" x-data="hitungNaik(@js($stat['value']))" x-text="tampil">{{ $stat['value'] }}</span>
-                        </dd>
-                        @unless ($sumberTunggal)
-                            <dd class="type-label-sm text-primary-soft">{{ $stat['source'] }}</dd>
-                        @endunless
-                    </div>
-                @endforeach
-            </dl>
-            @if ($sumberTunggal)
-                <p class="type-label-sm text-primary-soft">{{ preg_match('/^sumber\b/i', $sumberTunggal) ? $sumberTunggal : 'Sumber: '.$sumberTunggal }}</p>
-            @endif
-        </div>
-    </section>
-
-    {{-- Layanan informasi --}}
+    {{-- Layanan informasi: kartu menumpang di tepi bawah hero --}}
     <section aria-labelledby="layanan-judul" class="bg-surface">
-        <div class="container-page flex flex-col gap-6 pb-12 pt-10 lg:gap-8 lg:pb-[72px] lg:pt-14">
-            <h2 id="layanan-judul" class="type-h2 md:type-h1 text-text">Layanan informasi</h2>
+        <div class="container-page relative z-10 -mt-16 flex flex-col gap-6 pb-12 md:-mt-20 lg:-mt-24 lg:pb-[72px]">
+            <h2 id="layanan-judul" class="sr-only">Layanan informasi</h2>
             <div x-data x-muncul class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5 lg:gap-5">
                 @foreach ($content['akses'] as $item)
                     <x-ui.card-quick
                         :title="$item['title']" :description="$item['description']" :icon="$item['icon']" :href="route($item['route'])"
                         :row="$loop->last"
-                        :class="'bertahap '.($loop->last ? 'max-md:col-span-2' : '')"
+                        :class="'bertahap shadow-[0_14px_34px_rgb(20_73_26/0.14)] '.($loop->last ? 'max-md:col-span-2' : '')"
                         :style="'--urutan: '.$loop->index"
                     />
                 @endforeach

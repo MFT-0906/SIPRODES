@@ -445,3 +445,53 @@
 .titik-denyut {
     animation: denyut 1.8s ease-out infinite;
 }
+
+/* ===== Latar hero: garis kontur peta ===== */
+@keyframes gambar-garis {
+    from {
+        stroke-dashoffset: 1;
+    }
+}
+
+@keyframes titik-denyut-svg {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
+}
+
+.latar-kontur .garis-kontur {
+    stroke-dasharray: 1;
+    animation: gambar-garis 2.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation-delay: calc(var(--urutan, 0) * 90ms);
+}
+
+.latar-kontur .titik-kontur {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: titik-denyut-svg 3.2s ease-out infinite;
+    animation-delay: calc(var(--urutan, 0) * 530ms);
+}
+
+/* Kartu lokasi di hero: muncul sedikit terlambat, lalu mengambang pelan. */
+@keyframes mengambang {
+    0%,
+    100% {
+        translate: 0 0;
+    }
+
+    50% {
+        translate: 0 -6px;
+    }
+}
+
+.kartu-melayang {
+    animation:
+        naik-masuk 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both,
+        mengambang 6s ease-in-out 1.8s infinite;
+}
