@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Support\AntiSpamAspirasi;
+use App\Support\Turnstile;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -60,6 +61,24 @@ class SimpanAspirasiRequest extends FormRequest
             $galat = AntiSpamAspirasi::periksaToken($this->input(AntiSpamAspirasi::KOLOM_TOKEN));
             if ($galat !== null) {
                 $v->errors()->add('formulir', $galat);
+            }
+
+            // Verifikasi manusia: Cloudflare Turnstile bila aktif dan widgetnya berhasil dimuat; selain itu
+            // (Turnstile tidak aktif, widget gagal dimuat, atau Cloudflare tidak dapat dihubungi) pertanyaan hitungan.
+            $tokenTurnstile = (string) $this->input(Turnstile::KOLOM_TOKEN, '');
+            if (Turnstile::aktif() && $tokenTurnstile !== '') {
+                $hasil = Turnstile::periksa($tokenTurnstile);
+                if ($hasil === true) {
+                    session()->forget(AntiSpamAspirasi::SESI_JAWABAN);
+
+                    return;
+                }
+                if ($hasil === false) {
+                    session()->forget(AntiSpamAspirasi::SESI_JAWABAN);
+                    $v->errors()->add('formulir', 'Verifikasi keamanan belum berhasil. Muat ulang halaman lalu coba lagi.');
+
+                    return;
+                }
             }
 
             $galatJawaban = AntiSpamAspirasi::periksaJawaban($this->input(AntiSpamAspirasi::KOLOM_JAWABAN));

@@ -62,6 +62,13 @@ return [
         'hapus_pesan_saat_anonim' => (bool) env('ASPIRASI_HAPUS_PESAN', false),
     ],
 
+    // Cloudflare Turnstile untuk Ruang Aspirasi. Aktif bila kedua kunci diisi; bila kosong, formulir memakai
+    // pertanyaan hitungan. Kunci dibuat gratis di dasbor Cloudflare (menu Turnstile) untuk domain situs.
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
     // Audit log (Fase 10): entri lebih tua dari ini dihapus oleh perintah log:bersihkan (0 = tidak pernah dihapus).
     'log' => [
         'masa_simpan_bulan' => (int) env('LOG_AKTIVITAS_MASA_SIMPAN_BULAN', 24),

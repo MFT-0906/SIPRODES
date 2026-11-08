@@ -86,6 +86,11 @@ TRUSTED_PROXIES=                # isi IP proxy (koma) atau * bila HTTPS ditangan
 ASPIRASI_MASA_SIMPAN_BULAN=24
 UNGGAH_GAMBAR_MAKS_KB=2048
 UNGGAH_PDF_MAKS_KB=10240
+
+# Cloudflare Turnstile untuk Ruang Aspirasi (opsional). Buat widget gratis di dasbor Cloudflare → Turnstile
+# untuk domain situs, lalu isi kedua kunci. Kosong = formulir memakai pertanyaan hitungan.
+TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=
 ```
 
 `APP_KEY` dipakai mengenkripsi NIK aspirasi: **kehilangan kunci berarti NIK tak terbaca lagi**. Simpan salinannya terpisah dari server.

@@ -19,6 +19,9 @@
         'Aspirasi tidak ditampilkan ke publik.',
         'Nama dianonimkan otomatis '.config('desa.aspirasi.masa_simpan_bulan').' bulan setelah aspirasi selesai ditangani.',
     ];
+    if (\App\Support\Turnstile::aktif()) {
+        $privasi[] = 'Formulir dilindungi Cloudflare Turnstile untuk mencegah spam.';
+    }
     $tips = [
         ['Ceritakan dengan jelas', 'Sebutkan hal yang ingin Anda sampaikan dan lokasinya.'],
         ['Gunakan bahasa yang sopan', 'Fokus pada masalah dan saran perbaikan.'],
@@ -58,7 +61,7 @@
 
                     <form
                         method="post" action="{{ route('aspirasi.store') }}" novalidate
-                        x-data="formAspirasi" x-on:submit="periksa($event)"
+                        x-data="formAspirasi(@js(\App\Support\Turnstile::aktif()))" x-on:submit="periksa($event)"
                         class="flex flex-col gap-5 rounded-card border border-border bg-surface p-5 lg:p-8"
                     >
                         @csrf
@@ -94,13 +97,27 @@
                             placeholder="Tuliskan pertanyaan, keluhan, atau saran Anda…" help="Minimal 20 karakter"
                         />
 
-                        {{-- Pertanyaan hitungan anti-spam: jawabannya disimpan di sesi server, bukan di halaman. --}}
-                        <x-ui.field
-                            name="jawaban" :label="'Pertanyaan keamanan: '.$soal" required client-validated
-                            inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Contoh: 12"
-                            help="Jawab dengan angka, lalu kirim pesan Anda."
-                            class="max-w-[260px]"
-                        />
+                        {{--
+                            Verifikasi manusia. Bila Turnstile aktif, widget Cloudflare tampil dan pertanyaan hitungan
+                            disembunyikan; pertanyaan muncul otomatis bila widget gagal dimuat. Tanpa Turnstile (atau tanpa
+                            JavaScript) pertanyaan hitungan selalu tampil. Jawabannya disimpan di sesi server, bukan di halaman.
+                        --}}
+                        @php $siteKey = \App\Support\Turnstile::siteKey(); @endphp
+                        @if ($siteKey)
+                            <div x-show="! pakaiSoal" class="flex flex-col gap-1.5">
+                                <p class="type-label text-text">Verifikasi keamanan</p>
+                                <div x-ref="turnstile" data-sitekey="{{ $siteKey }}" class="min-h-[65px]"></div>
+                                <p x-show="memuat" class="type-body-sm text-muted">Memuat verifikasi…</p>
+                            </div>
+                        @endif
+                        <div @if ($siteKey) x-show="pakaiSoal" x-cloak @endif>
+                            <x-ui.field
+                                name="jawaban" :label="'Pertanyaan keamanan: '.$soal" required client-validated
+                                inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Contoh: 12"
+                                help="Jawab dengan angka, lalu kirim pesan Anda."
+                                class="max-w-[260px]"
+                            />
+                        </div>
 
                         <p class="flex items-start gap-2.5 rounded-[10px] bg-accent-soft px-3.5 py-3 type-body-sm text-text">
                             <x-ui.icon name="alert" class="mt-0.5 size-[18px] text-warning" />
@@ -112,7 +129,13 @@
                             <span class="hidden group-aria-busy:inline">Mengirim…</span>
                         </x-ui.button>
 
-                        <p class="type-label-sm text-muted">Dilindungi pertanyaan keamanan dan pembatasan pengiriman untuk mencegah spam.</p>
+                        <p class="type-label-sm text-muted">
+                            @if (\App\Support\Turnstile::aktif())
+                                Dilindungi Cloudflare Turnstile dan pembatasan pengiriman untuk mencegah spam.
+                            @else
+                                Dilindungi pertanyaan keamanan dan pembatasan pengiriman untuk mencegah spam.
+                            @endif
+                        </p>
                     </form>
                 @endif
             </div>
