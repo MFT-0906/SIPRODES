@@ -19,13 +19,8 @@
         default => 'tunas',
     };
 
-    // Warna dan ikon sampul berita per kategori.
-    [$warna, $lembut, $ikon] = match (true) {
-        str_contains($kunci, 'tani') || str_contains($kunci, 'pertanian') => ['#c98a12', '#fff4d6', 'sprout'],
-        str_contains($kunci, 'pemerintah') => ['#2d5ba8', '#e6eefb', 'building'],
-        str_contains($kunci, 'umum') || str_contains($kunci, 'pengumuman') => ['#d9731a', '#fdeedd', 'message'],
-        default => ['#1b5e20', '#e8f1e4', 'users'],
-    };
+    // Warna dan ikon sampul berita per kategori (sama dengan chip filter di halaman Berita).
+    ['warna' => $warna, 'lembut' => $lembut, 'ikon' => $ikon] = \App\Support\WarnaKategori::untuk($nama);
 
     // [x, skala] barisan tanaman komoditas; pisang lebih sedikit karena lebar.
     $barisan = $tanaman === 'pisang'

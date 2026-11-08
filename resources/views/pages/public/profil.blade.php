@@ -15,8 +15,9 @@
     <x-public.kepala-halaman jejak="Profil Desa" judul="Profil Desa Marga Agung" :pengantar="$content['pengantar']" />
 
     {{-- Navigasi bagian --}}
-    <nav aria-label="Bagian profil" x-data="sectionNav(['sejarah', 'visi-misi', 'struktur', 'lokasi'])" class="border-b border-border bg-surface">
-        <div class="container-page flex flex-wrap gap-2 py-5">
+    {{-- Menempel di bawah header saat digulir; menandai bagian yang sedang dibaca. --}}
+    <nav aria-label="Bagian profil" x-data="sectionNav(['sejarah', 'visi-misi', 'struktur', 'lokasi'])" class="sticky top-16 z-30 border-b border-border bg-surface/95 backdrop-blur-md lg:top-[72px]">
+        <div class="container-page flex gap-2 overflow-x-auto py-3 md:py-4">
             @foreach ([['sejarah', 'Sejarah'], ['visi-misi', 'Visi dan Misi'], ['struktur', 'Struktur Pemerintahan'], ['lokasi', 'Lokasi']] as [$id, $label])
                 <x-ui.chip
                     href="#{{ $id }}" class="shrink-0"
@@ -30,11 +31,12 @@
     <div class="bg-surface">
         <div class="container-page flex flex-col gap-12 pb-14 pt-8 lg:gap-14 lg:pb-20 lg:pt-12">
             {{-- Sejarah --}}
-            <section id="sejarah" aria-labelledby="sejarah-judul" class="grid scroll-mt-6 gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12">
+            <section id="sejarah" aria-labelledby="sejarah-judul" class="grid scroll-mt-20 gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12">
                 <div class="flex flex-col gap-4">
                     <h2 id="sejarah-judul" class="type-h2 text-text">Sejarah desa</h2>
                     <p class="type-body-lg max-w-[70ch] text-text">{{ $content['sejarah']['utama'] }}</p>
                     <p class="type-body max-w-[70ch] text-muted">{{ $content['sejarah']['lanjutan'] }}</p>
+                    <x-public.perjalanan-desa class="mt-2" />
                 </div>
 
                 <section aria-labelledby="fakta-judul" class="flex flex-col self-start rounded-[14px] border border-border bg-surface p-6">
@@ -52,7 +54,7 @@
             </section>
 
             {{-- Visi dan misi --}}
-            <section id="visi-misi" aria-labelledby="visi-misi-judul" class="flex scroll-mt-6 flex-col gap-6">
+            <section id="visi-misi" aria-labelledby="visi-misi-judul" class="flex scroll-mt-20 flex-col gap-6">
                 <div class="flex flex-wrap items-center gap-3">
                     <h2 id="visi-misi-judul" class="type-h2 text-text">Visi dan misi</h2>
                     @unless ($content['visi_misi']['resmi'])
@@ -96,31 +98,22 @@
             </section>
 
             {{-- Struktur pemerintahan --}}
-            <section id="struktur" aria-labelledby="struktur-judul" x-data="{ semua: false }" class="flex scroll-mt-6 flex-col gap-6">
+            <section id="struktur" aria-labelledby="struktur-judul" class="flex scroll-mt-20 flex-col gap-6">
                 <div class="flex flex-wrap items-center gap-3">
                     <h2 id="struktur-judul" class="type-h2 text-text">Struktur pemerintahan desa</h2>
                     @unless ($content['perangkat']['resmi'])
                         <x-ui.badge tone="peringatan">Nama dan foto menunggu data resmi desa</x-ui.badge>
                     @endunless
                 </div>
-                <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
-                    @foreach ($content['perangkat']['daftar'] as $perangkat)
-                        {{-- Di HP hanya 4 perangkat pertama tampil; sisanya dibuka lewat tombol "Lihat semua perangkat". --}}
-                        <div @if ($loop->index >= 4) class="max-md:hidden" x-bind:class="{ 'max-md:block!': semua }" @endif>
-                            <x-ui.card-official
-                                :name="$perangkat['name']" :position="$perangkat['position']" :photo="$perangkat['photo']" :photo-alt="$perangkat['photo_alt']"
-                                class="h-full"
-                            />
-                        </div>
-                    @endforeach
-                </div>
-                <div class="md:hidden" x-show="! semua">
-                    <x-ui.button variant="secondary" class="w-full" x-on:click="semua = true">Lihat semua perangkat</x-ui.button>
-                </div>
+                @if ($content['perangkat']['daftar'] !== [])
+                    <x-public.bagan-perangkat :daftar="$content['perangkat']['daftar']" />
+                @else
+                    <x-ui.empty-state icon="users" heading="h3" title="Data perangkat desa belum tersedia" description="Susunan perangkat desa akan ditampilkan setelah diisi oleh pemerintah desa." />
+                @endif
             </section>
 
             {{-- Lokasi dan geografis --}}
-            <section id="lokasi" aria-labelledby="lokasi-judul" class="flex scroll-mt-6 flex-col gap-6 lg:gap-8">
+            <section id="lokasi" aria-labelledby="lokasi-judul" class="flex scroll-mt-20 flex-col gap-6 lg:gap-8">
                 <div class="flex flex-col items-start gap-4">
                     <h2 id="lokasi-judul" class="type-h2 text-text">Lokasi dan geografis</h2>
                     <p class="flex items-start gap-2.5 type-body text-text">

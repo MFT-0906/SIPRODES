@@ -171,36 +171,39 @@ Alpine.data('daftarButir', (awal = []) => ({
 }));
 
 /**
- * Navigasi bagian halaman: menandai bagian yang sedang terlihat (scrollspy) lewat aria-current.
+ * Navigasi bagian halaman: menandai bagian yang sedang dibaca (scrollspy) lewat aria-current.
  */
 Alpine.data('sectionNav', (ids = []) => ({
     active: ids[0] ?? null,
 
     init() {
-        if (!('IntersectionObserver' in window)) {
-            return;
-        }
+        // Bagian aktif = bagian terakhir yang judulnya sudah melewati garis di bawah header + navigasi menempel.
+        // Di dasar halaman, bagian terakhir selalu aktif walau pendek.
+        const perbarui = () => {
+            const garis = this.$el.getBoundingClientRect().bottom + 40;
+            const diDasar = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+            let aktif = ids[0] ?? null;
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const visible = entries
-                    .filter((entry) => entry.isIntersecting)
-                    .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+            ids.forEach((id) => {
+                const bagian = document.getElementById(id);
 
-                if (visible) {
-                    this.active = visible.target.id;
+                if (bagian && bagian.getBoundingClientRect().top <= garis) {
+                    aktif = id;
                 }
-            },
-            { rootMargin: '-10% 0px -70% 0px' },
-        );
+            });
 
-        ids.forEach((id) => {
-            const section = document.getElementById(id);
+            this.active = diDasar ? ids[ids.length - 1] : aktif;
+        };
 
-            if (section) {
-                observer.observe(section);
+        let antre = false;
+        window.addEventListener('scroll', () => {
+            if (!antre) {
+                antre = true;
+                requestAnimationFrame(() => { antre = false; perbarui(); });
             }
-        });
+        }, { passive: true });
+
+        perbarui();
     },
 }));
 
