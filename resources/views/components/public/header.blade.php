@@ -5,8 +5,9 @@
     $jamLayanan = $identitas['kontak']['jam_layanan']['value'];
     $hariIni = now()->locale('id')->translatedFormat('l, j F Y');
 
-    // Di beranda, header melayang transparan di atas foto hero dan berubah putih saat halaman digulir.
-    $transparan = request()->routeIs('home');
+    // Di halaman yang diawali foto (beranda dan halaman berpita judul), header melayang transparan di atas foto
+    // dan berubah putih saat halaman digulir. Halaman lain (mis. detail berita) memakai header putih.
+    $transparan = request()->routeIs('home', 'profil', 'apbdes', 'potensi', 'berita.index', 'kontak', 'aspirasi.*');
 
     // Pintasan ke bagian halaman Profil (menu turun di desktop, sub-menu di HP).
     $subProfil = [

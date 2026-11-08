@@ -16,7 +16,8 @@
         'bg-[linear-gradient(180deg,rgb(20_73_26/0.82)_0%,rgb(20_73_26/0.74)_100%)] md:bg-[linear-gradient(90deg,rgb(20_73_26/0.88)_0%,rgb(27_94_32/0.66)_55%,rgb(27_94_32/0.38)_100%)]' => $foto,
     ])></div>
 
-    <div class="pembuka container-page flex flex-col gap-3 py-10 [text-shadow:0_1px_14px_rgb(0_0_0/0.28)] lg:gap-4 lg:py-14">
+    {{-- Ruang atas = tinggi header yang melayang di atas foto (101 px HP, 109 px layar lebar) + jarak. --}}
+    <div class="pembuka container-page flex flex-col gap-3 pb-10 pt-[141px] [text-shadow:0_1px_14px_rgb(0_0_0/0.28)] lg:gap-4 lg:pb-14 lg:pt-[165px]">
         <x-ui.breadcrumb gelap :items="[['label' => 'Beranda', 'href' => route('home')], ['label' => $jejak]]" style="--urutan: 0" />
         <h1 class="type-h1 text-surface" style="--urutan: 1">{{ $judul }}</h1>
         @if ($pengantar)
