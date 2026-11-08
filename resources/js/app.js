@@ -526,5 +526,17 @@ Alpine.data('donatAnggaran', (bagian = [], bawaan = {}) => ({
     },
 }));
 
+/** Jam waktu setempat (WIB) di footer, diperbarui setiap 20 detik. */
+Alpine.data('jamDesa', (awal = '') => ({
+    jam: awal,
+
+    init() {
+        const format = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' });
+        const perbarui = () => { this.jam = format.format(new Date()).replace(':', '.'); };
+        perbarui();
+        setInterval(perbarui, 20000);
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();

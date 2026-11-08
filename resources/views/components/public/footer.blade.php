@@ -3,97 +3,261 @@
     // Kontak resmi hanya tampil setelah diverifikasi pemerintah desa.
     $kontak = collect($identitas['kontak'])->filter(fn ($k) => $k['verified'] && filled($k['value']));
     $tautan = \App\Support\Navigation::footer();
+    $sekarang = now('Asia/Jakarta')->locale('id');
+    $namaBesar = $identitas['nama'];
 @endphp
 
-{{-- Footer: diawali siluet ladang jagung yang menyatu dengan warna footer, senada dengan hero beranda. --}}
-<footer class="on-dark relative mt-16 bg-primary-dark text-primary-soft">
-    <svg viewBox="0 0 1440 64" preserveAspectRatio="xMidYMax slice" class="pointer-events-none absolute inset-x-0 bottom-full h-14 w-full text-primary-dark md:h-16" fill="currentColor" aria-hidden="true" focusable="false">
-        <path d="M0 64V52L0 50.0L40 51.9L80 53.0L120 52.6L160 51.0L200 48.9L240 47.4L280 47.1L320 48.1L360 50.1L400 52.0L440 53.0L480 52.6L520 51.0L560 48.9L600 47.4L640 47.1L680 48.1L720 50.1L760 52.0L800 53.0L840 52.5L880 50.9L920 48.9L960 47.3L1000 47.1L1040 48.2L1080 50.2L1120 52.0L1160 53.0L1200 52.5L1240 50.9L1280 48.8L1320 47.3L1360 47.1L1400 48.2L1440 50.2V64ZM3.9 50L3.9 21.6L8.1 50ZM6.0 34.8Q0.2 27.8 -5.6 32.3Q0.8 32.8 6.0 37.8ZM6.0 39.7Q12.0 32.7 18.0 37.2Q11.4 37.7 6.0 42.7ZM14.5 50L18.1 18.4L17.9 50ZM16.2 32.0Q8.4 25.0 0.5 26.0Q9.1 30.0 16.2 35.0ZM16.2 28.2Q20.8 21.2 25.5 20.1Q20.4 26.2 16.2 31.2ZM27.1 50L26.7 27.4L30.8 50ZM28.9 40.7Q22.4 33.7 15.9 34.2Q23.1 38.7 28.9 43.7ZM28.9 37.7Q33.7 30.7 38.4 35.3Q33.2 35.7 28.9 40.7ZM38.8 50L40.2 10.2L42.5 50ZM40.6 29.8Q35.1 22.8 29.5 22.2Q35.6 27.8 40.6 32.8ZM40.6 32.7Q47.1 25.7 53.6 27.0Q46.5 30.7 40.6 35.7ZM57.4 50L62.0 22.8L60.8 50ZM59.1 33.3Q54.1 26.3 49.0 27.8Q54.6 31.3 59.1 36.3ZM59.1 34.1Q66.3 27.1 73.5 28.1Q65.6 32.1 59.1 37.1ZM77.4 50L80.7 22.0L81.6 50ZM79.5 35.7Q72.0 28.7 64.6 27.1Q72.8 33.7 79.5 38.7ZM79.5 33.7Q84.2 26.7 88.9 26.8Q83.7 31.7 79.5 36.7ZM95.1 50L98.8 0.2L98.7 50ZM96.9 20.9Q92.3 13.9 87.7 15.7Q92.8 18.9 96.9 23.9ZM96.9 30.5Q101.6 23.5 106.3 23.2Q101.1 28.5 96.9 33.5ZM98.0 2.2L95.8 -5.8L99.4 1.2ZM99.6 2.2L102.3 -4.8L100.4 2.2ZM107.5 50L111.3 19.5L110.8 50ZM109.1 33.5Q101.5 26.5 93.9 25.7Q102.3 31.5 109.1 36.5ZM119.4 50L120.9 18.7L124.0 50ZM121.7 37.1Q127.0 30.1 132.4 33.5Q126.5 35.1 121.7 40.1ZM135.4 50L135.6 13.1L138.6 50ZM137.0 32.3Q130.6 25.3 124.1 23.7Q131.2 30.3 137.0 35.3ZM137.0 30.5Q143.7 23.5 150.4 23.7Q143.0 28.5 137.0 33.5ZM134.8 15.1L132.6 7.1L136.2 14.1ZM136.4 15.1L139.1 8.1L137.2 15.1ZM155.5 50L160.0 7.0L160.0 50ZM157.7 29.0Q152.9 22.0 148.0 22.5Q153.4 27.0 157.7 32.0ZM157.7 34.0Q163.0 27.0 168.2 30.8Q162.4 32.0 157.7 37.0ZM159.2 9.0L157.0 1.0L160.6 8.0ZM160.8 9.0L163.5 2.0L161.6 9.0ZM165.7 50L165.3 32.0L169.1 50ZM167.4 43.5Q159.9 36.5 152.3 37.2Q160.6 41.5 167.4 46.5ZM167.4 42.1Q173.1 35.1 178.9 37.6Q172.6 40.1 167.4 45.1ZM176.0 50L181.0 4.8L180.0 50ZM178.0 32.8Q173.2 25.8 168.3 28.4Q173.6 30.8 178.0 35.8ZM178.0 21.1Q183.1 14.1 188.1 18.9Q182.6 19.1 178.0 24.1ZM192.3 50L194.1 27.3L195.5 50ZM193.9 34.3Q186.4 27.3 178.8 27.4Q187.1 32.3 193.9 37.3ZM193.9 39.1Q199.0 32.1 204.1 31.7Q198.5 37.1 193.9 42.1ZM208.0 50L208.8 7.1L211.6 50ZM209.8 20.2Q202.3 13.2 194.8 12.5Q203.1 18.2 209.8 23.2ZM209.8 23.9Q215.1 16.9 220.4 18.2Q214.6 21.9 209.8 26.9ZM208.0 9.1L205.8 1.1L209.4 8.1ZM209.6 9.1L212.3 2.1L210.4 9.1ZM217.4 50L217.9 31.1L221.0 50ZM219.2 37.1Q213.1 30.1 207.1 28.5Q213.7 35.1 219.2 40.1ZM238.8 50L238.9 20.3L242.4 50ZM240.6 37.5Q233.9 30.5 227.2 29.2Q234.6 35.5 240.6 40.5ZM240.6 34.6Q247.4 27.6 254.2 27.0Q246.7 32.6 240.6 37.6ZM248.5 50L253.2 10.9L252.9 50ZM250.7 29.8Q245.6 22.8 240.5 22.2Q246.1 27.8 250.7 32.8ZM250.7 25.3Q258.6 18.3 266.5 20.6Q257.8 23.3 250.7 28.3ZM252.4 12.9L250.2 4.9L253.8 11.9ZM254.0 12.9L256.7 5.9L254.8 12.9ZM270.3 50L270.0 8.8L273.7 50ZM272.0 22.5Q264.7 15.5 257.4 19.5Q265.4 20.5 272.0 25.5ZM272.0 21.4Q278.8 14.4 285.6 17.0Q278.1 19.4 272.0 24.4ZM269.2 10.8L267.0 2.8L270.6 9.8ZM270.8 10.8L273.5 3.8L271.6 10.8ZM280.6 50L285.5 31.5L284.8 50ZM282.7 37.5Q276.7 30.5 270.7 29.4Q277.3 35.5 282.7 40.5ZM282.7 42.2Q288.1 35.2 293.5 38.1Q287.6 40.2 282.7 45.2ZM292.9 50L293.4 13.2L296.8 50ZM294.8 25.4Q289.1 18.4 283.4 20.2Q289.7 23.4 294.8 28.4ZM294.8 25.5Q300.8 18.5 306.8 17.1Q300.2 23.5 294.8 28.5ZM292.6 15.2L290.4 7.2L294.0 14.2ZM294.2 15.2L296.9 8.2L295.0 15.2ZM308.8 50L307.9 15.2L312.7 50ZM310.8 37.8Q303.5 30.8 296.2 34.6Q304.2 35.8 310.8 40.8ZM310.8 29.0Q317.2 22.0 323.6 24.7Q316.6 27.0 310.8 32.0ZM307.1 17.2L304.9 9.2L308.5 16.2ZM308.7 17.2L311.4 10.2L309.5 17.2ZM324.9 50L324.6 6.9L329.0 50ZM327.0 30.7Q319.8 23.7 312.6 25.2Q320.5 28.7 327.0 33.7ZM327.0 23.5Q334.7 16.5 342.4 18.3Q333.9 21.5 327.0 26.5ZM340.6 50L343.7 15.6L344.5 50ZM342.5 32.2Q334.8 25.2 327.0 25.3Q335.5 30.2 342.5 35.2ZM352.6 50L357.6 14.1L357.2 50ZM354.9 35.9Q348.9 28.9 342.8 33.4Q349.5 33.9 354.9 38.9ZM354.9 36.5Q361.8 29.5 368.6 29.0Q361.1 34.5 354.9 39.5ZM364.2 50L366.9 9.1L367.6 50ZM366.1 11.1L363.9 3.1L367.5 10.1ZM367.7 11.1L370.4 4.1L368.5 11.1ZM384.9 50L387.2 19.3L389.7 50ZM387.3 37.5Q381.3 30.5 375.3 31.9Q381.9 35.5 387.3 40.5ZM387.3 37.1Q392.9 30.1 398.5 30.1Q392.4 35.1 387.3 40.1ZM394.9 50L396.2 14.3L398.2 50ZM396.6 29.7Q390.3 22.7 384.0 27.2Q390.9 27.7 396.6 32.7ZM416.6 50L416.8 28.6L419.8 50ZM418.2 40.5Q413.2 33.5 408.3 35.5Q413.7 38.5 418.2 43.5ZM435.5 50L435.7 23.7L440.2 50ZM437.8 34.4Q433.0 27.4 428.2 32.0Q433.5 32.4 437.8 37.4ZM437.8 36.9Q442.6 29.9 447.3 28.3Q442.1 34.9 437.8 39.9ZM452.8 50L452.6 6.3L457.4 50ZM455.1 21.5Q449.0 14.5 442.9 17.2Q449.6 19.5 455.1 24.5ZM455.1 20.6Q460.5 13.6 466.0 17.7Q460.0 18.6 455.1 23.6ZM451.8 8.3L449.6 0.3L453.2 7.3ZM453.4 8.3L456.1 1.3L454.2 8.3ZM465.5 50L465.2 28.5L468.8 50ZM467.2 40.1Q461.6 33.1 456.1 32.8Q462.2 38.1 467.2 43.1ZM467.2 38.7Q472.3 31.7 477.4 34.3Q471.8 36.7 467.2 41.7ZM474.2 50L473.5 24.0L478.6 50ZM476.4 39.2Q470.3 32.2 464.1 30.6Q470.9 37.2 476.4 42.2ZM476.4 33.4Q482.4 26.4 488.5 28.0Q481.8 31.4 476.4 36.4ZM494.1 50L496.3 19.4L498.4 50ZM496.3 30.4Q503.2 23.4 510.2 23.9Q502.6 28.4 496.3 33.4ZM508.8 50L507.9 20.9L512.2 50ZM510.5 32.3Q505.1 25.3 499.7 29.1Q505.7 30.3 510.5 35.3ZM510.5 31.2Q518.1 24.2 525.6 24.5Q517.3 29.2 510.5 34.2ZM521.2 50L522.0 24.2L525.2 50ZM523.2 37.0Q517.8 30.0 512.4 28.2Q518.3 35.0 523.2 40.0ZM537.5 50L542.1 24.2L541.2 50ZM539.3 41.0Q533.5 34.0 527.6 35.6Q534.1 39.0 539.3 44.0ZM539.3 39.1Q545.6 32.1 551.8 37.1Q545.0 37.1 539.3 42.1ZM550.1 50L551.1 29.1L553.4 50ZM551.7 40.5Q546.4 33.5 541.1 34.4Q547.0 38.5 551.7 43.5ZM551.7 37.2Q558.5 30.2 565.4 30.2Q557.9 35.2 551.7 40.2ZM569.8 50L571.1 19.5L574.6 50ZM572.2 31.6Q565.4 24.6 558.7 29.3Q566.1 29.6 572.2 34.6ZM572.2 29.8Q578.9 22.8 585.6 22.7Q578.2 27.8 572.2 32.8ZM589.7 50L591.9 27.5L593.7 50ZM591.7 35.8Q584.3 28.8 577.0 29.7Q585.1 33.8 591.7 38.8ZM608.0 50L608.0 9.8L611.2 50ZM609.6 30.9Q604.7 23.9 599.9 23.0Q605.2 28.9 609.6 33.9ZM609.6 27.1Q616.3 20.1 623.0 20.3Q615.6 25.1 609.6 30.1ZM607.2 11.8L605.0 3.8L608.6 10.8ZM608.8 11.8L611.5 4.8L609.6 11.8ZM616.7 50L620.1 6.5L620.7 50ZM618.7 24.7Q613.9 17.7 609.2 17.6Q614.4 22.7 618.7 27.7ZM618.7 33.6Q624.1 26.6 629.5 26.5Q623.5 31.6 618.7 36.6ZM619.3 8.5L617.1 0.5L620.7 7.5ZM620.9 8.5L623.6 1.5L621.7 8.5ZM635.4 50L637.2 0.8L639.2 50ZM637.3 21.0Q630.1 14.0 622.9 14.7Q630.8 19.0 637.3 24.0ZM637.3 31.4Q642.3 24.4 647.3 27.7Q641.8 29.4 637.3 34.4ZM648.6 50L647.3 13.8L651.9 50ZM650.2 28.8Q643.3 21.8 636.4 22.1Q644.0 26.8 650.2 31.8ZM650.2 30.8Q656.4 23.8 662.5 25.5Q655.7 28.8 650.2 33.8ZM646.5 15.8L644.3 7.8L647.9 14.8ZM648.1 15.8L650.8 8.8L648.9 15.8ZM668.5 50L673.7 25.6L673.2 50ZM670.8 37.6Q663.5 30.6 656.1 28.8Q664.2 35.6 670.8 40.6ZM670.8 39.2Q676.1 32.2 681.3 30.6Q675.6 37.2 670.8 42.2ZM680.6 50L680.4 13.4L684.6 50ZM682.6 26.7Q688.9 19.7 695.1 18.5Q688.2 24.7 682.6 29.7ZM693.0 50L694.5 3.3L696.2 50ZM694.6 25.6Q688.5 18.6 682.4 21.5Q689.1 23.6 694.6 28.6ZM694.6 28.0Q700.2 21.0 705.8 20.1Q699.6 26.0 694.6 31.0ZM693.7 5.3L691.5 -2.7L695.1 4.3ZM695.3 5.3L698.0 -1.7L696.1 5.3ZM711.0 50L711.1 5.1L715.7 50ZM713.4 20.1Q707.8 13.1 702.3 15.5Q708.4 18.1 713.4 23.1ZM713.4 18.6Q719.9 11.6 726.5 14.1Q719.3 16.6 713.4 21.6ZM710.3 7.1L708.1 -0.9L711.7 6.1ZM711.9 7.1L714.6 0.1L712.7 7.1ZM723.7 50L723.5 30.5L728.2 50ZM725.9 36.8Q720.6 29.8 715.2 32.9Q721.1 34.8 725.9 39.8ZM725.9 41.9Q731.7 34.9 737.5 33.2Q731.2 39.9 725.9 44.9ZM744.1 50L747.2 6.0L748.8 50ZM746.4 23.5Q751.1 16.5 755.8 16.4Q750.6 21.5 746.4 26.5ZM746.4 8.0L744.2 0.0L747.8 7.0ZM748.0 8.0L750.7 1.0L748.8 8.0ZM763.6 50L763.9 11.4L766.9 50ZM765.2 30.1Q770.9 23.1 776.6 26.0Q770.3 28.1 765.2 33.1ZM785.1 50L787.8 23.7L788.7 50ZM786.9 37.2Q781.8 30.2 776.7 34.0Q782.3 35.2 786.9 40.2ZM786.9 32.4Q793.1 25.4 799.4 28.9Q792.5 30.4 786.9 35.4ZM806.0 50L807.4 0.1L809.4 50ZM807.7 31.0Q802.0 24.0 796.3 28.3Q802.6 29.0 807.7 34.0ZM807.7 28.0Q814.2 21.0 820.7 19.8Q813.5 26.0 807.7 31.0ZM820.2 50L822.2 18.8L824.0 50ZM822.1 38.4Q816.6 31.4 811.1 29.6Q817.1 36.4 822.1 41.4ZM822.1 33.6Q828.8 26.6 835.5 25.5Q828.1 31.6 822.1 36.6ZM831.9 50L832.4 23.3L835.8 50ZM833.9 31.8Q826.4 24.8 818.9 23.6Q827.1 29.8 833.9 34.8ZM833.9 40.4Q840.8 33.4 847.8 32.1Q840.1 38.4 833.9 43.4ZM847.1 50L846.0 13.2L850.9 50ZM849.0 26.1Q856.9 19.1 864.8 22.4Q856.1 24.1 849.0 29.1ZM845.2 15.2L843.0 7.2L846.6 14.2ZM846.8 15.2L849.5 8.2L847.6 15.2ZM857.7 50L861.1 15.3L862.4 50ZM860.0 30.0Q852.8 23.0 845.7 24.8Q853.6 28.0 860.0 33.0ZM860.0 37.4Q867.3 30.4 874.5 33.7Q866.5 35.4 860.0 40.4ZM875.6 50L875.2 22.3L879.2 50ZM877.4 33.5Q872.5 26.5 867.6 31.0Q873.0 31.5 877.4 36.5ZM877.4 34.6Q883.3 27.6 889.1 31.1Q882.7 32.6 877.4 37.6ZM892.3 50L893.0 31.7L896.2 50ZM894.2 37.9Q900.4 30.9 906.6 34.3Q899.8 35.9 894.2 40.9ZM904.6 50L907.7 1.3L908.3 50ZM906.4 24.4Q899.6 17.4 892.7 19.5Q900.3 22.4 906.4 27.4ZM906.4 21.6Q914.2 14.6 921.9 18.0Q913.4 19.6 906.4 24.6ZM906.9 3.3L904.7 -4.7L908.3 2.3ZM908.5 3.3L911.2 -3.7L909.3 3.3ZM918.1 50L920.9 18.5L921.6 50ZM919.8 30.9Q913.6 23.9 907.3 27.4Q914.2 28.9 919.8 33.9ZM931.1 50L931.3 5.8L934.7 50ZM932.9 29.9Q925.1 22.9 917.2 24.5Q925.8 27.9 932.9 32.9ZM932.9 31.1Q938.8 24.1 944.8 24.4Q938.2 29.1 932.9 34.1ZM941.4 50L942.1 19.4L946.2 50ZM943.8 38.7Q939.1 31.7 934.4 34.0Q939.5 36.7 943.8 41.7ZM961.9 50L967.3 8.6L966.6 50ZM964.3 32.8Q956.5 25.8 948.7 25.6Q957.3 30.8 964.3 35.8ZM964.3 25.9Q970.1 18.9 975.9 21.2Q969.5 23.9 964.3 28.9ZM966.5 10.6L964.3 2.6L967.9 9.6ZM968.1 10.6L970.8 3.6L968.9 10.6ZM973.6 50L974.2 31.9L977.4 50ZM975.5 37.6Q980.7 30.6 985.9 33.1Q980.2 35.6 975.5 40.6ZM993.5 50L994.7 5.7L996.8 50ZM995.2 28.7Q987.4 21.7 979.7 25.4Q988.2 26.7 995.2 31.7ZM995.2 20.6Q999.8 13.6 1004.4 15.7Q999.3 18.6 995.2 23.6ZM1012.5 50L1011.3 30.7L1015.8 50ZM1014.1 38.2Q1021.8 31.2 1029.4 33.8Q1021.0 36.2 1014.1 41.2ZM1024.9 50L1027.4 1.4L1028.5 50ZM1026.7 27.6Q1021.2 20.6 1015.7 25.6Q1021.7 25.6 1026.7 30.6ZM1026.7 17.4Q1033.4 10.4 1040.1 8.8Q1032.7 15.4 1026.7 20.4ZM1026.6 3.4L1024.4 -4.6L1028.0 2.4ZM1028.2 3.4L1030.9 -3.6L1029.0 3.4ZM1036.3 50L1041.4 16.8L1041.1 50ZM1038.7 35.5Q1032.7 28.5 1026.7 30.0Q1033.3 33.5 1038.7 38.5ZM1047.8 50L1051.5 6.3L1052.3 50ZM1050.1 25.4Q1044.4 18.4 1038.8 21.2Q1045.0 23.4 1050.1 28.4ZM1050.1 22.8Q1054.9 15.8 1059.6 19.4Q1054.4 20.8 1050.1 25.8ZM1060.3 50L1059.5 29.9L1064.3 50ZM1062.3 36.1Q1054.7 29.1 1047.1 27.2Q1055.5 34.1 1062.3 39.1ZM1062.3 42.4Q1067.1 35.4 1072.0 36.9Q1066.6 40.4 1062.3 45.4ZM1078.6 50L1078.9 17.7L1082.5 50ZM1080.5 31.1Q1073.4 24.1 1066.3 23.1Q1074.1 29.1 1080.5 34.1ZM1080.5 37.3Q1088.0 30.3 1095.4 33.3Q1087.2 35.3 1080.5 40.3ZM1095.1 50L1098.3 20.1L1098.6 50ZM1096.9 37.0Q1091.9 30.0 1086.8 28.8Q1092.4 35.0 1096.9 40.0ZM1096.9 36.1Q1102.8 29.1 1108.7 27.2Q1102.2 34.1 1096.9 39.1ZM1110.4 50L1114.3 24.6L1114.6 50ZM1112.5 36.9Q1119.9 29.9 1127.2 29.0Q1119.1 34.9 1112.5 39.9ZM1131.7 50L1132.1 30.7L1135.1 50ZM1133.4 36.7Q1126.8 29.7 1120.3 28.2Q1127.5 34.7 1133.4 39.7ZM1133.4 37.4Q1139.4 30.4 1145.5 33.6Q1138.8 35.4 1133.4 40.4ZM1150.4 50L1150.1 1.7L1154.6 50ZM1152.5 29.4Q1146.7 22.4 1140.9 26.4Q1147.3 27.4 1152.5 32.4ZM1152.5 28.8Q1159.1 21.8 1165.7 22.2Q1158.4 26.8 1152.5 31.8ZM1149.3 3.7L1147.1 -4.3L1150.7 2.7ZM1150.9 3.7L1153.6 -3.3L1151.7 3.7ZM1159.9 50L1162.7 21.5L1163.4 50ZM1161.6 38.0Q1154.3 31.0 1147.1 32.2Q1155.1 36.0 1161.6 41.0ZM1161.6 39.0Q1167.5 32.0 1173.4 33.2Q1166.9 37.0 1161.6 42.0ZM1176.8 50L1176.9 29.1L1181.1 50ZM1178.9 40.6Q1173.4 33.6 1167.8 31.9Q1173.9 38.6 1178.9 43.6ZM1178.9 38.5Q1184.7 31.5 1190.4 33.6Q1184.1 36.5 1178.9 41.5ZM1197.4 50L1198.4 0.1L1200.9 50ZM1199.2 29.0Q1194.7 22.0 1190.1 20.7Q1195.1 27.0 1199.2 32.0ZM1199.2 18.2Q1205.1 11.2 1211.0 10.0Q1204.5 16.2 1199.2 21.2ZM1197.6 2.1L1195.4 -5.9L1199.0 1.1ZM1199.2 2.1L1201.9 -4.9L1200.0 2.1ZM1208.2 50L1210.6 31.5L1212.4 50ZM1210.3 39.5Q1216.1 32.5 1221.9 34.0Q1215.5 37.5 1210.3 42.5ZM1218.8 50L1221.3 22.9L1223.5 50ZM1221.2 35.9Q1213.9 28.9 1206.6 27.1Q1214.6 33.9 1221.2 38.9ZM1221.2 39.3Q1229.0 32.3 1236.8 30.5Q1228.2 37.3 1221.2 42.3ZM1234.6 50L1239.0 30.3L1238.4 50ZM1236.5 37.4Q1241.5 30.4 1246.6 29.9Q1241.0 35.4 1236.5 40.4ZM1246.1 50L1250.4 19.1L1250.6 50ZM1248.3 36.8Q1242.4 29.8 1236.6 31.2Q1243.0 34.8 1248.3 39.8ZM1248.3 37.8Q1253.7 30.8 1259.1 30.8Q1253.2 35.8 1248.3 40.8ZM1266.8 50L1269.4 30.7L1271.2 50ZM1269.0 37.6Q1264.1 30.6 1259.2 31.4Q1264.6 35.6 1269.0 40.6ZM1269.0 39.0Q1274.6 32.0 1280.2 34.1Q1274.0 37.0 1269.0 42.0ZM1283.6 50L1286.5 18.4L1287.5 50ZM1285.6 38.7Q1278.9 31.7 1272.3 33.2Q1279.6 36.7 1285.6 41.7ZM1285.6 30.5Q1292.8 23.5 1300.0 25.3Q1292.1 28.5 1285.6 33.5ZM1295.2 50L1294.6 16.9L1298.6 50ZM1296.9 37.3Q1290.9 30.3 1284.8 31.8Q1291.5 35.3 1296.9 40.3ZM1296.9 31.0Q1301.7 24.0 1306.5 23.9Q1301.2 29.0 1296.9 34.0ZM1314.0 50L1313.4 15.6L1318.0 50ZM1316.0 26.5Q1311.1 19.5 1306.1 18.5Q1311.6 24.5 1316.0 29.5ZM1333.6 50L1338.5 25.8L1337.6 50ZM1345.1 50L1349.4 6.8L1348.4 50ZM1346.8 23.4Q1341.7 16.4 1336.7 15.2Q1342.2 21.4 1346.8 26.4ZM1346.8 22.5Q1351.8 15.5 1356.8 17.0Q1351.3 20.5 1346.8 25.5ZM1356.6 50L1358.5 23.6L1360.3 50ZM1358.5 39.1Q1353.4 32.1 1348.4 30.5Q1353.9 37.1 1358.5 42.1ZM1358.5 32.5Q1363.6 25.5 1368.7 25.0Q1363.1 30.5 1358.5 35.5ZM1367.1 50L1369.8 15.0L1370.9 50ZM1369.0 30.7Q1376.6 23.7 1384.2 27.9Q1375.8 28.7 1369.0 33.7ZM1384.4 50L1387.9 19.4L1388.0 50ZM1386.2 35.4Q1393.3 28.4 1400.5 30.3Q1392.6 33.4 1386.2 38.4ZM1395.2 50L1394.8 8.2L1399.7 50ZM1397.5 26.0Q1389.5 19.0 1381.6 19.9Q1390.3 24.0 1397.5 29.0ZM1397.5 30.8Q1402.0 23.8 1406.5 28.6Q1401.5 28.8 1397.5 33.8ZM1394.0 10.2L1391.8 2.2L1395.4 9.2ZM1395.6 10.2L1398.3 3.2L1396.4 10.2ZM1412.2 50L1414.5 18.2L1416.8 50ZM1414.5 36.3Q1407.7 29.3 1400.9 34.2Q1408.4 34.3 1414.5 39.3ZM1414.5 34.9Q1419.3 27.9 1424.2 30.4Q1418.9 32.9 1414.5 37.9ZM1424.6 50L1426.9 13.3L1428.1 50ZM1426.4 31.1Q1421.4 24.1 1416.4 22.5Q1421.9 29.1 1426.4 34.1ZM1426.4 35.2Q1431.2 28.2 1436.1 28.8Q1430.7 33.2 1426.4 38.2Z" />
+{{--
+    Footer: ladang jagung yang bergoyang tertiup angin (dua lapis, bergerak seperti gelombang),
+    kalimat penutup, tautan, kantor desa, jam waktu setempat, lalu nama desa berukuran besar
+    yang hurufnya muncul satu per satu saat footer terlihat.
+--}}
+<footer class="on-dark text-primary-soft">
+    {{-- Pita ladang: latarnya mengikuti warna bagian terakhir halaman agar tidak ada garis sambungan (lihat app.css). --}}
+    <div class="celah-ladang relative h-[104px] bg-surface md:h-[150px]">
+    <svg viewBox="0 0 1440 124" preserveAspectRatio="xMidYMax slice" class="ladang-footer pointer-events-none absolute inset-x-0 bottom-0 h-[88px] w-full md:h-[124px]" aria-hidden="true" focusable="false">
+        <defs>
+            {{-- Jagung tinggi bertongkol dan bermalai --}}
+            <symbol id="lad-a" viewBox="0 0 40 120" overflow="visible">
+                <path d="M18.8 120 L19.5 14 L20.5 14 L21.2 120Z" />
+                <path d="M20 94 Q8 86 1 66 Q12 80 20 88Z" />
+                <path d="M20 76 Q32 68 39 50 Q28 63 20 70Z" />
+                <path d="M20 54 Q10 46 5 30 Q14 43 20 49Z" />
+                <path d="M20 38 Q28 30 33 18 Q26 27 20 33Z" />
+                <ellipse cx="24.5" cy="70" rx="3.2" ry="8.5" transform="rotate(16 24.5 70)" />
+                <path d="M20 15 L15 2 L19.2 13Z M20 15 L20.6 0 L21 14Z M20 15 L25 3 L21 14Z" />
+            </symbol>
+            {{-- Jagung sedang --}}
+            <symbol id="lad-b" viewBox="0 0 40 120" overflow="visible">
+                <path d="M19 120 L19.6 40 L20.4 40 L21 120Z" />
+                <path d="M20 104 Q7 98 2 82 Q12 94 20 98Z" />
+                <path d="M20 86 Q33 80 38 64 Q28 76 20 81Z" />
+                <path d="M20 66 Q11 58 8 44 Q15 56 20 61Z" />
+                <path d="M20 42 L17 30 L19.6 40Z M20 42 L23.5 31 L20.4 40Z" />
+            </symbol>
+            {{-- Tanaman muda berdaun --}}
+            <symbol id="lad-c" viewBox="0 0 40 120" overflow="visible">
+                <path d="M19.2 120 L19.7 70 L20.3 70 L20.8 120Z" />
+                <path d="M20 112 Q4 106 0 88 Q11 102 20 106Z" />
+                <path d="M20 106 Q36 100 40 82 Q29 97 20 101Z" />
+                <path d="M20 92 Q10 84 9 68 Q15 82 20 87Z" />
+                <path d="M20 86 Q30 78 31 64 Q25 77 20 82Z" />
+            </symbol>
+        </defs>
+
+        <g fill="#24622a">
+            <use href="#lad-c" x="-26.4" y="13.7" width="32.8" height="98.3" class="batang-ladang" style="--tunda:-0.31s;--lama:4.38s" />
+            <use href="#lad-a" x="-2.7" y="32.5" width="26.5" height="79.5" class="batang-ladang" style="--tunda:-0.24s;--lama:4.23s" />
+            <use href="#lad-a" x="20.0" y="25.3" width="28.9" height="86.7" class="batang-ladang" style="--tunda:-0.18s;--lama:4.14s" />
+            <use href="#lad-a" x="44.2" y="21.2" width="30.3" height="90.8" class="batang-ladang" style="--tunda:-0.36s;--lama:4.05s" />
+            <use href="#lad-a" x="67.5" y="20.4" width="30.5" height="91.6" class="batang-ladang" style="--tunda:-0.62s;--lama:3.66s" />
+            <use href="#lad-a" x="83.9" y="21.1" width="30.3" height="90.9" class="batang-ladang" style="--tunda:-0.66s;--lama:3.93s" />
+            <use href="#lad-a" x="106.2" y="23.3" width="29.6" height="88.7" class="batang-ladang" style="--tunda:-0.68s;--lama:4.10s" />
+            <use href="#lad-c" x="128.2" y="19.5" width="30.8" height="92.5" class="batang-ladang" style="--tunda:-0.66s;--lama:4.15s" />
+            <use href="#lad-a" x="153.3" y="18.1" width="31.3" height="93.9" class="batang-ladang" style="--tunda:-0.71s;--lama:3.83s" />
+            <use href="#lad-a" x="172.8" y="22.1" width="30.0" height="89.9" class="batang-ladang" style="--tunda:-0.70s;--lama:3.71s" />
+            <use href="#lad-a" x="189.9" y="11.2" width="33.6" height="100.8" class="batang-ladang" style="--tunda:-1.06s;--lama:3.60s" />
+            <use href="#lad-a" x="210.3" y="24.6" width="29.1" height="87.4" class="batang-ladang" style="--tunda:-1.17s;--lama:4.00s" />
+            <use href="#lad-a" x="225.6" y="16.1" width="32.0" height="95.9" class="batang-ladang" style="--tunda:-0.95s;--lama:3.69s" />
+            <use href="#lad-c" x="245.0" y="16.7" width="31.8" height="95.3" class="batang-ladang" style="--tunda:-0.95s;--lama:3.85s" />
+            <use href="#lad-a" x="263.4" y="24.8" width="29.1" height="87.2" class="batang-ladang" style="--tunda:-1.16s;--lama:4.28s" />
+            <use href="#lad-a" x="278.9" y="10.4" width="33.9" height="101.6" class="batang-ladang" style="--tunda:-1.33s;--lama:4.02s" />
+            <use href="#lad-c" x="301.3" y="26.0" width="28.7" height="86.0" class="batang-ladang" style="--tunda:-1.18s;--lama:3.87s" />
+            <use href="#lad-b" x="324.4" y="10.1" width="34.0" height="101.9" class="batang-ladang" style="--tunda:-1.19s;--lama:3.79s" />
+            <use href="#lad-a" x="354.7" y="36.4" width="25.2" height="75.6" class="batang-ladang" style="--tunda:-1.33s;--lama:4.04s" />
+            <use href="#lad-b" x="367.2" y="14.7" width="32.4" height="97.3" class="batang-ladang" style="--tunda:-1.49s;--lama:3.67s" />
+            <use href="#lad-a" x="389.0" y="37.2" width="24.9" height="74.8" class="batang-ladang" style="--tunda:-1.54s;--lama:4.22s" />
+            <use href="#lad-c" x="402.5" y="14.6" width="32.5" height="97.4" class="batang-ladang" style="--tunda:-1.51s;--lama:3.99s" />
+            <use href="#lad-b" x="424.4" y="12.5" width="33.2" height="99.5" class="batang-ladang" style="--tunda:-1.86s;--lama:3.85s" />
+            <use href="#lad-a" x="443.4" y="18.6" width="31.1" height="93.4" class="batang-ladang" style="--tunda:-1.75s;--lama:4.08s" />
+            <use href="#lad-a" x="462.8" y="34.7" width="25.8" height="77.3" class="batang-ladang" style="--tunda:-1.67s;--lama:4.56s" />
+            <use href="#lad-c" x="480.5" y="30.5" width="27.2" height="81.5" class="batang-ladang" style="--tunda:-2.05s;--lama:4.20s" />
+            <use href="#lad-a" x="496.4" y="12.0" width="33.3" height="100.0" class="batang-ladang" style="--tunda:-2.17s;--lama:3.73s" />
+            <use href="#lad-a" x="520.1" y="29.9" width="27.4" height="82.1" class="batang-ladang" style="--tunda:-2.22s;--lama:3.80s" />
+            <use href="#lad-b" x="535.7" y="26.2" width="28.6" height="85.8" class="batang-ladang" style="--tunda:-2.01s;--lama:3.65s" />
+            <use href="#lad-a" x="556.0" y="35.1" width="25.6" height="76.9" class="batang-ladang" style="--tunda:-2.03s;--lama:4.05s" />
+            <use href="#lad-a" x="573.0" y="21.3" width="30.2" height="90.7" class="batang-ladang" style="--tunda:-2.41s;--lama:4.07s" />
+            <use href="#lad-b" x="590.9" y="11.0" width="33.7" height="101.0" class="batang-ladang" style="--tunda:-2.12s;--lama:4.24s" />
+            <use href="#lad-b" x="614.6" y="28.8" width="27.7" height="83.2" class="batang-ladang" style="--tunda:-2.58s;--lama:3.68s" />
+            <use href="#lad-a" x="633.4" y="12.8" width="33.1" height="99.2" class="batang-ladang" style="--tunda:-2.55s;--lama:4.30s" />
+            <use href="#lad-b" x="659.9" y="27.9" width="28.0" height="84.1" class="batang-ladang" style="--tunda:-2.61s;--lama:4.50s" />
+            <use href="#lad-c" x="681.9" y="11.5" width="33.5" height="100.5" class="batang-ladang" style="--tunda:-2.44s;--lama:4.10s" />
+            <use href="#lad-c" x="700.6" y="27.1" width="28.3" height="84.9" class="batang-ladang" style="--tunda:-2.49s;--lama:3.67s" />
+            <use href="#lad-a" x="714.7" y="10.2" width="33.9" height="101.8" class="batang-ladang" style="--tunda:-2.89s;--lama:4.33s" />
+            <use href="#lad-c" x="737.1" y="25.4" width="28.9" height="86.6" class="batang-ladang" style="--tunda:-2.94s;--lama:3.68s" />
+            <use href="#lad-a" x="761.2" y="29.0" width="27.7" height="83.0" class="batang-ladang" style="--tunda:-2.73s;--lama:3.62s" />
+            <use href="#lad-a" x="785.9" y="23.9" width="29.4" height="88.1" class="batang-ladang" style="--tunda:-3.03s;--lama:4.52s" />
+            <use href="#lad-a" x="805.1" y="27.4" width="28.2" height="84.6" class="batang-ladang" style="--tunda:-2.90s;--lama:4.21s" />
+            <use href="#lad-b" x="824.9" y="19.4" width="30.9" height="92.6" class="batang-ladang" style="--tunda:-3.09s;--lama:4.49s" />
+            <use href="#lad-b" x="846.3" y="32.1" width="26.6" height="79.9" class="batang-ladang" style="--tunda:-3.16s;--lama:4.41s" />
+            <use href="#lad-a" x="870.6" y="27.0" width="28.3" height="85.0" class="batang-ladang" style="--tunda:-3.31s;--lama:3.92s" />
+            <use href="#lad-c" x="888.1" y="27.9" width="28.0" height="84.1" class="batang-ladang" style="--tunda:-3.49s;--lama:3.64s" />
+            <use href="#lad-b" x="902.6" y="14.9" width="32.4" height="97.1" class="batang-ladang" style="--tunda:-3.24s;--lama:4.07s" />
+            <use href="#lad-c" x="929.9" y="27.0" width="28.3" height="85.0" class="batang-ladang" style="--tunda:-3.49s;--lama:4.27s" />
+            <use href="#lad-c" x="953.3" y="28.8" width="27.7" height="83.2" class="batang-ladang" style="--tunda:-3.69s;--lama:3.88s" />
+            <use href="#lad-b" x="974.3" y="21.9" width="30.0" height="90.1" class="batang-ladang" style="--tunda:-3.56s;--lama:4.39s" />
+            <use href="#lad-a" x="991.2" y="26.4" width="28.5" height="85.6" class="batang-ladang" style="--tunda:-3.57s;--lama:4.37s" />
+            <use href="#lad-a" x="1008.1" y="15.6" width="32.1" height="96.4" class="batang-ladang" style="--tunda:-3.95s;--lama:3.72s" />
+            <use href="#lad-b" x="1024.4" y="11.1" width="33.6" height="100.9" class="batang-ladang" style="--tunda:-3.89s;--lama:3.80s" />
+            <use href="#lad-a" x="1046.3" y="17.9" width="31.4" height="94.1" class="batang-ladang" style="--tunda:-3.99s;--lama:4.13s" />
+            <use href="#lad-a" x="1064.7" y="30.1" width="27.3" height="81.9" class="batang-ladang" style="--tunda:-3.88s;--lama:4.30s" />
+            <use href="#lad-a" x="1085.3" y="26.7" width="28.4" height="85.3" class="batang-ladang" style="--tunda:-4.13s;--lama:4.51s" />
+            <use href="#lad-c" x="1103.4" y="34.0" width="26.0" height="78.0" class="batang-ladang" style="--tunda:-4.06s;--lama:4.23s" />
+            <use href="#lad-c" x="1126.6" y="22.4" width="29.9" height="89.6" class="batang-ladang" style="--tunda:-4.22s;--lama:4.10s" />
+            <use href="#lad-b" x="1151.2" y="24.8" width="29.1" height="87.2" class="batang-ladang" style="--tunda:-4.31s;--lama:3.80s" />
+            <use href="#lad-a" x="1175.6" y="31.7" width="26.8" height="80.3" class="batang-ladang" style="--tunda:-4.49s;--lama:4.58s" />
+            <use href="#lad-b" x="1201.1" y="30.4" width="27.2" height="81.6" class="batang-ladang" style="--tunda:-4.51s;--lama:3.62s" />
+            <use href="#lad-a" x="1221.3" y="25.4" width="28.9" height="86.6" class="batang-ladang" style="--tunda:-4.51s;--lama:4.37s" />
+            <use href="#lad-a" x="1243.2" y="31.6" width="26.8" height="80.4" class="batang-ladang" style="--tunda:-4.71s;--lama:4.03s" />
+            <use href="#lad-b" x="1257.4" y="18.7" width="31.1" height="93.3" class="batang-ladang" style="--tunda:-4.79s;--lama:4.07s" />
+            <use href="#lad-c" x="1282.2" y="11.5" width="33.5" height="100.5" class="batang-ladang" style="--tunda:-4.71s;--lama:4.55s" />
+            <use href="#lad-a" x="1301.4" y="25.5" width="28.8" height="86.5" class="batang-ladang" style="--tunda:-4.79s;--lama:4.43s" />
+            <use href="#lad-a" x="1322.6" y="23.2" width="29.6" height="88.8" class="batang-ladang" style="--tunda:-4.98s;--lama:4.16s" />
+            <use href="#lad-c" x="1339.8" y="11.2" width="33.6" height="100.8" class="batang-ladang" style="--tunda:-5.06s;--lama:4.21s" />
+            <use href="#lad-a" x="1358.8" y="10.9" width="33.7" height="101.1" class="batang-ladang" style="--tunda:-4.99s;--lama:4.17s" />
+            <use href="#lad-a" x="1378.9" y="23.7" width="29.4" height="88.3" class="batang-ladang" style="--tunda:-5.08s;--lama:3.63s" />
+            <use href="#lad-c" x="1404.4" y="22.6" width="29.8" height="89.4" class="batang-ladang" style="--tunda:-5.32s;--lama:3.72s" />
+            <use href="#lad-a" x="1423.5" y="35.8" width="25.4" height="76.2" class="batang-ladang" style="--tunda:-5.20s;--lama:4.01s" />
+        </g>
+        <g fill="#14491a">
+            <use href="#lad-c" x="-27.2" y="20.7" width="34.4" height="103.3" class="batang-ladang" style="--tunda:-0.15s;--lama:3.73s" />
+            <use href="#lad-c" x="-5.5" y="11.5" width="37.5" height="112.5" class="batang-ladang" style="--tunda:-0.09s;--lama:4.02s" />
+            <use href="#lad-b" x="15.2" y="25.7" width="32.8" height="98.3" class="batang-ladang" style="--tunda:-0.42s;--lama:3.62s" />
+            <use href="#lad-a" x="36.2" y="30.0" width="31.3" height="94.0" class="batang-ladang" style="--tunda:-0.29s;--lama:4.32s" />
+            <use href="#lad-c" x="56.6" y="26.6" width="32.5" height="97.4" class="batang-ladang" style="--tunda:-0.55s;--lama:3.72s" />
+            <use href="#lad-b" x="77.0" y="4.6" width="39.8" height="119.4" class="batang-ladang" style="--tunda:-0.62s;--lama:4.48s" />
+            <use href="#lad-c" x="94.7" y="0.7" width="41.1" height="123.3" class="batang-ladang" style="--tunda:-0.65s;--lama:4.14s" />
+            <use href="#lad-a" x="124.8" y="11.3" width="37.6" height="112.7" class="batang-ladang" style="--tunda:-0.84s;--lama:4.21s" />
+            <use href="#lad-a" x="150.8" y="-2.5" width="42.2" height="126.5" class="batang-ladang" style="--tunda:-0.85s;--lama:3.95s" />
+            <use href="#lad-b" x="171.1" y="-1.7" width="41.9" height="125.7" class="batang-ladang" style="--tunda:-0.74s;--lama:4.38s" />
+            <use href="#lad-a" x="196.0" y="25.6" width="32.8" height="98.4" class="batang-ladang" style="--tunda:-0.83s;--lama:4.33s" />
+            <use href="#lad-a" x="215.3" y="14.7" width="36.4" height="109.3" class="batang-ladang" style="--tunda:-1.19s;--lama:4.14s" />
+            <use href="#lad-a" x="241.9" y="15.9" width="36.0" height="108.1" class="batang-ladang" style="--tunda:-1.18s;--lama:3.62s" />
+            <use href="#lad-b" x="259.3" y="-2.4" width="42.1" height="126.4" class="batang-ladang" style="--tunda:-1.36s;--lama:3.72s" />
+            <use href="#lad-b" x="285.8" y="12.3" width="37.2" height="111.7" class="batang-ladang" style="--tunda:-1.33s;--lama:3.79s" />
+            <use href="#lad-a" x="307.5" y="29.5" width="31.5" height="94.5" class="batang-ladang" style="--tunda:-1.43s;--lama:4.21s" />
+            <use href="#lad-c" x="335.7" y="25.1" width="33.0" height="98.9" class="batang-ladang" style="--tunda:-1.30s;--lama:3.80s" />
+            <use href="#lad-b" x="359.1" y="-3.0" width="42.3" height="127.0" class="batang-ladang" style="--tunda:-1.36s;--lama:3.66s" />
+            <use href="#lad-c" x="393.6" y="27.6" width="32.1" height="96.4" class="batang-ladang" style="--tunda:-1.46s;--lama:3.99s" />
+            <use href="#lad-b" x="414.6" y="14.9" width="36.4" height="109.1" class="batang-ladang" style="--tunda:-1.74s;--lama:3.61s" />
+            <use href="#lad-a" x="442.5" y="23.9" width="33.4" height="100.1" class="batang-ladang" style="--tunda:-1.78s;--lama:4.34s" />
+            <use href="#lad-a" x="462.8" y="8.6" width="38.5" height="115.4" class="batang-ladang" style="--tunda:-1.71s;--lama:4.39s" />
+            <use href="#lad-a" x="483.5" y="1.5" width="40.8" height="122.5" class="batang-ladang" style="--tunda:-2.03s;--lama:4.46s" />
+            <use href="#lad-c" x="510.5" y="9.9" width="38.0" height="114.1" class="batang-ladang" style="--tunda:-1.91s;--lama:4.18s" />
+            <use href="#lad-b" x="534.3" y="20.3" width="34.6" height="103.7" class="batang-ladang" style="--tunda:-1.96s;--lama:4.34s" />
+            <use href="#lad-c" x="555.1" y="25.6" width="32.8" height="98.4" class="batang-ladang" style="--tunda:-2.12s;--lama:4.14s" />
+            <use href="#lad-c" x="573.7" y="2.9" width="40.4" height="121.1" class="batang-ladang" style="--tunda:-2.22s;--lama:4.32s" />
+            <use href="#lad-b" x="595.4" y="19.5" width="34.8" height="104.5" class="batang-ladang" style="--tunda:-2.17s;--lama:4.49s" />
+            <use href="#lad-a" x="625.7" y="22.0" width="34.0" height="102.0" class="batang-ladang" style="--tunda:-2.61s;--lama:4.27s" />
+            <use href="#lad-c" x="645.7" y="9.9" width="38.0" height="114.1" class="batang-ladang" style="--tunda:-2.52s;--lama:3.99s" />
+            <use href="#lad-a" x="674.9" y="5.2" width="39.6" height="118.8" class="batang-ladang" style="--tunda:-2.72s;--lama:4.58s" />
+            <use href="#lad-a" x="692.9" y="3.8" width="40.1" height="120.2" class="batang-ladang" style="--tunda:-2.58s;--lama:4.00s" />
+            <use href="#lad-a" x="712.1" y="7.1" width="39.0" height="116.9" class="batang-ladang" style="--tunda:-2.54s;--lama:3.86s" />
+            <use href="#lad-b" x="734.0" y="10.6" width="37.8" height="113.4" class="batang-ladang" style="--tunda:-2.82s;--lama:4.57s" />
+            <use href="#lad-a" x="758.3" y="7.4" width="38.9" height="116.6" class="batang-ladang" style="--tunda:-3.02s;--lama:3.68s" />
+            <use href="#lad-a" x="785.0" y="16.5" width="35.8" height="107.5" class="batang-ladang" style="--tunda:-3.16s;--lama:3.99s" />
+            <use href="#lad-c" x="813.7" y="10.9" width="37.7" height="113.1" class="batang-ladang" style="--tunda:-3.13s;--lama:4.03s" />
+            <use href="#lad-b" x="837.7" y="11.4" width="37.5" height="112.6" class="batang-ladang" style="--tunda:-3.21s;--lama:3.97s" />
+            <use href="#lad-b" x="858.9" y="10.2" width="37.9" height="113.8" class="batang-ladang" style="--tunda:-3.16s;--lama:4.32s" />
+            <use href="#lad-a" x="879.2" y="2.6" width="40.5" height="121.4" class="batang-ladang" style="--tunda:-3.36s;--lama:4.23s" />
+            <use href="#lad-c" x="906.4" y="28.5" width="31.8" height="95.5" class="batang-ladang" style="--tunda:-3.33s;--lama:4.00s" />
+            <use href="#lad-b" x="931.3" y="27.8" width="32.1" height="96.2" class="batang-ladang" style="--tunda:-3.65s;--lama:4.03s" />
+            <use href="#lad-a" x="955.2" y="28.8" width="31.7" height="95.2" class="batang-ladang" style="--tunda:-3.41s;--lama:4.41s" />
+            <use href="#lad-a" x="978.5" y="-4.8" width="42.9" height="128.8" class="batang-ladang" style="--tunda:-3.80s;--lama:4.20s" />
+            <use href="#lad-c" x="1001.0" y="14.0" width="36.7" height="110.0" class="batang-ladang" style="--tunda:-3.62s;--lama:3.65s" />
+            <use href="#lad-a" x="1025.9" y="17.3" width="35.6" height="106.7" class="batang-ladang" style="--tunda:-3.68s;--lama:4.02s" />
+            <use href="#lad-c" x="1051.1" y="17.3" width="35.6" height="106.7" class="batang-ladang" style="--tunda:-4.01s;--lama:4.42s" />
+            <use href="#lad-b" x="1068.5" y="4.0" width="40.0" height="120.0" class="batang-ladang" style="--tunda:-3.88s;--lama:3.71s" />
+            <use href="#lad-b" x="1100.0" y="20.5" width="34.5" height="103.5" class="batang-ladang" style="--tunda:-4.12s;--lama:4.33s" />
+            <use href="#lad-a" x="1124.2" y="7.6" width="38.8" height="116.4" class="batang-ladang" style="--tunda:-4.27s;--lama:3.79s" />
+            <use href="#lad-a" x="1143.8" y="-1.2" width="41.7" height="125.2" class="batang-ladang" style="--tunda:-4.06s;--lama:3.66s" />
+            <use href="#lad-c" x="1170.1" y="29.4" width="31.5" height="94.6" class="batang-ladang" style="--tunda:-4.13s;--lama:3.82s" />
+            <use href="#lad-a" x="1186.1" y="-2.5" width="42.2" height="126.5" class="batang-ladang" style="--tunda:-4.26s;--lama:3.83s" />
+            <use href="#lad-c" x="1218.5" y="13.2" width="36.9" height="110.8" class="batang-ladang" style="--tunda:-4.38s;--lama:3.94s" />
+            <use href="#lad-a" x="1243.5" y="1.5" width="40.8" height="122.5" class="batang-ladang" style="--tunda:-4.57s;--lama:4.42s" />
+            <use href="#lad-a" x="1273.7" y="14.4" width="36.5" height="109.6" class="batang-ladang" style="--tunda:-4.79s;--lama:3.99s" />
+            <use href="#lad-a" x="1292.3" y="6.9" width="39.0" height="117.1" class="batang-ladang" style="--tunda:-4.95s;--lama:3.93s" />
+            <use href="#lad-a" x="1318.2" y="15.0" width="36.3" height="109.0" class="batang-ladang" style="--tunda:-4.79s;--lama:3.70s" />
+            <use href="#lad-a" x="1346.0" y="10.8" width="37.7" height="113.2" class="batang-ladang" style="--tunda:-4.91s;--lama:4.17s" />
+            <use href="#lad-c" x="1375.3" y="19.6" width="34.8" height="104.4" class="batang-ladang" style="--tunda:-5.15s;--lama:3.68s" />
+            <use href="#lad-a" x="1393.5" y="5.4" width="39.5" height="118.6" class="batang-ladang" style="--tunda:-5.10s;--lama:4.36s" />
+            <use href="#lad-a" x="1418.3" y="22.5" width="33.8" height="101.5" class="batang-ladang" style="--tunda:-5.25s;--lama:3.93s" />
+        </g>
     </svg>
+    </div>
 
-    <div class="container-page pb-8 pt-8 md:pt-12">
-        <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
-            {{-- Identitas --}}
-            <div class="flex flex-col gap-4">
-                <x-public.logo tone="gelap" tanpa-caption />
-                <p class="type-body-sm">{{ $identitas['wilayah'] }}</p>
-                <p class="type-body-sm text-primary-soft/80">Situs resmi pemerintah desa untuk informasi profil, anggaran, potensi, dan kabar terbaru Desa {{ $identitas['nama'] }}.</p>
+    <div class="bg-primary-dark">
+    <div class="container-page pt-6 md:pt-10">
+        <div class="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-20">
+            {{-- Kalimat penutup --}}
+            <div class="flex flex-col gap-5">
+                <p class="max-w-[22ch] font-display text-[28px] font-bold leading-[1.2] text-surface md:text-[36px]">
+                    Tumbuh dari ladang jagung, dibuka warga bedol desa asal Kaligesik.
+                </p>
+                <p class="max-w-[46ch] type-body-sm text-primary-soft/80">{{ $identitas['sebutan'] }} {{ $identitas['nama'] }}, {{ $identitas['wilayah'] }}</p>
+                <p
+                    x-data="jamDesa(@js($sekarang->format('H.i')))"
+                    class="inline-flex w-fit items-center gap-2.5 rounded-pill border border-surface/15 px-3.5 py-1.5 type-label-sm text-surface/90"
+                >
+                    <span class="relative flex size-2">
+                        <span class="titik-denyut absolute inset-0 rounded-full bg-accent"></span>
+                        <span class="relative size-2 rounded-full bg-accent"></span>
+                    </span>
+                    <span>Di Marga Agung sekarang pukul <span class="tabular-nums" x-text="jam">{{ $sekarang->format('H.i') }}</span> WIB</span>
+                </p>
             </div>
 
-            {{-- Tautan --}}
-            <nav aria-label="Tautan penting" class="flex flex-col gap-3">
-                <h2 class="type-label text-accent">Tautan Penting</h2>
-                <ul class="flex flex-col">
-                    @foreach ($tautan as $item)
-                        <li>
-                            <a href="{{ route($item['route']) }}" class="group/tautan flex min-h-11 items-center gap-2 type-body-sm hover:text-surface md:min-h-0 md:py-1.5">
-                                <x-ui.icon name="chevron-right" class="size-3.5 text-accent transition-transform group-hover/tautan:translate-x-0.5" />
-                                {{ $item['label'] }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </nav>
-
-            {{-- Kontak --}}
-            <div class="flex flex-col gap-3">
-                @if ($kontak->isNotEmpty())
-                    <h2 class="type-label text-accent">Kontak Resmi</h2>
-                    <ul class="flex flex-col gap-3">
-                        @isset($kontak['alamat'])
-                            <li class="flex items-start gap-2.5 type-body-sm">
-                                <x-ui.icon name="map-pin" class="mt-0.5 size-4 shrink-0 text-accent" />
-                                <span>{{ $kontak['alamat']['value'] }}</span>
+            <div class="grid gap-10 sm:grid-cols-2">
+                <nav aria-label="Tautan penting" class="flex flex-col gap-3">
+                    <h2 class="type-label-sm text-accent">Tautan Penting</h2>
+                    <ul class="flex flex-col">
+                        @foreach ($tautan as $item)
+                            <li>
+                                <a href="{{ route($item['route']) }}" class="garis-tautan inline-flex min-h-11 items-center type-body text-surface/90 hover:text-surface md:min-h-0 md:py-1.5">{{ $item['label'] }}</a>
                             </li>
-                        @endisset
-                        @isset($kontak['telepon'])
-                            <li class="flex items-start gap-2.5 type-body-sm">
-                                <x-ui.icon name="phone" class="mt-0.5 size-4 shrink-0 text-accent" />
-                                <a href="tel:{{ preg_replace('/[^\d+]/', '', $kontak['telepon']['value']) }}" class="hover:text-surface hover:underline">{{ $kontak['telepon']['value'] }}</a>
-                            </li>
-                        @endisset
-                        @isset($kontak['email'])
-                            <li class="flex items-start gap-2.5 type-body-sm">
-                                <x-ui.icon name="mail" class="mt-0.5 size-4 shrink-0 text-accent" />
-                                <a href="mailto:{{ $kontak['email']['value'] }}" class="break-all hover:text-surface hover:underline">{{ $kontak['email']['value'] }}</a>
-                            </li>
-                        @endisset
-                        @isset($kontak['jam_layanan'])
-                            <li class="flex items-start gap-2.5 type-body-sm">
-                                <x-ui.icon name="clock" class="mt-0.5 size-4 shrink-0 text-accent" />
-                                <span>{{ $kontak['jam_layanan']['value'] }}</span>
-                            </li>
-                        @endisset
+                        @endforeach
                     </ul>
-                @else
-                    <h2 class="type-label text-accent">Kantor Desa</h2>
-                    <p class="type-body-sm">Alamat, telepon, dan jam layanan kantor akan ditampilkan setelah diverifikasi pemerintah desa.</p>
-                    <a href="{{ route('kontak') }}" class="inline-flex items-center gap-1.5 type-label text-surface hover:underline">
-                        Lihat lokasi desa
-                        <x-ui.icon name="arrow-right" class="size-4" />
-                    </a>
-                @endif
-            </div>
+                </nav>
 
-            {{-- Ajakan aspirasi --}}
-            <div class="flex flex-col items-start gap-3 rounded-[16px] border border-surface/10 bg-surface/5 p-5">
-                <span class="flex size-10 items-center justify-center rounded-[10px] bg-accent text-text">
-                    <x-ui.icon name="message" class="size-5" />
-                </span>
-                <h2 class="type-label text-surface">Punya pertanyaan atau saran?</h2>
-                <p class="type-body-sm">Sampaikan langsung kepada pemerintah desa melalui Ruang Aspirasi.</p>
-                <x-ui.button :href="route('aspirasi.create')" variant="accent" size="s" icon="arrow-right">Sampaikan aspirasi</x-ui.button>
+                <div class="flex flex-col gap-3">
+                    @if ($kontak->isNotEmpty())
+                        <h2 class="type-label-sm text-accent">Kontak Resmi</h2>
+                        <ul class="flex flex-col gap-3 type-body-sm">
+                            @isset($kontak['alamat'])
+                                <li>{{ $kontak['alamat']['value'] }}</li>
+                            @endisset
+                            @isset($kontak['telepon'])
+                                <li><a href="tel:{{ preg_replace('/[^\d+]/', '', $kontak['telepon']['value']) }}" class="garis-tautan text-surface">{{ $kontak['telepon']['value'] }}</a></li>
+                            @endisset
+                            @isset($kontak['email'])
+                                <li><a href="mailto:{{ $kontak['email']['value'] }}" class="garis-tautan break-all text-surface">{{ $kontak['email']['value'] }}</a></li>
+                            @endisset
+                            @isset($kontak['jam_layanan'])
+                                <li>Layanan: {{ $kontak['jam_layanan']['value'] }}</li>
+                            @endisset
+                        </ul>
+                    @else
+                        <h2 class="type-label-sm text-accent">Kantor Desa</h2>
+                        <p class="type-body-sm">Alamat, telepon, dan jam layanan kantor akan ditampilkan setelah diverifikasi pemerintah desa.</p>
+                    @endif
+                    <a href="{{ route('aspirasi.create') }}" class="garis-tautan mt-2 w-fit type-label text-accent">Kirim pertanyaan lewat Ruang Aspirasi</a>
+                </div>
             </div>
         </div>
 
-        <div class="mt-10 flex flex-col gap-4 border-t border-surface/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        {{-- Nama desa berukuran besar; huruf naik satu per satu saat terlihat. --}}
+        <div x-data x-muncul class="nama-besar mt-14 select-none overflow-hidden md:mt-20" aria-hidden="true">
+            <p class="flex justify-between whitespace-nowrap font-display font-bold leading-[0.78] tracking-[-0.02em] text-primary">
+                @foreach (mb_str_split($namaBesar) as $huruf)
+                    <span class="huruf" style="--urutan: {{ $loop->index }}">{!! $huruf === ' ' ? '&nbsp;' : e($huruf) !!}</span>
+                @endforeach
+            </p>
+        </div>
+
+        <div class="flex flex-col gap-3 border-t border-surface/10 py-6 sm:flex-row sm:items-center sm:justify-between">
             <p class="type-label-sm">© {{ date('Y') }} {{ $identitas['sebutan'] }} {{ $identitas['nama'] }}</p>
-            <a href="#" class="group/atas inline-flex min-h-11 items-center gap-2 self-start type-label-sm text-surface hover:text-accent sm:self-auto">
-                Kembali ke atas
-                <span class="flex size-8 items-center justify-center rounded-full border border-surface/25 transition-transform group-hover/atas:-translate-y-0.5">
-                    <x-ui.icon name="chevron-down" class="size-4 rotate-180" />
-                </span>
-            </a>
+            <a href="#" class="garis-tautan w-fit type-label-sm text-surface">Kembali ke atas</a>
         </div>
+    </div>
     </div>
 </footer>
