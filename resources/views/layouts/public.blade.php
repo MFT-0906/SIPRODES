@@ -22,8 +22,6 @@
         @yield('content')
     </main>
 
-    <x-public.footer />
-
     <x-ui.toast :message="session('toast')" />
 </body>
 </html>
