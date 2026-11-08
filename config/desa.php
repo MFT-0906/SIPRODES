@@ -19,6 +19,12 @@ return [
     // Dibaca lewat config agar tetap bekerja saat `php artisan config:cache` dipakai di produksi.
     'proksi_tepercaya' => env('TRUSTED_PROXIES'),
 
+    // Asal warga transmigrasi bedol desa (sumber: proposal desa), untuk panel perjalanan di halaman Profil.
+    'asal' => [
+        'desa' => 'Kaligesik',
+        'wilayah' => 'Kec. Srumbung, Kab. Magelang, Jawa Tengah',
+    ],
+
     // Wilayah administrasi untuk header, footer, dan halaman kontak.
     'wilayah' => [
         'sebutan' => 'Pemerintah Desa',

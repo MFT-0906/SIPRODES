@@ -12,13 +12,7 @@
 
 @section('content')
     {{-- Judul halaman --}}
-    <section class="bg-background">
-        <div class="container-page flex flex-col gap-3 py-8 lg:py-10">
-            <x-ui.breadcrumb :items="[['label' => 'Beranda', 'href' => route('home')], ['label' => 'Potensi Desa']]" />
-            <h1 class="type-h1 text-text">Potensi Desa</h1>
-            <p class="type-body max-w-[760px] text-muted">{{ $content['pengantar'] }}</p>
-        </div>
-    </section>
+    <x-public.kepala-halaman jejak="Potensi Desa" judul="Potensi Desa" :pengantar="$content['pengantar']" />
 
     <div class="bg-surface" x-data="katalog(@js($tabAwal))">
         <div class="container-page flex flex-col gap-8 pb-14 pt-8 lg:gap-10 lg:pb-20 lg:pt-12">

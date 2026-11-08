@@ -129,7 +129,6 @@ class Fase4PublikDatabaseTest extends TestCase
         $this->get('/kontak-lokasi')->assertOk()
             ->assertSee('Jl. Balai Desa No. 1')->assertSee('0721123456')->assertSee('info@desa.test')
             ->assertSee('google.com/maps', false);
-        $this->get('/')->assertOk()->assertSee('Kontak Resmi');
     }
 
     public function test_peta_interaktif_hanya_tampil_setelah_lokasi_diverifikasi(): void

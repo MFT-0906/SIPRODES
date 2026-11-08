@@ -115,7 +115,7 @@ class KontenPublik
                 'eyebrow' => 'Website resmi Pemerintah Desa',
                 'judul' => 'Selamat datang di Desa Marga Agung',
                 'deskripsi' => 'Desa di Kecamatan Jati Agung, Lampung Selatan, yang dibuka warga transmigrasi bedol desa asal Kaligesik, Magelang. Di sini Anda dapat melihat profil desa, anggaran, potensi, dan kabar terbaru.',
-                'foto' => null,
+                ...self::fotoHero(),
             ],
             'akses' => [
                 ['title' => 'APBDes', 'description' => 'Ringkasan & dokumen PDF', 'icon' => 'wallet', 'route' => 'apbdes'],
@@ -351,6 +351,24 @@ class KontenPublik
             'location' => $a->lokasi ?: null,
             'relatif' => self::relatif($a),
         ];
+    }
+
+    /**
+     * Foto hero beranda dari berkas public/images/hero-desa.(jpg|jpeg|png|webp), bila ada.
+     * Foto yang sama dipakai sebagai latar samar dan di kartu besar sebelah kanan.
+     *
+     * @return array{foto: ?string}
+     */
+    public static function fotoHero(): array
+    {
+        foreach (['jpg', 'jpeg', 'png', 'webp'] as $ekstensi) {
+            $berkas = public_path('images/hero-desa.'.$ekstensi);
+            if (is_file($berkas)) {
+                return ['foto' => asset('images/hero-desa.'.$ekstensi).'?v='.filemtime($berkas)];
+            }
+        }
+
+        return ['foto' => null];
     }
 
     /**

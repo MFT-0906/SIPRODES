@@ -1,5 +1,5 @@
 @props([
-    'variant' => 'primary', // primary | accent | secondary | ghost | danger
+    'variant' => 'primary', // primary | accent | secondary | ghost | danger | terang
     'size' => 'm', // m | s
     'href' => null,
     'type' => 'button',
@@ -15,6 +15,8 @@
         'secondary' => 'border-[1.5px] border-primary bg-surface text-primary hover:bg-primary-soft',
         'ghost' => 'text-primary hover:bg-primary-soft',
         'danger' => 'bg-danger text-surface hover:bg-danger-dark',
+        // Untuk latar gelap (mis. hero beranda): garis putih tipis, mengisi samar saat disorot.
+        'terang' => 'border-[1.5px] border-surface/60 text-surface hover:border-surface hover:bg-surface/10',
     ];
     $sizes = [
         'm' => 'min-h-12 px-5 py-3',

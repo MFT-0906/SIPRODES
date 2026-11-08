@@ -21,13 +21,7 @@
 
 @section('content')
     {{-- Judul halaman --}}
-    <section class="bg-background">
-        <div class="container-page flex flex-col gap-3 py-8 lg:py-10">
-            <x-ui.breadcrumb :items="[['label' => 'Beranda', 'href' => route('home')], ['label' => 'Kontak & Lokasi']]" />
-            <h1 class="type-h1 text-text">Kontak &amp; Lokasi Kantor Desa</h1>
-            <p class="type-body max-w-[760px] text-muted">Hubungi Pemerintah Desa Marga Agung melalui saluran resmi berikut.</p>
-        </div>
-    </section>
+    <x-public.kepala-halaman jejak="Kontak & Lokasi" judul="Kontak & Lokasi Kantor Desa" pengantar="Hubungi Pemerintah Desa Marga Agung melalui saluran resmi berikut." />
 
     <div class="bg-surface">
         <div class="container-page flex flex-col gap-6 pb-14 pt-8 lg:gap-8 lg:pb-20 lg:pt-12">

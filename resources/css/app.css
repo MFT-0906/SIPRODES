@@ -148,7 +148,7 @@
         background-color: var(--color-background);
         scroll-behavior: smooth;
         /* Header publik lengket: tautan jangkar (#...) tidak tertutup header. */
-        scroll-padding-top: 88px;
+        scroll-padding-top: 96px;
         -webkit-text-size-adjust: 100%;
     }
 
@@ -444,4 +444,22 @@
 /* Titik berdenyut untuk agenda yang sudah dekat. */
 .titik-denyut {
     animation: denyut 1.8s ease-out infinite;
+}
+
+/* Kartu lokasi di hero: muncul sedikit terlambat, lalu mengambang pelan. */
+@keyframes mengambang {
+    0%,
+    100% {
+        translate: 0 0;
+    }
+
+    50% {
+        translate: 0 -6px;
+    }
+}
+
+.kartu-melayang {
+    animation:
+        naik-masuk 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both,
+        mengambang 6s ease-in-out 1.8s infinite;
 }

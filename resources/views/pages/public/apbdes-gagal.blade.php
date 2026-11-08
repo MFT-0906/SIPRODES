@@ -4,12 +4,8 @@
 
 {{-- Keadaan gagal memuat. Pesan tidak menampilkan detail teknis (kode server, query, atau jejak galat). --}}
 @section('content')
-    <section class="bg-background">
-        <div class="container-page flex flex-col gap-3 py-8 lg:py-10">
-            <x-ui.breadcrumb :items="[['label' => 'Beranda', 'href' => route('home')], ['label' => 'Transparansi APBDes']]" />
-            <h1 class="type-h1 text-text">Transparansi APBDes</h1>
-        </div>
-    </section>
+    {{-- Judul halaman --}}
+    <x-public.kepala-halaman jejak="Transparansi APBDes" judul="Transparansi APBDes" />
 
     <div class="bg-surface">
         <div class="container-page flex justify-center py-12 lg:py-16">
