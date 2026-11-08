@@ -355,26 +355,20 @@ class KontenPublik
 
     /**
      * Foto hero beranda dari berkas public/images/hero-desa.(jpg|jpeg|png|webp), bila ada.
-     * Foto selalu dipakai sebagai latar samar; di kartu besar hanya bila cukup tajam (lebar ≥ 1000 px),
-     * selain itu kartu tetap menampilkan ilustrasi ladang agar foto kecil tidak tampak pecah.
+     * Foto yang sama dipakai sebagai latar samar dan di kartu besar sebelah kanan.
      *
-     * @return array{foto: ?string, foto_tajam: bool}
+     * @return array{foto: ?string}
      */
     public static function fotoHero(): array
     {
         foreach (['jpg', 'jpeg', 'png', 'webp'] as $ekstensi) {
             $berkas = public_path('images/hero-desa.'.$ekstensi);
             if (is_file($berkas)) {
-                $ukuran = @getimagesize($berkas);
-
-                return [
-                    'foto' => asset('images/hero-desa.'.$ekstensi).'?v='.filemtime($berkas),
-                    'foto_tajam' => $ukuran !== false && $ukuran[0] >= 1000,
-                ];
+                return ['foto' => asset('images/hero-desa.'.$ekstensi).'?v='.filemtime($berkas)];
             }
         }
 
-        return ['foto' => null, 'foto_tajam' => false];
+        return ['foto' => null];
     }
 
     /**

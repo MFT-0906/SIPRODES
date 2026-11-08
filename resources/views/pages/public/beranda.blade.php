@@ -5,7 +5,7 @@
 
 @section('content')
     {{--
-        Hero: latar hijau tua dengan garis kontur peta dan titik berdenyut, foto desa samar di belakang bila ada.
+        Hero: latar hijau tua dengan foto desa samar di belakang bila ada.
         Data singkat desa ikut di dalam hero; kartu layanan di bawahnya menumpang di tepi bawah hero.
     --}}
     @php
@@ -26,7 +26,6 @@
             // Dengan foto: lapisan hijau tembus pandang, lebih pekat di sisi kiri tempat teks berada.
             'bg-[radial-gradient(60%_70%_at_85%_10%,rgb(249_168_37/0.14),transparent_70%),linear-gradient(90deg,rgb(15_58_20/0.95)_0%,rgb(20_73_26/0.82)_45%,rgb(20_73_26/0.55)_100%)]' => $content['hero']['foto'],
         ])></div>
-        <x-public.latar-kontur class="absolute inset-0 -z-10 size-full" />
 
         <div class="container-page grid gap-10 pb-28 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-14 lg:gap-16 lg:pb-40 lg:pt-20">
             <div class="pembuka flex min-w-0 flex-col gap-5">
@@ -69,10 +68,10 @@
                 </div>
             </div>
 
-            {{-- Kartu visual: foto asli desa bila ada, sebelum itu ilustrasi ladang jagung (bukan foto AI/stok). --}}
+            {{-- Kartu visual: foto desa yang sama dengan latar bila ada, sebelum itu ilustrasi ladang jagung (bukan foto AI/stok). --}}
             <div class="relative">
                 <div class="overflow-hidden rounded-[22px] shadow-[0_30px_60px_rgb(0_0_0/0.35)] ring-1 ring-surface/15">
-                    @if ($content['hero']['foto'] && $content['hero']['foto_tajam'])
+                    @if ($content['hero']['foto'])
                         <img src="{{ $content['hero']['foto'] }}" alt="Pemandangan Desa Marga Agung" loading="lazy" class="h-[260px] w-full object-cover md:h-[360px] lg:h-[460px]">
                     @else
                         <x-public.ilustrasi-ladang class="h-[260px] md:h-[360px] lg:h-[460px]" />
