@@ -37,7 +37,7 @@
                     <p class="type-body max-w-[70ch] text-muted">{{ $content['sejarah']['lanjutan'] }}</p>
                 </div>
 
-                <aside aria-labelledby="fakta-judul" class="flex flex-col self-start rounded-[14px] border border-border bg-surface p-6">
+                <section aria-labelledby="fakta-judul" class="flex flex-col self-start rounded-[14px] border border-border bg-surface p-6">
                     <h3 id="fakta-judul" class="type-h3 pb-1 text-text">Fakta singkat</h3>
                     <dl>
                         @foreach ($content['fakta'] as $fakta)
@@ -48,7 +48,7 @@
                         @endforeach
                     </dl>
                     <p class="type-label-sm text-muted">{{ preg_match('/^sumber\b/i', $content['fakta_sumber']) ? $content['fakta_sumber'] : 'Sumber: '.$content['fakta_sumber'] }}</p>
-                </aside>
+                </section>
             </section>
 
             {{-- Visi dan misi --}}

@@ -51,23 +51,12 @@
                 <h2 id="ringkasan-judul" class="sr-only">Ringkasan anggaran tahun {{ $tahun }}</h2>
 
                 <div class="grid gap-4 md:grid-cols-3 lg:gap-6">
-                    <x-ui.card-stat label="Total Pendapatan" :value="Format::rupiah($pendapatan)" :source="$sumber" />
-                    <x-ui.card-stat label="Total Belanja" :value="Format::rupiah($belanja)" :source="$sumber" />
-                    <x-ui.card-stat label="Pembiayaan Netto" :value="Format::rupiah($ringkasan['pembiayaan'])" :source="$sumber" />
+                    <x-ui.card-stat label="Total Pendapatan" :value="Format::rupiah($pendapatan)" :source="$sumber" icon="download" aksen="var(--color-primary)" />
+                    <x-ui.card-stat label="Total Belanja" :value="Format::rupiah($belanja)" :source="$sumber" icon="upload" aksen="#c98a12" />
+                    <x-ui.card-stat label="Pembiayaan Netto" :value="Format::rupiah($ringkasan['pembiayaan'])" :source="$sumber" icon="wallet" aksen="var(--color-grafik-6)" />
                 </div>
 
-                <div class="grid gap-4 lg:grid-cols-2 lg:items-start lg:gap-6">
-                    <x-public.tabel-anggaran
-                        id="tabel-pendapatan" judul="Pendapatan desa" total-label="Jumlah Pendapatan"
-                        :rows="$data['pendapatan']['rows']" :total="$data['pendapatan']['total']"
-                    />
-                    <x-public.tabel-anggaran
-                        id="tabel-belanja" judul="Belanja desa per bidang" total-label="Jumlah Belanja"
-                        :rows="$data['belanja']['rows']" :total="$data['belanja']['total']"
-                    />
-                </div>
-
-                {{-- Diagram pendamping; tabel di atas tetap menjadi acuan utama. --}}
+                {{-- Diagram ringkas ditampilkan lebih dulu; tabel rinci di bawahnya tetap menjadi acuan utama. --}}
                 @php
                     // Donat belanja per bidang: keliling lingkaran r = 15,915 tepat 100 satuan, jadi panjang busur = persen.
                     $barisBelanja = collect($data['belanja']['rows'])->filter(fn ($b) => ($b['anggaran'] ?? 0) > 0)->sortByDesc('anggaran')->values();
@@ -225,6 +214,21 @@
                                 <p class="type-body-sm">Diagram belum tersedia</p>
                             </div>
                         @endif
+                    </div>
+                </div>
+
+                {{-- Rincian lengkap --}}
+                <div class="flex flex-col gap-4 pt-2">
+                    <h3 class="type-h2 text-text">Rincian anggaran</h3>
+                    <div class="grid gap-4 lg:grid-cols-2 lg:items-start lg:gap-6">
+                        <x-public.tabel-anggaran
+                            id="tabel-pendapatan" judul="Pendapatan desa" total-label="Jumlah Pendapatan"
+                            :rows="$data['pendapatan']['rows']" :total="$data['pendapatan']['total']"
+                        />
+                        <x-public.tabel-anggaran
+                            id="tabel-belanja" judul="Belanja desa per bidang" total-label="Jumlah Belanja"
+                            :rows="$data['belanja']['rows']" :total="$data['belanja']['total']"
+                        />
                     </div>
                 </div>
             </section>

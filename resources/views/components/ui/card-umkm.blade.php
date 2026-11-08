@@ -15,7 +15,7 @@
     @if ($image)
         <img src="{{ $image }}" alt="{{ $imageAlt }}" loading="lazy" class="h-[170px] w-full object-cover">
     @else
-        <x-ui.image-placeholder class="h-[170px] w-full" caption="Foto produk (dengan izin pemilik)" />
+        <x-ui.sampul jenis="umkm" :nama="$name" class="h-[170px] w-full" />
     @endif
 
     <div class="flex flex-1 flex-col gap-1.5 p-4">

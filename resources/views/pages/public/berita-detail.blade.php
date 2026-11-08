@@ -30,7 +30,7 @@
                 @if ($artikel['gambar'])
                     <img src="{{ $artikel['gambar'] }}" alt="{{ $artikel['gambar_alt'] }}" loading="lazy" class="h-[220px] w-full rounded-card object-cover md:h-[420px]">
                 @else
-                    <x-ui.image-placeholder caption="Foto berita" class="h-[220px] rounded-card md:h-[420px]" />
+                    <x-ui.sampul jenis="berita" :nama="$artikel['category']" class="h-[220px] rounded-card md:h-[420px]" />
                 @endif
 
                 {{-- Isi artikel: lebar baca dibatasi agar nyaman dibaca. HTML sudah dibersihkan di server (TeksRingan). --}}

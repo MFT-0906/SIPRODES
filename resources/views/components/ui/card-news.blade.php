@@ -9,7 +9,7 @@
     @if ($image)
         <div class="h-[190px] overflow-hidden"><img src="{{ $image }}" alt="{{ $imageAlt }}" loading="lazy" class="size-full object-cover transition-transform duration-500 group-hover:scale-105"></div>
     @else
-        <x-ui.image-placeholder class="h-[190px] w-full transition-colors duration-300 group-hover:bg-accent-soft" />
+        <x-ui.sampul jenis="berita" :nama="$category" class="h-[190px] w-full" />
     @endif
 
     <div class="flex flex-1 flex-col gap-2.5 p-5">

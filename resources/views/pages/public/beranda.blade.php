@@ -142,7 +142,7 @@
                     @if ($unggulan['foto'])
                         <img src="{{ $unggulan['foto'] }}" alt="{{ $unggulan['foto_keterangan'] }}" loading="lazy" class="h-[220px] w-full object-cover">
                     @else
-                        <x-ui.image-placeholder :caption="$unggulan['foto_keterangan']" class="h-[220px]" />
+                        <x-ui.sampul jenis="komoditas" :nama="$unggulan['nama']" class="h-[220px]" />
                     @endif
                     <div class="flex flex-1 flex-col items-start gap-3 p-6 lg:p-7">
                         <x-ui.badge tone="aksen">{{ $unggulan['badge'] }}</x-ui.badge>
