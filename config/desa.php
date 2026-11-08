@@ -52,9 +52,9 @@ return [
 
     // Ruang Aspirasi (Fase 9).
     'aspirasi' => [
-        // NIK opsional, disimpan terenkripsi, tampil disamarkan.
-        'nik_aktif' => (bool) env('ASPIRASI_NIK', true),
-        // Masa simpan nama & NIK setelah aspirasi selesai, lalu dianonimkan.
+        // NIK tidak lagi diminta di formulir. Kolom NIK di database dipertahankan hanya untuk data lama
+        // (tetap terenkripsi, tampil disamarkan, dan ikut dianonimkan).
+        // Masa simpan nama (dan NIK data lama) setelah aspirasi selesai, lalu dianonimkan.
         'masa_simpan_bulan' => (int) env('ASPIRASI_MASA_SIMPAN_BULAN', 24),
         // Waktu isi minimum formulir (detik) untuk anti-spam.
         'waktu_isi_minimum_detik' => (int) env('ASPIRASI_WAKTU_MINIMUM', 3),

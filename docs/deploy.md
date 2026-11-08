@@ -83,7 +83,6 @@ ADMIN_EMAIL=...                 # hanya untuk AdminAwalSeeder
 TRUSTED_PROXIES=                # isi IP proxy (koma) atau * bila HTTPS ditangani proxy/hosting
 
 # Keputusan desa (nilai bawaan boleh dipakai dulu)
-ASPIRASI_NIK=true
 ASPIRASI_MASA_SIMPAN_BULAN=24
 UNGGAH_GAMBAR_MAKS_KB=2048
 UNGGAH_PDF_MAKS_KB=10240

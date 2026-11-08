@@ -27,9 +27,8 @@ class SimpanAspirasiRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // NIK tidak diminta: formulir hanya menerima nama dan pesan. Isian lain (termasuk "nik") diabaikan.
             'nama' => ['required', 'string', 'max:100'],
-            // NIK opsional; bila dimatikan lewat ASPIRASI_NIK=false, isiannya diabaikan dan tidak disimpan.
-            'nik' => ['nullable', 'digits:16'],
             'pesan' => ['required', 'string', 'min:20', 'max:1000'],
         ];
     }
@@ -42,7 +41,6 @@ class SimpanAspirasiRequest extends FormRequest
         return [
             'nama.required' => 'Nama wajib diisi.',
             'nama.max' => 'Nama paling banyak :max karakter.',
-            'nik.digits' => 'NIK harus terdiri dari 16 digit angka. Kosongkan jika tidak diperlukan.',
             'pesan.required' => 'Isi pesan wajib diisi.',
             'pesan.min' => 'Pesan terlalu pendek. Tulis minimal :min karakter.',
             'pesan.max' => 'Pesan terlalu panjang. Tulis paling banyak :max karakter.',
@@ -50,7 +48,7 @@ class SimpanAspirasiRequest extends FormRequest
     }
 
     /**
-     * Pemeriksaan token waktu; pesan galat bersifat umum dan tidak membocorkan cara kerja anti-spam.
+     * Pemeriksaan token waktu dan jawaban hitungan; pesan galat bersifat umum dan tidak membocorkan cara kerja anti-spam.
      */
     protected function withValidator(Validator $validator): void
     {
@@ -62,6 +60,11 @@ class SimpanAspirasiRequest extends FormRequest
             $galat = AntiSpamAspirasi::periksaToken($this->input(AntiSpamAspirasi::KOLOM_TOKEN));
             if ($galat !== null) {
                 $v->errors()->add('formulir', $galat);
+            }
+
+            $galatJawaban = AntiSpamAspirasi::periksaJawaban($this->input(AntiSpamAspirasi::KOLOM_JAWABAN));
+            if ($galatJawaban !== null) {
+                $v->errors()->add(AntiSpamAspirasi::KOLOM_JAWABAN, $galatJawaban);
             }
         });
     }

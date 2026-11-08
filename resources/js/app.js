@@ -267,8 +267,10 @@ Alpine.data('formAspirasi', () => ({
             err.nama = 'Nama paling banyak 100 karakter.';
         }
 
-        if (nilai('nik') !== '' && !/^\d{16}$/.test(nilai('nik'))) {
-            err.nik = 'NIK harus terdiri dari 16 digit angka. Kosongkan jika tidak diperlukan.';
+        if (nilai('jawaban') === '') {
+            err.jawaban = 'Jawab pertanyaan hitungan terlebih dahulu.';
+        } else if (!/^\d{1,2}$/.test(nilai('jawaban'))) {
+            err.jawaban = 'Tulis jawaban hitungan dengan angka.';
         }
 
         if (nilai('pesan') === '') {

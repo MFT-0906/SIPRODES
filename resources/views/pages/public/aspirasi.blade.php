@@ -9,7 +9,7 @@
     $pesanGalat = $jumlahGalat ? "Ada {$jumlahGalat} isian yang perlu diperbaiki sebelum pesan dapat dikirim." : '';
 
     $langkah = [
-        ['Kirim pesan', 'Isi nama dan pesan. NIK tidak wajib.'],
+        ['Kirim pesan', 'Cukup isi nama dan pesan.'],
         ['Dibaca perangkat desa', 'Status pesan berubah menjadi “Sudah Dibaca”.'],
         ['Ditindaklanjuti', 'Pesan ditandai “Selesai” setelah ditangani.'],
     ];
@@ -17,10 +17,7 @@
         'Data dikumpulkan hanya untuk menindaklanjuti aspirasi Anda.',
         'Pesan hanya dapat dibaca perangkat desa yang berwenang.',
         'Aspirasi tidak ditampilkan ke publik.',
-        config('desa.aspirasi.nik_aktif')
-            ? 'NIK bersifat opsional — kosongkan jika tidak diperlukan. Bila diisi, NIK disimpan terenkripsi.'
-            : 'Kami tidak meminta NIK Anda.',
-        'Nama dan NIK dianonimkan otomatis '.config('desa.aspirasi.masa_simpan_bulan').' bulan setelah aspirasi selesai ditangani.',
+        'Nama dianonimkan otomatis '.config('desa.aspirasi.masa_simpan_bulan').' bulan setelah aspirasi selesai ditangani.',
     ];
     $tips = [
         ['Ceritakan dengan jelas', 'Sebutkan hal yang ingin Anda sampaikan dan lokasinya.'],
@@ -56,7 +53,7 @@
                     {{-- Catatan privasi ringkas untuk HP (versi lengkap ada di bawah formulir). --}}
                     <p class="flex items-start gap-3 rounded-[12px] bg-primary-soft p-3.5 type-body-sm text-text lg:hidden">
                         <x-ui.icon name="shield" class="mt-0.5 size-5 text-primary" />
-                        <span>Pesan hanya dibaca perangkat desa yang berwenang dan tidak ditampilkan ke publik. NIK tidak wajib.</span>
+                        <span>Pesan hanya dibaca perangkat desa yang berwenang dan tidak ditampilkan ke publik.</span>
                     </p>
 
                     <form
@@ -92,15 +89,17 @@
                         @enderror
 
                         <x-ui.field name="nama" label="Nama" required client-validated placeholder="Tulis nama Anda" help="Boleh nama panggilan." autocomplete="name" />
-                        @if (config('desa.aspirasi.nik_aktif'))
-                            <x-ui.field
-                                name="nik" label="NIK" client-validated placeholder="16 digit angka" inputmode="numeric" maxlength="16" autocomplete="off"
-                                help="Tidak wajib. Isi hanya jika diminta untuk keperluan layanan tertentu."
-                            />
-                        @endif
                         <x-ui.field
                             name="pesan" label="Isi Pesan" multiline required client-validated :counter="1000"
                             placeholder="Tuliskan pertanyaan, keluhan, atau saran Anda…" help="Minimal 20 karakter"
+                        />
+
+                        {{-- Pertanyaan hitungan anti-spam: jawabannya disimpan di sesi server, bukan di halaman. --}}
+                        <x-ui.field
+                            name="jawaban" :label="'Pertanyaan keamanan: '.$soal" required client-validated
+                            inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Contoh: 12"
+                            help="Jawab dengan angka, lalu kirim pesan Anda."
+                            class="max-w-[260px]"
                         />
 
                         <p class="flex items-start gap-2.5 rounded-[10px] bg-accent-soft px-3.5 py-3 type-body-sm text-text">
@@ -113,7 +112,7 @@
                             <span class="hidden group-aria-busy:inline">Mengirim…</span>
                         </x-ui.button>
 
-                        <p class="type-label-sm text-muted">Dilindungi pembatasan pengiriman untuk mencegah spam.</p>
+                        <p class="type-label-sm text-muted">Dilindungi pertanyaan keamanan dan pembatasan pengiriman untuk mencegah spam.</p>
                     </form>
                 @endif
             </div>
