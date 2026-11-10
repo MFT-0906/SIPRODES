@@ -59,7 +59,7 @@
         x-bind:class="gulir && 'bg-surface/95 shadow-[0_6px_24px_rgb(20_73_26/0.10)] backdrop-blur-md'"
     >
         <div class="container-page flex items-center justify-between gap-6 py-2.5 lg:py-3.5">
-            <x-public.logo tone="adaptif" tanpa-caption />
+            <x-public.logo tone="adaptif" />
 
             {{-- Navigasi desktop (>= 1024 px) --}}
             <nav aria-label="Navigasi utama" class="hidden items-center gap-0.5 lg:flex">
@@ -154,7 +154,7 @@
         class="fixed inset-0 z-50 flex flex-col bg-background lg:hidden"
     >
         <div class="flex items-center justify-between border-b border-border bg-surface px-4 py-2.5">
-            <x-public.logo tone="terang" tanpa-caption />
+            <x-public.logo tone="terang" />
             <button
                 type="button" x-on:click="open = false" autofocus aria-label="Tutup menu"
                 class="flex size-11 items-center justify-center rounded-[10px] bg-primary-soft text-primary"

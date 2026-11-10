@@ -18,7 +18,7 @@
     <section aria-labelledby="hero-judul" class="on-dark relative isolate overflow-hidden bg-primary-dark text-surface">
         @if ($content['hero']['foto'])
             {{-- Foto desa sebagai latar samar (sedikit diburamkan agar teks tetap mudah dibaca). --}}
-            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[6px]">
+            <img src="{{ $content['hero']['foto'] }}" @if ($content['hero']['srcset']) srcset="{{ $content['hero']['srcset'] }}" sizes="(min-width: 768px) 60vw, 50vw" @endif alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[6px]">
         @endif
         <div @class([
             'absolute inset-0 -z-10',
@@ -75,7 +75,7 @@
             <div class="relative order-first md:order-none">
                 <div class="overflow-hidden rounded-[22px] shadow-[0_30px_60px_rgb(0_0_0/0.35)] ring-1 ring-surface/15">
                     @if ($content['hero']['foto'])
-                        <img src="{{ $content['hero']['foto'] }}" alt="Balai Desa Marga Agung" loading="lazy" class="h-[260px] w-full object-cover object-[20%_50%] md:h-[360px] lg:h-[460px]">
+                        <img src="{{ $content['hero']['foto'] }}" @if ($content['hero']['srcset']) srcset="{{ $content['hero']['srcset'] }}" sizes="(min-width: 1024px) 820px, (min-width: 768px) 640px, 100vw" @endif alt="Balai Desa Marga Agung" loading="lazy" class="h-[260px] w-full object-cover object-[20%_50%] md:h-[360px] lg:h-[460px]">
                     @else
                         <x-public.ilustrasi-ladang class="h-[260px] md:h-[360px] lg:h-[460px]" />
                     @endif

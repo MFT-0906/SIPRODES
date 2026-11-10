@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminProfilController;
 use App\Http\Controllers\AdminStrukturController;
 use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\PastikanAkunAktif;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,11 @@ Route::get('/potensi-desa', [PublicPageController::class, 'potensi'])->name('pot
 Route::get('/berita', [PublicPageController::class, 'berita'])->name('berita.index');
 Route::get('/berita/{slug}', [PublicPageController::class, 'beritaShow'])->name('berita.show');
 Route::get('/kontak-lokasi', [PublicPageController::class, 'kontak'])->name('kontak');
+
+// Untuk mesin pencari. robots.txt dibuat dinamis (bukan berkas public/robots.txt) agar alamat sitemap
+// selalu mengikuti APP_URL, baik di hosting uji coba maupun di domain resmi.
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 Route::get('/ruang-aspirasi', [AspirasiController::class, 'create'])->name('aspirasi.create');
 Route::post('/ruang-aspirasi', [AspirasiController::class, 'store'])->middleware('throttle:aspirasi')->name('aspirasi.store');

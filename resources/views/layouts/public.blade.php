@@ -7,6 +7,25 @@
     @hasSection('description')
         <meta name="description" content="@yield('description')">
     @endif
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta name="theme-color" content="#1b5e20">
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+
+    {{-- Pratinjau saat tautan dibagikan (WhatsApp, Facebook, X, Telegram). --}}
+    @php $gambarBagikan = trim($__env->yieldContent('og_image')) ?: \App\Support\KontenPublik::gambarBagikan(); @endphp
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@hasSection('title')@yield('title') — @endif{{ config('app.name') }}">
+    @hasSection('description')
+        <meta property="og:description" content="@yield('description')">
+    @endif
+    <meta property="og:url" content="{{ url()->current() }}">
+    @if ($gambarBagikan)
+        <meta property="og:image" content="{{ $gambarBagikan }}">
+        <meta property="og:image:alt" content="@yield('og_image_alt', 'Balai Desa Marga Agung')">
+    @endif
+    <meta name="twitter:card" content="{{ $gambarBagikan ? 'summary_large_image' : 'summary' }}">
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

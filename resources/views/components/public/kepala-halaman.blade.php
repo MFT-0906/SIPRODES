@@ -4,11 +4,11 @@
     Bagian judul halaman publik, senada dengan hero beranda: latar hijau dengan foto desa
     (public/images/hero-desa.*) bila ada, judul putih, dan jejak halaman.
 --}}
-@php $foto = \App\Support\KontenPublik::fotoHero()['foto']; @endphp
+@php ['foto' => $foto, 'srcset' => $srcset] = \App\Support\KontenPublik::fotoHero(); @endphp
 
 <section {{ $attributes->class(['on-dark relative isolate overflow-hidden bg-primary-dark text-surface']) }}>
     @if ($foto)
-        <img src="{{ $foto }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[8px]">
+        <img src="{{ $foto }}" @if ($srcset) srcset="{{ $srcset }}" sizes="(min-width: 768px) 60vw, 50vw" @endif alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[8px]">
     @endif
     <div @class([
         'absolute inset-0 -z-10',

@@ -357,18 +357,81 @@ class KontenPublik
      * Foto hero beranda dari berkas public/images/hero-desa.(jpg|jpeg|png|webp), bila ada.
      * Foto yang sama dipakai sebagai latar samar dan di kartu besar sebelah kanan.
      *
-     * @return array{foto: ?string}
+     * Varian turunan (WebP 800/1600/2400 px untuk srcset, dan og-desa.jpg 1200×630 untuk pratinjau tautan)
+     * dicatat di public/images/hero-desa.json beserta ukuran byte foto sumbernya. Varian hanya dipakai bila
+     * ukuran itu masih sama dengan foto hero sekarang; bila fotonya diganti tanpa membuat ulang varian,
+     * situs otomatis kembali memakai foto utama saja sehingga tidak menampilkan foto lama.
+     *
+     * @return array{foto: ?string, srcset: ?string}
      */
     public static function fotoHero(): array
+    {
+        $berkas = self::berkasHero();
+        if ($berkas === null) {
+            return ['foto' => null, 'srcset' => null];
+        }
+
+        $varian = collect(self::varianHero()['webp'] ?? [])
+            ->filter(fn ($nama, $lebar) => is_file(public_path('images/'.$nama)))
+            ->map(fn ($nama, $lebar) => asset('images/'.$nama).'?v='.filemtime(public_path('images/'.$nama)).' '.$lebar.'w');
+
+        return [
+            'foto' => asset('images/'.basename($berkas)).'?v='.filemtime($berkas),
+            'srcset' => $varian->isEmpty() ? null : $varian->implode(', '),
+        ];
+    }
+
+    /**
+     * Gambar pratinjau saat tautan situs dibagikan (WhatsApp, Facebook, dll.): varian og dari foto hero
+     * bila masih sesuai, selain itu foto hero itu sendiri.
+     */
+    public static function gambarBagikan(): ?string
+    {
+        $og = self::varianHero()['og'] ?? null;
+        if ($og && is_file(public_path('images/'.$og))) {
+            return asset('images/'.$og).'?v='.filemtime(public_path('images/'.$og));
+        }
+
+        return self::fotoHero()['foto'];
+    }
+
+    /**
+     * Catatan varian yang masih cocok dengan foto hero sekarang, atau [] bila tidak ada / sudah usang.
+     *
+     * @return array{webp?: array<int, string>, og?: string}
+     */
+    private static function varianHero(): array
+    {
+        $berkas = self::berkasHero();
+        $catatan = public_path('images/hero-desa.json');
+        if ($berkas === null || ! is_file($catatan)) {
+            return [];
+        }
+
+        $data = json_decode((string) file_get_contents($catatan), true);
+        if (! is_array($data) || ($data['sumber'] ?? null) !== basename($berkas) || ($data['ukuran_sumber'] ?? null) !== filesize($berkas)) {
+            return [];
+        }
+
+        // Hanya nama berkas sederhana di folder images yang diterima.
+        $aman = fn ($nama) => is_string($nama) && preg_match('/^[a-z0-9-]+\.(webp|jpg)$/', $nama) === 1;
+
+        return [
+            'webp' => collect($data['webp'] ?? [])->filter($aman)->mapWithKeys(fn ($n, $w) => [(int) $w => $n])->filter(fn ($n, $w) => $w > 0)->sortKeys()->all(),
+            'og' => $aman($data['og'] ?? null) ? $data['og'] : null,
+        ];
+    }
+
+    private static function berkasHero(): ?string
     {
         foreach (['jpg', 'jpeg', 'png', 'webp'] as $ekstensi) {
             $berkas = public_path('images/hero-desa.'.$ekstensi);
             if (is_file($berkas)) {
-                return ['foto' => asset('images/hero-desa.'.$ekstensi).'?v='.filemtime($berkas)];
+                return $berkas;
             }
         }
 
-        return ['foto' => null];
+        return null;
     }
 
     /**

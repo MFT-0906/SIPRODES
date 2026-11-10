@@ -6,6 +6,11 @@
 
 @section('title', $artikel['title'])
 @section('description', $artikel['excerpt'])
+@section('og_type', 'article')
+@if ($artikel['gambar'])
+    @section('og_image', $artikel['gambar'])
+    @section('og_image_alt', $artikel['gambar_alt'] ?: $artikel['title'])
+@endif
 
 @section('content')
     <article aria-labelledby="judul-artikel" class="bg-background">

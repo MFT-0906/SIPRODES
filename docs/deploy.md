@@ -180,6 +180,22 @@ php artisan up
 
 Rollback: kembalikan commit sebelumnya, jalankan `composer install`, dan pulihkan database dari cadangan bila ada migrasi yang tidak dapat dibalik.
 
+### Mengganti foto hero (foto balai desa)
+
+Foto di beranda dan pita judul halaman diambil dari `public/images/hero-desa.jpg`. Setelah mengganti berkas itu, buat ulang variannya:
+
+```bash
+php artisan desa:foto-hero
+```
+
+Perintah ini membuat versi WebP 800/1600/2400 px (agar HP mengunduh foto kecil), `og-desa.jpg` 1200×630 untuk pratinjau tautan di WhatsApp/Facebook, dan catatan `hero-desa.json`. Bila potongan pratinjau kurang pas, atur titik fokusnya, misalnya `--fokus-x=0.5 --fokus-y=0.35 --cakupan=0.8`. Bila perintah ini belum dijalankan, situs otomatis memakai foto utama saja (tidak pernah menampilkan varian foto lama).
+
+## 7a. Mesin pencari
+
+- Peta situs: `/sitemap.xml` (halaman publik + berita terbit). `robots.txt` dibuat aplikasi dan menunjuk ke sitemap sesuai `APP_URL`; jangan membuat berkas `public/robots.txt`.
+- Setelah domain resmi aktif: daftarkan situs di Google Search Console, lalu kirim alamat `https://domain-desa/sitemap.xml`.
+- Pratinjau tautan bisa diperiksa dengan membagikan alamat situs ke WhatsApp, atau lewat Facebook Sharing Debugger.
+
 ## 8. Pemantauan
 
 - Cek kesehatan: `GET /up` (HTTP 200).
@@ -197,3 +213,4 @@ Rollback: kembalikan commit sebelumnya, jalankan `composer install`, dan pulihka
 - [ ] Cron `schedule:run` aktif.
 - [ ] Header keamanan diperiksa (securityheaders.com) dan konsol browser bebas galat CSP.
 - [ ] Uji unggah gambar dan PDF dari HP; batas PHP sesuai bagian 1.
+- [ ] `APP_URL` sudah memakai domain resmi (alamat sitemap, canonical, dan gambar pratinjau tautan mengikutinya).
