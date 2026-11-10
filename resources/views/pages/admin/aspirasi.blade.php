@@ -84,11 +84,13 @@
                             <x-admin.status-badge :status="$a['status']" />
                         </div>
 
-                        {{-- NIK hanya tampil disamarkan; aspirasi tidak pernah tampil di halaman publik. --}}
-                        <p class="flex items-center gap-2 rounded-[10px] bg-background px-3.5 py-3 type-body-sm text-muted">
-                            <x-ui.icon name="lock" class="size-4 shrink-0" />
-                            NIK: {{ $a['nik_samar'] ?? ($a['anonim'] ? 'dianonimkan' : 'tidak diisi pengirim') }}
-                        </p>
+                        {{-- Formulir tidak lagi meminta NIK; baris ini hanya muncul untuk data lama yang memuat NIK (selalu disamarkan). --}}
+                        @if ($a['nik_samar'] || $a['anonim'])
+                            <p class="flex items-center gap-2 rounded-[10px] bg-background px-3.5 py-3 type-body-sm text-muted">
+                                <x-ui.icon name="lock" class="size-4 shrink-0" />
+                                NIK: {{ $a['nik_samar'] ?? 'dianonimkan' }}
+                            </p>
+                        @endif
 
                         <div class="flex flex-col gap-1.5">
                             <p class="type-label-sm uppercase text-muted">Isi pesan</p>

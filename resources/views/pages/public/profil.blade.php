@@ -66,7 +66,7 @@
                     <x-ui.empty-state
                         icon="building" heading="h3"
                         title="Naskah visi dan misi belum tersedia"
-                        description="Visi dan misi akan ditampilkan setelah naskah resminya disahkan dan diverifikasi oleh pemerintah desa."
+                        description="Visi dan misi akan ditampilkan setelah naskah resminya disahkan dan diverifikasi oleh desa."
                     />
                 @else
                     <div class="grid gap-6 lg:grid-cols-2">
@@ -108,7 +108,7 @@
                 @if ($content['perangkat']['daftar'] !== [])
                     <x-public.bagan-perangkat :daftar="$content['perangkat']['daftar']" />
                 @else
-                    <x-ui.empty-state icon="users" heading="h3" title="Data perangkat desa belum tersedia" description="Susunan perangkat desa akan ditampilkan setelah diisi oleh pemerintah desa." />
+                    <x-ui.empty-state icon="users" heading="h3" title="Data perangkat desa belum tersedia" description="Susunan perangkat desa akan ditampilkan setelah diisi oleh desa." />
                 @endif
             </section>
 
@@ -120,7 +120,7 @@
                         <x-ui.icon name="map-pin" class="mt-0.5 size-5 text-primary" />
                         <span>{{ $content['lokasi']['alamat_wilayah'] }}</span>
                     </p>
-                    {{-- Alamat kantor dan tautan peta hanya tampil setelah diverifikasi pemerintah desa. --}}
+                    {{-- Alamat kantor dan tautan peta hanya tampil setelah diverifikasi desa. --}}
                     @if ($alamatTerverifikasi)
                         <p class="flex items-start gap-2.5 type-body text-text">
                             <x-ui.icon name="building" class="mt-0.5 size-5 text-primary" />

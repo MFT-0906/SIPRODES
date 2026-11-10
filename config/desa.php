@@ -27,7 +27,7 @@ return [
 
     // Wilayah administrasi untuk header, footer, dan halaman kontak.
     'wilayah' => [
-        'sebutan' => 'Pemerintah Desa',
+        'sebutan' => 'Desa',
         'nama' => 'Marga Agung',
         'lengkap' => 'Kecamatan Jati Agung, Kabupaten Lampung Selatan, Provinsi Lampung.',
         'strip' => 'Kecamatan Jati Agung · Kabupaten Lampung Selatan · Provinsi Lampung',
@@ -52,14 +52,21 @@ return [
 
     // Ruang Aspirasi (Fase 9).
     'aspirasi' => [
-        // NIK opsional, disimpan terenkripsi, tampil disamarkan.
-        'nik_aktif' => (bool) env('ASPIRASI_NIK', true),
-        // Masa simpan nama & NIK setelah aspirasi selesai, lalu dianonimkan.
+        // NIK tidak lagi diminta di formulir. Kolom NIK di database dipertahankan hanya untuk data lama
+        // (tetap terenkripsi, tampil disamarkan, dan ikut dianonimkan).
+        // Masa simpan nama (dan NIK data lama) setelah aspirasi selesai, lalu dianonimkan.
         'masa_simpan_bulan' => (int) env('ASPIRASI_MASA_SIMPAN_BULAN', 24),
         // Waktu isi minimum formulir (detik) untuk anti-spam.
         'waktu_isi_minimum_detik' => (int) env('ASPIRASI_WAKTU_MINIMUM', 3),
         // true: saat anonimisasi, isi pesan juga diganti teks netral (bukan hanya nama dan NIK).
         'hapus_pesan_saat_anonim' => (bool) env('ASPIRASI_HAPUS_PESAN', false),
+    ],
+
+    // Cloudflare Turnstile untuk Ruang Aspirasi. Aktif bila kedua kunci diisi; bila kosong, formulir memakai
+    // pertanyaan hitungan. Kunci dibuat gratis di dasbor Cloudflare (menu Turnstile) untuk domain situs.
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
     ],
 
     // Audit log (Fase 10): entri lebih tua dari ini dihapus oleh perintah log:bersihkan (0 = tidak pernah dihapus).

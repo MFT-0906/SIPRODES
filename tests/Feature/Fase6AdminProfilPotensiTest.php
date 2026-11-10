@@ -38,7 +38,7 @@ class Fase6AdminProfilPotensiTest extends TestCase
 
         $this->get(route('admin.profil'))->assertOk()->assertSee('Naskah sejarah')->assertSee('Naskah Sejarah Uji')->assertSee('Terakhir diperbarui');
         $this->get(route('admin.profil', ['tab' => 'visi']))->assertOk()->assertSee('Visi Uji Tab')->assertSee('Misi Tab Satu')->assertSee('Tambah butir misi');
-        $this->get(route('admin.profil', ['tab' => 'lokasi']))->assertOk()->assertSee('Pratinjau titik peta')->assertSee('sudah diverifikasi pemerintah desa');
+        $this->get(route('admin.profil', ['tab' => 'lokasi']))->assertOk()->assertSee('Pratinjau titik peta')->assertSee('sudah diverifikasi desa');
         $this->get(route('admin.profil', ['tab' => 'data']))->assertOk()->assertSee('Sumber Uji 2026');
         $this->get(route('admin.profil', ['tab' => 'ngawur']))->assertOk()->assertSee('Naskah sejarah');
     }

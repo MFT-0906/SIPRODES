@@ -53,17 +53,17 @@ class Fase6PagesTest extends TestCase
 
     public function test_formulir_aspirasi_menolak_isian_tidak_valid(): void
     {
-        $this->post('/ruang-aspirasi', ['nama' => '', 'nik' => '123', 'pesan' => 'Jalan rusak'])
-            ->assertSessionHasErrors(['nama', 'nik', 'pesan']);
+        $this->post('/ruang-aspirasi', ['nama' => '', 'pesan' => 'Jalan rusak'])
+            ->assertSessionHasErrors(['nama', 'pesan', AntiSpamAspirasi::KOLOM_JAWABAN]);
     }
 
-    public function test_nik_opsional_dan_pesan_valid_diterima(): void
+    public function test_pesan_valid_tanpa_nik_diterima(): void
     {
-        $this->post('/ruang-aspirasi', [
+        $this->withSession([AntiSpamAspirasi::SESI_JAWABAN => 9])->post('/ruang-aspirasi', [
             'nama' => 'Warga',
-            'nik' => '',
             'pesan' => 'Mohon perbaikan jalan di dusun saya, terima kasih.',
             'dibuka' => AntiSpamAspirasi::token(30),
+            AntiSpamAspirasi::KOLOM_JAWABAN => '9',
         ])
             ->assertRedirect('/ruang-aspirasi')
             ->assertSessionHas('aspirasi_terkirim');
@@ -79,7 +79,8 @@ class Fase6PagesTest extends TestCase
         $this->get('/ruang-aspirasi')
             ->assertOk()
             ->assertSee('Formulir aspirasi')
-            ->assertSee('Opsional')
+            ->assertSee('Pertanyaan keamanan')
+            ->assertDontSee('name="nik"', false)
             ->assertSee('Aspirasi tidak ditampilkan ke publik.');
     }
 

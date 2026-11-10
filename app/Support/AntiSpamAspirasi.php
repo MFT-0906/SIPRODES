@@ -8,13 +8,20 @@ use Illuminate\Support\Facades\Crypt;
 /**
  * Anti-spam formulir Ruang Aspirasi tanpa layanan pihak ketiga:
  * - token waktu terenkripsi dibuat saat formulir dibuka; pengiriman terlalu cepat (bot) ditolak;
- * - kolom jebakan (honeypot) yang tidak boleh diisi manusia.
+ * - kolom jebakan (honeypot) yang tidak boleh diisi manusia;
+ * - pertanyaan hitungan sederhana (mis. "Berapa 3 + 4?") yang jawabannya disimpan di sesi server
+ *   dan hanya berlaku untuk satu kali pengiriman.
  */
 class AntiSpamAspirasi
 {
     public const KOLOM_JEBAKAN = 'situs_web';
 
     public const KOLOM_TOKEN = 'dibuka';
+
+    public const KOLOM_JAWABAN = 'jawaban';
+
+    /** Kunci sesi tempat jawaban pertanyaan hitungan disimpan (tidak pernah dikirim ke peramban). */
+    public const SESI_JAWABAN = 'aspirasi_jawaban';
 
     /** Token yang lebih tua dari ini dianggap kedaluwarsa (formulir dibiarkan terbuka terlalu lama). */
     private const UMUR_MAKS_DETIK = 86400;
@@ -25,6 +32,40 @@ class AntiSpamAspirasi
     public static function token(int $detikLalu = 0): string
     {
         return Crypt::encryptString((string) (now()->timestamp - $detikLalu));
+    }
+
+    /**
+     * Membuat pertanyaan hitungan baru (penjumlahan dua angka 1–9) dan menyimpan jawabannya di sesi.
+     *
+     * @return string teks pertanyaan, mis. "Berapa 3 + 4?"
+     */
+    public static function soalBaru(): string
+    {
+        $a = random_int(1, 9);
+        $b = random_int(1, 9);
+        session()->put(self::SESI_JAWABAN, $a + $b);
+
+        return "Berapa {$a} + {$b}?";
+    }
+
+    /**
+     * Mengembalikan pesan galat bila jawaban hitungan salah atau sesi tidak memuat pertanyaan; null bila benar.
+     * Jawaban di sesi selalu dihapus setelah diperiksa, sehingga satu jawaban tidak bisa dipakai berulang.
+     */
+    public static function periksaJawaban(mixed $jawaban): ?string
+    {
+        $benar = session()->pull(self::SESI_JAWABAN);
+        $jawaban = trim((string) $jawaban);
+
+        if ($jawaban === '') {
+            return 'Jawab pertanyaan hitungan terlebih dahulu.';
+        }
+
+        if ($benar === null || ! ctype_digit($jawaban) || (int) $jawaban !== (int) $benar) {
+            return 'Jawaban hitungan belum tepat. Coba pertanyaan yang baru.';
+        }
+
+        return null;
     }
 
     /**

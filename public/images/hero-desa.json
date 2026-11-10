@@ -1,0 +1,10 @@
+{
+    "sumber": "hero-desa.jpg",
+    "ukuran_sumber": 430091,
+    "webp": {
+        "800": "hero-desa-800.webp",
+        "1600": "hero-desa-1600.webp",
+        "2400": "hero-desa-2400.webp"
+    },
+    "og": "og-desa.jpg"
+}

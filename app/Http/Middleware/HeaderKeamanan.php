@@ -52,19 +52,25 @@ class HeaderKeamanan
         $dev = $this->originVite();
         $dev = $dev === null ? '' : ' '.$dev.' '.str_replace(['http://', 'https://'], 'ws://', $dev);
 
-        return implode('; ', [
+        // Cloudflare Turnstile (Ruang Aspirasi) memuat skrip dan bingkai dari challenges.cloudflare.com; hanya diizinkan
+        // bila Turnstile diaktifkan lewat .env.
+        $turnstile = \App\Support\Turnstile::aktif() ? ' '.\App\Support\Turnstile::ORIGIN : '';
+
+        return implode('; ', array_filter([
             "default-src 'self'",
-            "script-src 'self' 'unsafe-eval'".$dev,
+            "script-src 'self' 'unsafe-eval'".$dev.$turnstile,
+            // Tanpa Turnstile, bingkai mengikuti default-src 'self' seperti sebelumnya.
+            $turnstile !== '' ? 'frame-src'.$turnstile : null,
             "style-src 'self' 'unsafe-inline'".$dev,
-            // Gambar peta (Leaflet): hanya ubin citra satelit dan label Esri. Tidak ada frame eksternal yang diizinkan.
+            // Gambar peta (Leaflet): hanya ubin citra satelit dan label Esri. Frame eksternal hanya untuk Turnstile (bila aktif).
             "img-src 'self' data: https://server.arcgisonline.com",
             "font-src 'self' data:".$dev,
-            "connect-src 'self'".$dev,
+            "connect-src 'self'".$dev.$turnstile,
             "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self'",
             "frame-ancestors 'none'",
-        ]);
+        ]));
     }
 
     private function originVite(): ?string

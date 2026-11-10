@@ -22,12 +22,19 @@ class Fase9AspirasiTest extends TestCase
 
     private const NIK = '1871010101010001';
 
-    /** @return array<string, mixed> */
+    /**
+     * Isian formulir yang sah. Seperti saat formulir dibuka, jawaban pertanyaan hitungan (7) disiapkan di sesi.
+     *
+     * @return array<string, mixed>
+     */
     private function kirim(array $ganti = []): array
     {
+        $this->withSession([AntiSpamAspirasi::SESI_JAWABAN => 7]);
+
         return $ganti + [
-            'nama' => 'Warga Uji', 'nik' => '', 'pesan' => 'Mohon perbaikan jalan dusun yang rusak setelah hujan.',
+            'nama' => 'Warga Uji', 'pesan' => 'Mohon perbaikan jalan dusun yang rusak setelah hujan.',
             AntiSpamAspirasi::KOLOM_TOKEN => AntiSpamAspirasi::token(30), AntiSpamAspirasi::KOLOM_JEBAKAN => '',
+            AntiSpamAspirasi::KOLOM_JAWABAN => '7',
         ];
     }
 
@@ -46,30 +53,29 @@ class Fase9AspirasiTest extends TestCase
         $this->assertSame(['diterima'], $a->riwayat->pluck('aksi')->all());
     }
 
-    public function test_nik_tersimpan_terenkripsi_dan_tidak_pernah_utuh_di_tampilan_admin(): void
+    public function test_formulir_tidak_meminta_nik_dan_nik_yang_dikirim_diabaikan(): void
     {
+        $this->get(route('aspirasi.create'))->assertOk()
+            ->assertDontSee('name="nik"', false)->assertDontSee('NIK');
+
         $this->post(route('aspirasi.store'), $this->kirim(['nik' => self::NIK]))->assertRedirect();
+
+        $this->assertNull(Aspirasi::sole()->nik);
+        $this->assertStringNotContainsString(self::NIK, json_encode(DB::table('aspirasi')->first()));
+    }
+
+    public function test_nik_data_lama_tetap_terenkripsi_dan_tampil_disamarkan_di_admin(): void
+    {
+        $a = Aspirasi::factory()->create(['nik' => self::NIK]);
 
         $mentah = DB::table('aspirasi')->value('nik');
         $this->assertNotSame(self::NIK, $mentah);
         $this->assertStringNotContainsString(self::NIK, $mentah);
-        $this->assertSame(self::NIK, Aspirasi::sole()->nik);
 
-        $a = Aspirasi::sole();
         $this->masukSebagaiAdmin();
         $html = $this->get(route('admin.aspirasi.index', ['id' => $a->id]))->assertOk()->assertSee('•••• •••• •••• 0001')->getContent();
         $this->assertStringNotContainsString(self::NIK, $html);
         $this->assertStringNotContainsString('1871 0101 0101 0001', $html);
-    }
-
-    public function test_nik_dimatikan_lewat_konfigurasi_diabaikan_dan_kolomnya_hilang(): void
-    {
-        config(['desa.aspirasi.nik_aktif' => false]);
-
-        $this->get(route('aspirasi.create'))->assertOk()->assertDontSee('name="nik"', false)->assertSee('Kami tidak meminta NIK Anda');
-        $this->post(route('aspirasi.store'), $this->kirim(['nik' => self::NIK]))->assertRedirect();
-
-        $this->assertNull(Aspirasi::sole()->nik);
     }
 
     public function test_tidak_ada_ip_atau_data_perangkat_yang_disimpan(): void
@@ -85,8 +91,8 @@ class Fase9AspirasiTest extends TestCase
 
     public function test_validasi_server_tetap_berlaku(): void
     {
-        $this->post(route('aspirasi.store'), $this->kirim(['nama' => '', 'nik' => '123', 'pesan' => 'Jalan rusak']))
-            ->assertSessionHasErrors(['nama', 'nik', 'pesan']);
+        $this->post(route('aspirasi.store'), $this->kirim(['nama' => '', 'pesan' => 'Jalan rusak']))
+            ->assertSessionHasErrors(['nama', 'pesan']);
         $this->post(route('aspirasi.store'), $this->kirim(['pesan' => str_repeat('a', 1001)]))->assertSessionHasErrors('pesan');
         $this->post(route('aspirasi.store'), $this->kirim(['nama' => str_repeat('n', 101)]))->assertSessionHasErrors('nama');
 
@@ -109,6 +115,54 @@ class Fase9AspirasiTest extends TestCase
             ->assertSessionHasErrors(['formulir' => 'Pesan terkirim terlalu cepat. Periksa isian Anda, tunggu beberapa detik, lalu kirim kembali.']);
 
         $this->assertSame(0, Aspirasi::count());
+    }
+
+    public function test_formulir_menampilkan_pertanyaan_hitungan_dan_jawabannya_hanya_di_sesi(): void
+    {
+        $html = $this->get(route('aspirasi.create'))->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('/Pertanyaan keamanan: Berapa [1-9] \+ [1-9]\?/', $html);
+        $this->assertStringContainsString('name="'.AntiSpamAspirasi::KOLOM_JAWABAN.'"', $html);
+        preg_match('/Berapa ([1-9]) \+ ([1-9])\?/', $html, $angka);
+        $this->assertSame((int) $angka[1] + (int) $angka[2], session(AntiSpamAspirasi::SESI_JAWABAN));
+    }
+
+    public function test_jawaban_hitungan_salah_kosong_atau_tanpa_pertanyaan_ditolak(): void
+    {
+        foreach (['8', '', 'tujuh', '7.0'] as $jawaban) {
+            $this->post(route('aspirasi.store'), $this->kirim([AntiSpamAspirasi::KOLOM_JAWABAN => $jawaban]))
+                ->assertSessionHasErrors(AntiSpamAspirasi::KOLOM_JAWABAN);
+        }
+
+        // Kiriman langsung tanpa membuka formulir (tidak ada pertanyaan di sesi) ditolak walau menebak jawaban.
+        $isian = $this->kirim();
+        $this->flushSession();
+        $this->post(route('aspirasi.store'), $isian)->assertSessionHasErrors(AntiSpamAspirasi::KOLOM_JAWABAN);
+
+        $this->assertSame(0, Aspirasi::count());
+    }
+
+    public function test_jawaban_salah_tidak_diisikan_kembali_tetapi_isian_lain_tetap(): void
+    {
+        $this->from(route('aspirasi.create'))->post(route('aspirasi.store'), $this->kirim([AntiSpamAspirasi::KOLOM_JAWABAN => '13']))
+            ->assertRedirect(route('aspirasi.create'));
+
+        $this->get(route('aspirasi.create'))->assertOk()
+            ->assertSee('value="Warga Uji"', false)
+            ->assertDontSee('value="13"', false)
+            ->assertSee('Jawaban hitungan belum tepat');
+    }
+
+    public function test_satu_jawaban_hitungan_hanya_berlaku_sekali(): void
+    {
+        $isian = $this->kirim();
+        $this->post(route('aspirasi.store'), $isian)->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertNull(session(AntiSpamAspirasi::SESI_JAWABAN));
+
+        // Mengirim ulang isian yang sama tanpa membuka formulir lagi ditolak.
+        $this->post(route('aspirasi.store'), $isian)->assertSessionHasErrors(AntiSpamAspirasi::KOLOM_JAWABAN);
+
+        $this->assertSame(1, Aspirasi::count());
     }
 
     public function test_token_hilang_rusak_atau_kedaluwarsa_ditolak(): void
@@ -161,7 +215,7 @@ class Fase9AspirasiTest extends TestCase
         $this->get(route('admin.aspirasi.index', ['q' => 'lampu']))->assertSee('Pengirim Dua')->assertDontSee('Pengirim Satu');
         $this->get(route('admin.aspirasi.index', ['q' => "%' OR 1=1 --"]))->assertOk()->assertDontSee('Pengirim Satu');
         $this->get(route('admin.aspirasi.index', ['id' => Aspirasi::where('nama', 'Pengirim Satu')->value('id')]))
-            ->assertSee('Soal jalan rusak di dusun dua.')->assertSee('NIK: tidak diisi pengirim')->assertSee('Riwayat penanganan');
+            ->assertSee('Soal jalan rusak di dusun dua.')->assertDontSee('NIK:')->assertSee('Riwayat penanganan');
     }
 
     public function test_keadaan_kosong_per_filter(): void

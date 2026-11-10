@@ -252,9 +252,56 @@ Alpine.data('katalog', (awal = 'pertanian', daftarTab = ['pertanian', 'umkm']) =
  * Formulir Ruang Aspirasi: validasi di sisi klien hanya untuk kenyamanan (aturan sama dengan server).
  * Server tetap memvalidasi ulang di AspirasiController.
  */
-Alpine.data('formAspirasi', () => ({
+/**
+ * Formulir Ruang Aspirasi. Bila Turnstile aktif, widget Cloudflare dimuat (skrip dari challenges.cloudflare.com,
+ * diizinkan CSP hanya saat aktif). Bila skrip gagal dimuat, terlambat, atau widget galat, formulir beralih ke
+ * pertanyaan hitungan agar warga tetap dapat mengirim aspirasi.
+ */
+Alpine.data('formAspirasi', (turnstileAktif = false) => ({
     err: {},
     ringkasan: '',
+    pakaiSoal: !turnstileAktif,
+    memuat: turnstileAktif,
+    tokenAda: false,
+
+    init() {
+        if (!turnstileAktif || !this.$refs.turnstile) {
+            return;
+        }
+
+        const cadangan = () => { this.pakaiSoal = true; this.memuat = false; };
+        const batas = setTimeout(cadangan, 10000);
+
+        const tampilkan = () => {
+            try {
+                window.turnstile.render(this.$refs.turnstile, {
+                    sitekey: this.$refs.turnstile.dataset.sitekey,
+                    language: 'id',
+                    theme: 'light',
+                    callback: () => { this.tokenAda = true; this.memuat = false; clearTimeout(batas); },
+                    'expired-callback': () => { this.tokenAda = false; },
+                    'error-callback': () => { clearTimeout(batas); cadangan(); },
+                });
+                this.memuat = false;
+            } catch (e) {
+                clearTimeout(batas);
+                cadangan();
+            }
+        };
+
+        if (window.turnstile) {
+            tampilkan();
+
+            return;
+        }
+
+        const skrip = document.createElement('script');
+        skrip.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        skrip.async = true;
+        skrip.onload = tampilkan;
+        skrip.onerror = () => { clearTimeout(batas); cadangan(); };
+        document.head.appendChild(skrip);
+    },
 
     periksa(event) {
         const form = event.target;
@@ -267,8 +314,12 @@ Alpine.data('formAspirasi', () => ({
             err.nama = 'Nama paling banyak 100 karakter.';
         }
 
-        if (nilai('nik') !== '' && !/^\d{16}$/.test(nilai('nik'))) {
-            err.nik = 'NIK harus terdiri dari 16 digit angka. Kosongkan jika tidak diperlukan.';
+        if (this.pakaiSoal) {
+            if (nilai('jawaban') === '') {
+                err.jawaban = 'Jawab pertanyaan hitungan terlebih dahulu.';
+            } else if (!/^\d{1,2}$/.test(nilai('jawaban'))) {
+                err.jawaban = 'Tulis jawaban hitungan dengan angka.';
+            }
         }
 
         if (nilai('pesan') === '') {
@@ -283,7 +334,15 @@ Alpine.data('formAspirasi', () => ({
 
         if (jumlah) {
             event.preventDefault();
-            form.elements[Object.keys(err)[0]].focus();
+            form.elements[Object.keys(err)[0]]?.focus();
+
+            return;
+        }
+
+        // Turnstile aktif tetapi belum selesai memverifikasi: tahan pengiriman sebentar.
+        if (!this.pakaiSoal && !this.tokenAda) {
+            event.preventDefault();
+            this.ringkasan = 'Tunggu hingga verifikasi keamanan selesai, lalu kirim kembali.';
         }
     },
 }));
