@@ -18,7 +18,7 @@
     <section aria-labelledby="hero-judul" class="on-dark relative isolate overflow-hidden bg-primary-dark text-surface">
         @if ($content['hero']['foto'])
             {{-- Foto desa sebagai latar samar (sedikit diburamkan agar teks tetap mudah dibaca). --}}
-            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[1px]">
+            <img src="{{ $content['hero']['foto'] }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[6px]">
         @endif
         <div @class([
             'absolute inset-0 -z-10',
@@ -29,7 +29,7 @@
         ])></div>
 
         {{-- Ruang atas ditambah setinggi header, karena di beranda header melayang di atas hero. --}}
-        <div class="container-page grid gap-10 pb-28 pt-[140px] md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-[164px] lg:gap-16 lg:pb-40 lg:pt-[188px]">
+        <div class="container-page grid gap-8 pb-28 pt-[124px] md:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] md:items-center md:gap-10 md:pb-32 md:pt-[164px] lg:gap-16 lg:pb-40 lg:pt-[188px]">
             <div class="pembuka flex min-w-0 flex-col gap-5 [text-shadow:0_1px_14px_rgb(0_0_0/0.28)]">
                 <p class="inline-flex w-fit items-center gap-2 rounded-pill border border-surface/25 bg-surface/5 px-3.5 py-1.5 type-label-sm text-surface/90 backdrop-blur-sm" style="--urutan: 0">
                     <span class="size-2 rounded-full bg-accent" aria-hidden="true"></span>
@@ -70,11 +70,12 @@
                 </div>
             </div>
 
-            {{-- Kartu visual: foto desa yang sama dengan latar bila ada, sebelum itu ilustrasi ladang jagung (bukan foto AI/stok). --}}
-            <div class="relative">
+            {{-- Kartu visual: foto desa yang sama dengan latar bila ada, sebelum itu ilustrasi ladang jagung (bukan foto AI/stok).
+                 Di HP kartu ini tampil paling atas agar foto balai desa langsung terlihat; di layar lebar berada di kanan teks. --}}
+            <div class="relative order-first md:order-none">
                 <div class="overflow-hidden rounded-[22px] shadow-[0_30px_60px_rgb(0_0_0/0.35)] ring-1 ring-surface/15">
                     @if ($content['hero']['foto'])
-                        <img src="{{ $content['hero']['foto'] }}" alt="Pemandangan Desa Marga Agung" loading="lazy" class="h-[260px] w-full object-cover md:h-[360px] lg:h-[460px]">
+                        <img src="{{ $content['hero']['foto'] }}" alt="Balai Desa Marga Agung" loading="lazy" class="h-[260px] w-full object-cover object-[20%_50%] md:h-[360px] lg:h-[460px]">
                     @else
                         <x-public.ilustrasi-ladang class="h-[260px] md:h-[360px] lg:h-[460px]" />
                     @endif

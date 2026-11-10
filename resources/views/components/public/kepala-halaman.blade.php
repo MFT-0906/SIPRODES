@@ -8,7 +8,7 @@
 
 <section {{ $attributes->class(['on-dark relative isolate overflow-hidden bg-primary-dark text-surface']) }}>
     @if ($foto)
-        <img src="{{ $foto }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_60%] blur-[1px]">
+        <img src="{{ $foto }}" alt="" aria-hidden="true" loading="lazy" class="absolute inset-0 -z-20 size-full scale-105 object-cover object-[center_40%] blur-[8px]">
     @endif
     <div @class([
         'absolute inset-0 -z-10',
