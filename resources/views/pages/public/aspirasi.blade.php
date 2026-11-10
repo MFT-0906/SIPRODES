@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
 @section('title', 'Ruang Aspirasi')
-@section('description', 'Sampaikan pertanyaan, keluhan, atau saran kepada Pemerintah Desa Marga Agung.')
+@section('description', 'Sampaikan pertanyaan, keluhan, atau saran kepada Desa Marga Agung.')
 
 @php
     $terkirim = (bool) session('aspirasi_terkirim');
@@ -31,7 +31,7 @@
 
 @section('content')
     {{-- Judul halaman --}}
-    <x-public.kepala-halaman jejak="Ruang Aspirasi" judul="Ruang Aspirasi Warga" pengantar="Sampaikan pertanyaan, keluhan, atau saran kepada Pemerintah Desa Marga Agung." />
+    <x-public.kepala-halaman jejak="Ruang Aspirasi" judul="Ruang Aspirasi Warga" pengantar="Sampaikan pertanyaan, keluhan, atau saran kepada Desa Marga Agung." />
 
     <div class="bg-surface">
         <div class="container-page grid gap-8 pb-14 pt-8 lg:grid-cols-[minmax(0,1fr)_620px] lg:gap-12 lg:pb-20 lg:pt-10">

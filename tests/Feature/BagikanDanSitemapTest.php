@@ -120,7 +120,7 @@ class BagikanDanSitemapTest extends TestCase
 
     public function test_header_tanpa_logo_menampilkan_identitas_tulisan(): void
     {
-        $respons = $this->get(route('home'))->assertOk()->assertSee('Pemerintah Desa');
+        $respons = $this->get(route('home'))->assertOk()->assertSee('Website resmi Desa Marga Agung')->assertDontSee('Pemerintah Desa');
         $header = str($respons->getContent())->after('<header')->before('</header>');
 
         $this->assertStringNotContainsString('bg-accent text-text"><svg', (string) $header);

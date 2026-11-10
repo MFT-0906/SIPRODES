@@ -112,7 +112,7 @@ class KontenPublik
 
         return [
             'hero' => [
-                'eyebrow' => 'Website resmi Pemerintah Desa',
+                'eyebrow' => 'Website resmi Desa Marga Agung',
                 'judul' => 'Selamat datang di Desa Marga Agung',
                 'deskripsi' => 'Desa di Kecamatan Jati Agung, Lampung Selatan, yang dibuka warga transmigrasi bedol desa asal Kaligesik, Magelang. Di sini Anda dapat melihat profil desa, anggaran, potensi, dan kabar terbaru.',
                 ...self::fotoHero(),

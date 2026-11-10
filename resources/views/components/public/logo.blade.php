@@ -1,8 +1,8 @@
-@props(['tone' => 'gelap', 'caption' => null, 'href' => null, 'tanpaCaption' => false]) {{-- gelap: untuk latar hijau; terang: untuk latar terang; adaptif: mengikuti header publik (putih di atas foto, gelap di header putih); caption/href menggantikan teks "Pemerintah Desa" dan tautan beranda; tanpaCaption: hanya satu baris "Desa {nama}" --}}
+@props(['tone' => 'gelap', 'caption' => null, 'href' => null, 'tanpaCaption' => false]) {{-- gelap: untuk latar hijau; terang: untuk latar terang; adaptif: mengikuti header publik (putih di atas foto, gelap di header putih); caption/href menggantikan teks "Desa" dan tautan beranda; tanpaCaption: hanya satu baris "Desa {nama}" --}}
 
 @php
     // Desa belum memiliki logo resmi, jadi identitas ditampilkan sebagai tulisan: garis aksen kuning,
-    // sebutan kecil "Pemerintah Desa", dan nama desa. Bila kelak ada logo resmi, letakkan di sini.
+    // sebutan kecil "Desa", dan nama desa. Bila kelak ada logo resmi, letakkan di sini.
     $identitas = app(\App\Support\KontenPublik::class)->identitas();
     $gelap = $tone === 'gelap';
     $adaptif = $tone === 'adaptif';

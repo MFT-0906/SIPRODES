@@ -27,7 +27,7 @@ return [
 
     // Wilayah administrasi untuk header, footer, dan halaman kontak.
     'wilayah' => [
-        'sebutan' => 'Pemerintah Desa',
+        'sebutan' => 'Desa',
         'nama' => 'Marga Agung',
         'lengkap' => 'Kecamatan Jati Agung, Kabupaten Lampung Selatan, Provinsi Lampung.',
         'strip' => 'Kecamatan Jati Agung · Kabupaten Lampung Selatan · Provinsi Lampung',

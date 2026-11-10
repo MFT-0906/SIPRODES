@@ -1,10 +1,10 @@
 @extends('layouts.public')
 
 @section('title', 'Kontak & Lokasi')
-@section('description', 'Hubungi Pemerintah Desa Marga Agung melalui saluran resmi.')
+@section('description', 'Hubungi Desa Marga Agung melalui saluran resmi.')
 
 @php
-    // Telepon, email, alamat, jam layanan, dan peta hanya tampil setelah diverifikasi pemerintah desa.
+    // Telepon, email, alamat, jam layanan, dan peta hanya tampil setelah diverifikasi desa.
     $kontak = $identitas['kontak'];
     $tersedia = fn (string $kunci) => $kontak[$kunci]['verified'] && filled($kontak[$kunci]['value']);
     $peta = $identitas['peta'];
@@ -21,7 +21,7 @@
 
 @section('content')
     {{-- Judul halaman --}}
-    <x-public.kepala-halaman jejak="Kontak & Lokasi" judul="Kontak & Lokasi Kantor Desa" pengantar="Hubungi Pemerintah Desa Marga Agung melalui saluran resmi berikut." />
+    <x-public.kepala-halaman jejak="Kontak & Lokasi" judul="Kontak & Lokasi Kantor Desa" pengantar="Hubungi Desa Marga Agung melalui saluran resmi berikut." />
 
     <div class="bg-surface">
         <div class="container-page flex flex-col gap-6 pb-14 pt-8 lg:gap-8 lg:pb-20 lg:pt-12">
@@ -50,7 +50,7 @@
                     <li class="flex flex-col items-start gap-3 rounded-[14px] border border-border bg-surface p-6">
                         <span class="flex size-12 items-center justify-center rounded-[12px] bg-primary-soft text-primary"><x-ui.icon name="phone" class="size-6" /></span>
                         <h2 class="type-h3 text-text">Telepon dan email resmi</h2>
-                        <p class="type-body-sm text-muted">Nomor telepon dan alamat email resmi akan ditampilkan setelah diverifikasi oleh pemerintah desa. Sementara itu, gunakan formulir daring.</p>
+                        <p class="type-body-sm text-muted">Nomor telepon dan alamat email resmi akan ditampilkan setelah diverifikasi oleh desa. Sementara itu, gunakan formulir daring.</p>
                     </li>
                 @endunless
 
@@ -72,7 +72,7 @@
                         <div class="flex flex-col gap-0.5">
                             <p class="type-label text-text">Alamat</p>
                             <p class="type-body-sm text-muted">
-                                {{ $tersedia('alamat') ? $kontak['alamat']['value'] : 'Alamat resmi akan ditampilkan setelah diverifikasi oleh pemerintah desa.' }}
+                                {{ $tersedia('alamat') ? $kontak['alamat']['value'] : 'Alamat resmi akan ditampilkan setelah diverifikasi oleh desa.' }}
                             </p>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                         <div class="flex flex-col gap-0.5">
                             <p class="type-label text-text">Jam layanan</p>
                             <p class="type-body-sm text-muted">
-                                {{ $tersedia('jam_layanan') ? $kontak['jam_layanan']['value'] : 'Jam layanan akan ditampilkan setelah diverifikasi oleh pemerintah desa.' }}
+                                {{ $tersedia('jam_layanan') ? $kontak['jam_layanan']['value'] : 'Jam layanan akan ditampilkan setelah diverifikasi oleh desa.' }}
                             </p>
                         </div>
                     </div>

@@ -31,7 +31,7 @@
             @method('put')
 
             @if ($tab === 'sejarah')
-                <x-admin.editor name="sejarah" label="Naskah sejarah" :value="$d['sejarah']" help="Salin dari naskah resmi pemerintah desa. Baris kosong memisahkan paragraf." />
+                <x-admin.editor name="sejarah" label="Naskah sejarah" :value="$d['sejarah']" help="Salin dari naskah resmi desa. Baris kosong memisahkan paragraf." />
             @elseif ($tab === 'visi')
                 <div class="flex flex-col gap-6" x-data="daftarButir({{ Js::from(old('misi', $d['misi'])) }})">
                     <x-ui.field name="visi" label="Visi" required multiline :rows="4" :value="$d['visi']" placeholder="Masukkan teks visi resmi desa…" help="Salin sesuai dokumen RPJMDes yang berlaku." />
@@ -87,7 +87,7 @@
                         @endif
                     </div>
                 </div>
-                <x-ui.checkbox name="terverifikasi" label="Data lokasi & kontak sudah diverifikasi pemerintah desa" :checked="$d['terverifikasi']" />
+                <x-ui.checkbox name="terverifikasi" label="Data lokasi & kontak sudah diverifikasi desa" :checked="$d['terverifikasi']" />
                 <p class="type-body-sm text-muted">Alamat, telepon, email, dan peta baru tampil di situs publik bila kotak ini dicentang dan disimpan lewat “Simpan &amp; Terbitkan”. “Simpan Draf” tidak menayangkannya.</p>
             @else
                 <div class="grid gap-5 sm:grid-cols-2">
@@ -97,7 +97,7 @@
                     <x-ui.field name="dusun" label="Jumlah dusun" required inputmode="numeric" :value="$d['dusun']" />
                 </div>
                 <x-ui.field name="sumber" label="Sumber data" required :value="$d['sumber']" help="Cantumkan sumber dan tahunnya. Angka tanpa sumber tidak boleh ditampilkan di situs publik." />
-                <x-ui.checkbox name="terverifikasi" label="Angka sudah diverifikasi pemerintah desa" :checked="$d['terverifikasi']" />
+                <x-ui.checkbox name="terverifikasi" label="Angka sudah diverifikasi desa" :checked="$d['terverifikasi']" />
             @endif
 
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

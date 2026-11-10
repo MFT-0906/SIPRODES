@@ -12,7 +12,7 @@
             <x-ui.empty-state
                 icon="wallet" class="w-full max-w-[560px]"
                 title="Data APBDes belum dipublikasikan"
-                description="Ringkasan dan dokumen APBDes akan tampil di sini setelah dipublikasikan oleh pemerintah desa."
+                description="Ringkasan dan dokumen APBDes akan tampil di sini setelah dipublikasikan oleh desa."
             >
                 <x-slot:action>
                     <x-ui.button :href="route('profil')" variant="secondary">Lihat Profil Desa</x-ui.button>
