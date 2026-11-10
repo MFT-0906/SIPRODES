@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Vite;
 use Tests\TestCase;
 
 /**
@@ -20,6 +21,13 @@ class TurnstileAspirasiTest extends TestCase
     use RefreshDatabase;
 
     private const SITE_KEY = '1x00000000000000000000AA';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Jangan bergantung pada server dev Vite yang mungkin sedang berjalan (public/hot).
+        Vite::useHotFile(storage_path('framework/testing/vite-hot-tidak-ada'));
+    }
 
     private function aktifkan(): void
     {
