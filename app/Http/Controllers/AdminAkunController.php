@@ -76,7 +76,15 @@ class AdminAkunController extends Controller
         }
 
         $sebelum = $this->potret($user);
-        DB::transaction(function () use ($request, $user, $peranBaru, $aktifBaru) {
+        $emailBaru = $request->string('email')->toString();
+        // Tautan Google dilepas bila email diganti (akun Google lama tidak lagi berlaku) atau diminta Super Admin.
+        $lepasGoogle = $user->google_id !== null
+            && ($request->boolean('lepas_google') || mb_strtolower($emailBaru) !== mb_strtolower($user->email));
+
+        DB::transaction(function () use ($request, $user, $peranBaru, $aktifBaru, $lepasGoogle) {
+            if ($lepasGoogle) {
+                $user->forceFill(['google_id' => null]);
+            }
             $user->update([
                 'name' => $request->string('nama')->toString(),
                 'email' => $request->string('email')->toString(),
@@ -88,6 +96,9 @@ class AdminAkunController extends Controller
         });
 
         Aktivitas::catat('akun.diubah', $user, $user->email.$this->selisih($sebelum, $this->potret($user->refresh())));
+        if ($lepasGoogle) {
+            Aktivitas::catat('akun.google_dilepas', $user, $user->email);
+        }
 
         return redirect()->route('admin.akun.index')->with('toast', 'Perubahan berhasil disimpan.');
     }

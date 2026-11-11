@@ -75,6 +75,12 @@ return [
     ],
 
     // Atur ulang kata sandi & pembatasan login (Fase 2).
+    // Masuk dashboard dengan Google (opsional). Buat OAuth Client di Google Cloud Console; lihat docs/deploy.md.
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    ],
+
     'auth' => [
         'kata_sandi_min' => 10,
         'percobaan_maks' => (int) env('LOGIN_PERCOBAAN_MAKS', 5),

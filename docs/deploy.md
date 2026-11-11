@@ -91,11 +91,32 @@ UNGGAH_PDF_MAKS_KB=10240
 # untuk domain situs, lalu isi kedua kunci. Kosong = formulir memakai pertanyaan hitungan.
 TURNSTILE_SITE_KEY=
 TURNSTILE_SECRET_KEY=
+
+# Masuk dashboard dengan Google (opsional), lihat bagian 3a. Kosong = tombol Google tidak tampil.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```
 
 `APP_KEY` dipakai mengenkripsi NIK aspirasi: **kehilangan kunci berarti NIK tak terbaca lagi**. Simpan salinannya terpisah dari server.
 
 Setelah mengubah `.env`: `php artisan config:cache`.
+
+## 3a. Masuk dengan Google (opsional)
+
+Admin bisa masuk dengan akun Google, **hanya** bila emailnya sudah didaftarkan Super Admin di menu Akun & Hak Akses dan akunnya aktif. Google tidak pernah membuat akun baru. Saat pertama masuk, akun Google ditautkan ke akun admin; setelah itu hanya akun Google yang sama yang diterima (Super Admin dapat melepas tautan di form Ubah Akun; mengganti email juga melepas tautan). Login dengan kata sandi tetap tersedia sebagai cadangan.
+
+Menyiapkan kunci (gratis), memakai akun Google resmi desa:
+
+1. Buka https://console.cloud.google.com → buat project baru, misalnya `SIPRODES Marga Agung`.
+2. **APIs & Services → OAuth consent screen** (Google Auth Platform → Branding): nama aplikasi `Desa Marga Agung`, email dukungan = email resmi desa. Jenis pengguna (Audience): **External**, lalu **Publish app** (status "In production"). Cakupan yang dipakai hanya `openid`, `email`, `profile`, jadi tidak perlu verifikasi Google.
+3. **Credentials → Create credentials → OAuth client ID** → jenis **Web application**.
+   - *Authorized JavaScript origins*: `https://domain-situs` (mis. `https://margaagung.alwaysdata.net`).
+   - *Authorized redirect URIs*: `https://domain-situs/admin/masuk/google/kembali`.
+   - Saat pindah domain, **tambahkan** alamat domain baru di kedua kolom (alamat lama boleh dihapus setelah pindah).
+4. Salin *Client ID* dan *Client secret* ke `.env` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`), lalu `php artisan config:cache`. Jangan bagikan *Client secret* lewat chat.
+5. Uji: halaman `/admin/masuk` menampilkan tombol **Masuk dengan Google**. Masuk dengan Gmail yang terdaftar sebagai admin.
+
+Catatan: `SESSION_SAME_SITE` harus tetap `lax` (bawaan). Nilai `strict` membuat sesi hilang saat kembali dari Google sehingga login selalu gagal. Login Google yang ditolak tercatat di Log Aktivitas sebagai "Masuk dengan Google ditolak".
 
 ## 4. Web server
 

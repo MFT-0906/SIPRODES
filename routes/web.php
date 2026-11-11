@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminPotensiController;
 use App\Http\Controllers\AdminProfilController;
 use App\Http\Controllers\AdminStrukturController;
 use App\Http\Controllers\AspirasiController;
+use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\PastikanAkunAktif;
@@ -46,6 +47,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/masuk', [AdminAuthController::class, 'login'])->name('login');
         Route::post('/masuk', [AdminAuthController::class, 'masuk'])->middleware('throttle:30,1')->name('login.store');
+        Route::get('/masuk/google', [GoogleLoginController::class, 'arahkan'])->middleware('throttle:30,1')->name('login.google');
+        Route::get('/masuk/google/kembali', [GoogleLoginController::class, 'kembali'])->middleware('throttle:30,1')->name('login.google.kembali');
         Route::get('/lupa-kata-sandi', [AdminAuthController::class, 'lupa'])->name('password.request');
         Route::post('/lupa-kata-sandi', [AdminAuthController::class, 'kirimTautan'])->middleware('throttle:5,1')->name('password.email');
         Route::get('/atur-ulang-kata-sandi/{token}', [AdminAuthController::class, 'formAturUlang'])->name('password.reset');
