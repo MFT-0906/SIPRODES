@@ -30,7 +30,7 @@
                             <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary" aria-hidden="true"><x-ui.icon name="user" class="size-[18px]" /></span>
                             <span class="min-w-0">
                                 <span class="block type-label text-text">{{ $a->name }}</span>
-                                <span class="block type-body-sm text-muted">{{ $a->email }}@if ($a->username) · {{ $a->username }}@endif</span>
+                                <span class="block type-body-sm text-muted">{{ $a->email }}@if ($a->username) · {{ $a->username }}@endif @if ($a->google_id) · <span class="text-primary">tertaut Google</span>@endif</span>
                             </span>
                         </th>
                         <td><x-ui.badge :tone="$a->peran->value === 'super_admin' ? 'aksen' : 'sukses'">{{ $teksPeran[$a->peran->value] }}</x-ui.badge></td>
@@ -174,6 +174,13 @@
                             @endforeach
                         </div>
                     </fieldset>
+                    @if ($ubah->google_id)
+                        <div class="flex flex-col gap-1 rounded-[10px] border border-border bg-background p-3">
+                            <p class="type-label text-text">Akun Google tertaut</p>
+                            <p class="type-body-sm text-muted">Pengguna ini masuk dengan akun Google. Lepas tautan bila ia berganti akun Google; tautan baru dibuat saat ia masuk lagi. Mengganti email juga melepas tautan.</p>
+                            <x-ui.checkbox name="lepas_google" id="ubah-lepas-google" value="1" label="Lepas tautan akun Google" />
+                        </div>
+                    @endif
                     <x-ui.toggle name="aktif" id="ubah-aktif" label="Status akun" :checked="$ubah->aktif" />
                     @error('aktif')
                         <p class="type-body-sm text-danger" role="alert">{{ $message }}</p>

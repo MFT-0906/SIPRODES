@@ -20,6 +20,26 @@
             <x-ui.alert tone="bahaya">{{ session('gagal_masuk') }}</x-ui.alert>
         @endif
 
+        @if (\App\Support\GoogleLogin::aktif())
+            {{-- Tautan biasa (GET), bukan form: pengalihan ke Google tidak terhalang aturan form-action CSP. --}}
+            {{-- Logo "G" resmi diunduh dari panduan merek Google (developers.google.com/identity/branding-guidelines)
+                 dan disimpan sebagai public/images/google-g.svg. Tanpa berkas itu tombol tampil tanpa logo. --}}
+            <a
+                href="{{ route('admin.login.google') }}"
+                class="flex min-h-12 w-full items-center justify-center gap-3 rounded-control border border-border bg-surface px-4 shadow-[0_1px_2px_rgb(15_51_33/0.08)] type-label text-text transition-colors hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+                @if (is_file(public_path('images/google-g.svg')))
+                    <img src="{{ asset('images/google-g.svg') }}" alt="" loading="lazy" class="size-5 shrink-0">
+                @endif
+                Masuk dengan Google
+            </a>
+            <p class="-mt-2 type-body-sm text-muted">Pakai akun Google dengan email yang didaftarkan Super Admin.</p>
+
+            <div class="flex items-center gap-3 type-label-sm text-muted" aria-hidden="true">
+                <span class="h-px flex-1 bg-border"></span>atau dengan kata sandi<span class="h-px flex-1 bg-border"></span>
+            </div>
+        @endif
+
         <form method="post" action="{{ route('admin.login.store') }}" class="flex flex-col gap-5" novalidate>
             @csrf
             <x-ui.field
