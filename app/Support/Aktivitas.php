@@ -21,6 +21,7 @@ class Aktivitas
         'masuk.google' => 'Masuk dengan Google',
         'masuk.google_ditolak' => 'Masuk dengan Google ditolak',
         'akun.google_dilepas' => 'Tautan akun Google dilepas',
+        'akun.dihapus' => 'Akun dihapus',
         'kata_sandi.diatur_ulang' => 'Kata sandi diatur ulang',
         'akun.dibuat' => 'Akun dibuat',
         'akun.diubah' => 'Akun diubah',
@@ -71,8 +72,11 @@ class Aktivitas
     public static function catat(string $aksi, ?Model $subjek = null, ?string $keterangan = null): void
     {
         try {
+            $pelaku = auth()->user();
             LogAktivitas::query()->create([
-                'user_id' => auth()->id(),
+                'user_id' => $pelaku?->getKey(),
+                // Salinan nama: log tetap menyebut pelaku walau akunnya kelak dihapus.
+                'pelaku_nama' => $pelaku ? Str::limit($pelaku->name.' ('.$pelaku->email.')', 197, '…') : null,
                 'aksi' => $aksi,
                 'subjek_type' => $subjek?->getMorphClass(),
                 'subjek_id' => $subjek?->getKey(),

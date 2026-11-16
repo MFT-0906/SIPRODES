@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-#[Fillable(['user_id', 'aksi', 'subjek_type', 'subjek_id', 'keterangan', 'ip'])]
+#[Fillable(['user_id', 'pelaku_nama', 'aksi', 'subjek_type', 'subjek_id', 'keterangan', 'ip'])]
 class LogAktivitas extends Model
 {
     /** @use HasFactory<LogAktivitasFactory> */
