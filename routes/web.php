@@ -111,6 +111,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/akun', [AdminAkunController::class, 'store'])->name('akun.store');
             Route::put('/akun/{user}', [AdminAkunController::class, 'update'])->name('akun.update');
             Route::post('/akun/{user}/atur-ulang', [AdminAkunController::class, 'reset'])->name('akun.reset');
+            Route::delete('/akun/{user}', [AdminAkunController::class, 'destroy'])->name('akun.destroy');
 
             Route::get('/data-master', [AdminMasterController::class, 'index'])->name('master');
             Route::post('/data-master/{jenis}', [AdminMasterController::class, 'store'])->whereIn('jenis', ['dusun', 'jabatan'])->name('master.store');

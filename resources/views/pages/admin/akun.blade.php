@@ -42,6 +42,9 @@
                                 @csrf
                                 <x-admin.icon-button icon="lock" :submit="true" :label="'Kirim tautan atur ulang kata sandi: '.$a->name" class="text-warning!" />
                             </form>
+                            @unless (auth()->user()->is($a))
+                                <x-admin.icon-button icon="trash" tone="bahaya" :label="'Hapus akun: '.$a->name" x-on:click="$dispatch('open-modal', 'hapus-akun-{{ $a->id }}')" />
+                            @endunless
                         </td>
                     </x-admin.tr>
                 @endforeach
@@ -103,7 +106,7 @@
                             <p class="type-label-sm text-muted lg:w-40 lg:shrink-0">{{ $baris->created_at->locale('id')->translatedFormat('j M Y, H.i') }} WIB</p>
                             <p class="type-label text-text lg:w-60 lg:shrink-0">{{ $labelAksi[$baris->aksi] ?? $baris->aksi }}</p>
                             <p class="min-w-0 flex-1 type-body-sm text-muted">{{ $baris->keterangan }}</p>
-                            <p class="type-label-sm text-muted lg:text-right">{{ $baris->user?->name ?? 'Sistem/tamu' }} · {{ $baris->ip }}</p>
+                            <p class="type-label-sm text-muted lg:text-right">{{ $baris->user?->name ?? ($baris->pelaku_nama ? $baris->pelaku_nama.' · akun dihapus' : 'Sistem/tamu') }} · {{ $baris->ip }}</p>
                         </li>
                     @endforeach
                 </ul>
@@ -192,5 +195,16 @@
                 </x-slot:footer>
             </x-ui.modal>
         @endif
+
+        {{-- Konfirmasi hapus akun. Riwayat (berita, unggahan, log) tetap tersimpan dengan nama pelakunya. --}}
+        @foreach ($daftar as $a)
+            @unless (auth()->user()->is($a))
+                <x-admin.confirm-delete
+                    :name="'hapus-akun-'.$a->id" title="Hapus akun ini?"
+                    :description="'Akun “'.$a->name.'” ('.$a->email.') akan dihapus permanen dan tidak bisa masuk lagi. Berita, unggahan, dan Log Aktivitas yang pernah dibuatnya tetap tersimpan. Bila akun ini mungkin dipakai lagi, nonaktifkan saja lewat tombol Ubah.'"
+                    :action="route('admin.akun.destroy', $a)" confirm="Ya, hapus akun"
+                />
+            @endunless
+        @endforeach
     </div>
 @endsection

@@ -183,6 +183,37 @@ class AdminAkunController extends Controller
         return is_string($aksi) && array_key_exists($aksi, Aktivitas::LABEL) ? $aksi : null;
     }
 
+    /**
+     * Menghapus akun secara permanen. Riwayatnya tidak hilang: berita, dokumen APBDes, riwayat aspirasi, dan
+     * Log Aktivitas menyimpan kolom pelaku sebagai kosong (nullOnDelete), sedangkan log tetap memuat nama pelaku
+     * di kolom pelaku_nama. Super Admin tidak bisa menghapus akunnya sendiri maupun Super Admin aktif terakhir.
+     */
+    public function destroy(Request $request, User $user): RedirectResponse
+    {
+        if ($request->user()->is($user)) {
+            return redirect()->route('admin.akun.index')->with('toast', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        if ($user->adalahSuperAdmin() && $user->aktif && ! $this->adaSuperAdminAktifLain($user)) {
+            return redirect()->route('admin.akun.index')->with('toast', 'Harus ada minimal satu Super Admin aktif. Akun ini tidak dapat dihapus.');
+        }
+
+        $ringkas = $user->name.' · '.$user->email.' · peran '.$user->peran->label();
+
+        DB::transaction(function () use ($user) {
+            // Putuskan sesi yang masih terbuka dan tautan atur ulang kata sandi yang belum dipakai.
+            if (config('session.driver') === 'database') {
+                DB::table(config('session.table', 'sessions'))->where('user_id', $user->getKey())->delete();
+            }
+            DB::table(config('auth.passwords.users.table', 'password_reset_tokens'))->where('email', $user->email)->delete();
+            $user->delete();
+        });
+
+        Aktivitas::catat('akun.dihapus', null, $ringkas);
+
+        return redirect()->route('admin.akun.index')->with('toast', 'Akun “'.$user->name.'” dihapus.');
+    }
+
     private function adaSuperAdminAktifLain(User $user): bool
     {
         return User::query()
