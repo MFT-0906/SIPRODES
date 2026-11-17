@@ -261,7 +261,7 @@ class StatistikPengunjungTest extends TestCase
         return $cocok[1] ?? null;
     }
 
-    public function test_footer_menampilkan_blok_statistik_empat_angka(): void
+    public function test_footer_menampilkan_kartu_statistik_tiga_baris_tanpa_data_30_hari(): void
     {
         $this->kunjungi('/profil-desa');
         $this->kunjungi('/profil-desa', ip: '203.0.113.60');
@@ -272,29 +272,32 @@ class StatistikPengunjungTest extends TestCase
 
         $this->assertSame('2', $this->nilaiFooter($html, 'Hari ini'));
         $this->assertSame('7', $this->nilaiFooter($html, 'Kemarin'));
-        $this->assertSame('9', $this->nilaiFooter($html, '30 hari terakhir'));
-        $this->assertSame('9', $this->nilaiFooter($html, 'Total'));
+        $this->assertSame('9', $this->nilaiFooter($html, 'Jumlah pengunjung'));
+        $this->assertSame(3, substr_count($html, 'border-t border-surface/20 py-2.5'), 'Tiga baris dipisah garis tipis');
+        $this->assertStringNotContainsString('30 hari terakhir', $html);
     }
 
-    public function test_blok_statistik_berada_di_atas_baris_hak_cipta_dan_responsif_2_kolom_lalu_4_kolom(): void
+    public function test_kartu_statistik_di_kanan_pada_desktop_dan_di_atas_pada_hp(): void
     {
         $html = $this->get('/kontak-lokasi')->assertOk()->getContent();
 
+        // Di DOM kartu lebih dulu (tampil di atas pada HP); md:order-last memindahkannya ke kanan pada desktop.
         $this->assertLessThan(strpos($html, 'Seluruh hak dilindungi'), strpos($html, 'Statistik Pengunjung'));
-        $this->assertStringContainsString('grid-cols-2', $html);
-        $this->assertStringContainsString('lg:grid-cols-4', $html);
-        $this->assertSame(4, substr_count($html, 'bg-surface/15 text-accent'), 'Setiap angka punya ikon kecil');
+        $this->assertStringContainsString('md:order-last md:w-[320px]', $html);
+        $this->assertStringContainsString('md:flex-row md:items-start md:justify-between', $html);
+        $this->assertSame(1, substr_count($html, 'bg-surface/15 text-accent'), 'Satu ikon grafik kecil di judul kartu');
+        $this->assertLessThan(strpos($html, 'Kebijakan Privasi</a>'), strpos($html, 'Seluruh hak dilindungi'));
     }
 
     public function test_angka_footer_diformat_ribuan(): void
     {
-        StatistikKunjungan::query()->create(['tanggal' => now()->toDateString(), 'path' => StatistikKunjungan::SEMUA, 'jumlah_tayang' => 5000, 'jumlah_pengunjung' => 1234]);
+        StatistikKunjungan::query()->create(['tanggal' => now()->toDateString(), 'path' => StatistikKunjungan::SEMUA, 'jumlah_tayang' => 90000, 'jumlah_pengunjung' => 61185]);
         Cache::forget('statistik.publik');
 
         $html = $this->get('/kontak-lokasi')->assertOk()->getContent();
 
-        $this->assertSame('1.234', $this->nilaiFooter($html, 'Hari ini'));
-        $this->assertSame('1.234', $this->nilaiFooter($html, 'Total'));
+        $this->assertSame('61.185', $this->nilaiFooter($html, 'Hari ini'));
+        $this->assertSame('61.185', $this->nilaiFooter($html, 'Jumlah pengunjung'));
     }
 
     public function test_footer_tanpa_statistik_hanya_menyisakan_hak_cipta_dan_tautan_kebijakan(): void
@@ -302,6 +305,7 @@ class StatistikPengunjungTest extends TestCase
         config(['desa.statistik.tampil_publik' => false]);
         $this->get('/kontak-lokasi')->assertOk()
             ->assertDontSee('Statistik Pengunjung')
+            ->assertDontSee('Jumlah pengunjung')
             ->assertSee('Seluruh hak dilindungi')
             ->assertSee('Kebijakan Privasi');
 
@@ -313,13 +317,13 @@ class StatistikPengunjungTest extends TestCase
     {
         $this->kunjungi('/profil-desa');
         Cache::forget('statistik.publik');
-        $this->assertSame('1', $this->nilaiFooter($this->get('/kontak-lokasi')->getContent(), 'Total'));
+        $this->assertSame('1', $this->nilaiFooter($this->get('/kontak-lokasi')->getContent(), 'Jumlah pengunjung'));
 
         $this->kunjungi('/profil-desa', ip: '203.0.113.61');
-        $this->assertSame('1', $this->nilaiFooter($this->get('/kontak-lokasi')->getContent(), 'Total'));
+        $this->assertSame('1', $this->nilaiFooter($this->get('/kontak-lokasi')->getContent(), 'Jumlah pengunjung'));
 
         Cache::forget('statistik.publik');
-        $this->assertSame('2', $this->nilaiFooter($this->get('/kontak-lokasi')->getContent(), 'Total'));
+        $this->assertSame('2', $this->nilaiFooter($this->get('/kontak-lokasi')->getContent(), 'Jumlah pengunjung'));
     }
 
     // ---- Pemeliharaan ----

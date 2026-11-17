@@ -90,7 +90,7 @@ final class StatistikPengunjung
      * Angka untuk footer publik, disimpan di cache beberapa menit agar ringan. Null bila dimatikan lewat config
      * atau bila basis data tidak dapat dibaca (footer tetap tampil tanpa angka).
      *
-     * @return array{hari_ini: int, kemarin: int, tiga_puluh_hari: int, total: int}|null
+     * @return array{hari_ini: int, kemarin: int, total: int}|null
      */
     public static function publik(): ?array
     {
@@ -105,7 +105,6 @@ final class StatistikPengunjung
                 return [
                     'hari_ini' => $ringkasan['pengunjung_hari_ini'],
                     'kemarin' => $ringkasan['pengunjung_kemarin'],
-                    'tiga_puluh_hari' => $ringkasan['pengunjung_30_hari'],
                     'total' => $ringkasan['pengunjung_total'],
                 ];
             });

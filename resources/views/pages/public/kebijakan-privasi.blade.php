@@ -47,7 +47,7 @@
                                 tanpa penghapusan otomatis.
                             @endif
                             @if ($statistikPublik)
-                                Ringkasan jumlah pengunjung (hari ini, kemarin, 30 hari terakhir, dan total) ditampilkan di bagian bawah halaman.
+                                Ringkasan jumlah pengunjung (hari ini, kemarin, dan jumlah keseluruhan) ditampilkan di bagian bawah halaman.
                             @endif
                         </p>
                     @else
