@@ -27,6 +27,7 @@ Route::get('/potensi-desa', [PublicPageController::class, 'potensi'])->name('pot
 Route::get('/berita', [PublicPageController::class, 'berita'])->name('berita.index');
 Route::get('/berita/{slug}', [PublicPageController::class, 'beritaShow'])->name('berita.show');
 Route::get('/kontak-lokasi', [PublicPageController::class, 'kontak'])->name('kontak');
+Route::get('/kebijakan-privasi', [PublicPageController::class, 'privasi'])->name('kebijakan-privasi');
 
 // Untuk mesin pencari. robots.txt dibuat dinamis (bukan berkas public/robots.txt) agar alamat sitemap
 // selalu mengikuti APP_URL, baik di hosting uji coba maupun di domain resmi.
