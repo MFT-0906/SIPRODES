@@ -165,4 +165,14 @@ class PublicPageController extends Controller
             'statistik' => collect($this->konten()->statistik())->keyBy('label'),
         ]);
     }
+
+    public function privasi(): View
+    {
+        return view('pages.public.kebijakan-privasi', [
+            'identitas' => $this->konten()->identitas(),
+            'masaSimpanAspirasiBulan' => (int) config('desa.aspirasi.masa_simpan_bulan'),
+            'masaSimpanLogBulan' => (int) config('desa.log.masa_simpan_bulan'),
+            'masaSesiMenit' => (int) config('session.lifetime'),
+        ]);
+    }
 }

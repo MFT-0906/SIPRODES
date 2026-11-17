@@ -20,6 +20,7 @@ class SitemapController extends Controller
         ['berita.index', '0.8', 'daily'],
         ['kontak', '0.6', 'monthly'],
         ['aspirasi.create', '0.5', 'yearly'],
+        ['kebijakan-privasi', '0.3', 'yearly'],
     ];
 
     public function sitemap(): Response
