@@ -277,16 +277,95 @@ class StatistikPengunjungTest extends TestCase
         $this->assertStringNotContainsString('30 hari terakhir', $html);
     }
 
-    public function test_kartu_statistik_di_kanan_pada_desktop_dan_di_atas_pada_hp(): void
+    /** Isi elemen <footer> saja, agar tidak tercampur dengan header. */
+    private function footer(string $url = '/kontak-lokasi'): string
     {
-        $html = $this->get('/kontak-lokasi')->assertOk()->getContent();
+        $html = $this->get($url)->assertOk()->getContent();
+        $this->assertSame(1, preg_match('#<footer\b.*</footer>#s', $html, $cocok));
 
-        // Di DOM kartu lebih dulu (tampil di atas pada HP); md:order-last memindahkannya ke kanan pada desktop.
-        $this->assertLessThan(strpos($html, 'Seluruh hak dilindungi'), strpos($html, 'Statistik Pengunjung'));
-        $this->assertStringContainsString('md:order-last md:w-[320px]', $html);
-        $this->assertStringContainsString('md:flex-row md:items-start md:justify-between', $html);
-        $this->assertSame(1, substr_count($html, 'bg-surface/15 text-accent'), 'Satu ikon grafik kecil di judul kartu');
-        $this->assertLessThan(strpos($html, 'Kebijakan Privasi</a>'), strpos($html, 'Seluruh hak dilindungi'));
+        return $cocok[0];
+    }
+
+    public function test_footer_desktop_tiga_kolom_identitas_tautan_dan_statistik(): void
+    {
+        $footer = $this->footer();
+
+        $this->assertStringContainsString('md:grid-cols-12', $footer);
+        $this->assertStringContainsString('md:items-start', $footer, 'Kolom rata atas');
+        $this->assertStringContainsString('md:col-span-5', $footer);
+        $this->assertStringContainsString('md:col-span-3', $footer);
+        $this->assertStringContainsString('md:col-span-4', $footer);
+
+        $identitas = strpos($footer, 'Marga Agung');
+        $tautan = strpos($footer, 'id="tautan-footer-judul"');
+        $statistik = strpos($footer, 'id="statistik-footer-judul"');
+        $this->assertTrue($identitas < $tautan && $tautan < $statistik, 'Urutan kolom: identitas, tautan, statistik');
+        $this->assertSame(1, substr_count($footer, 'bg-surface/15 text-accent'), 'Satu ikon grafik kecil di judul kartu');
+    }
+
+    public function test_footer_memuat_identitas_wilayah_lengkap_tanpa_kontak(): void
+    {
+        $footer = $this->footer();
+
+        $this->assertStringContainsString('Marga Agung', $footer);
+        foreach (['Kecamatan Jati Agung', 'Kabupaten Lampung Selatan', 'Provinsi Lampung'] as $bagian) {
+            $this->assertStringContainsString($bagian, $footer);
+        }
+        $this->assertStringNotContainsString('mailto:', $footer);
+        $this->assertStringNotContainsString('tel:', $footer);
+        $this->assertStringNotContainsString('wa.me', $footer);
+    }
+
+    public function test_footer_memuat_tautan_cepat_dengan_target_sentuh_44px(): void
+    {
+        $footer = $this->footer();
+
+        $this->assertStringContainsString('>Tautan</h2>', $footer);
+        foreach ([
+            'Profil Desa' => route('profil'),
+            'APBDes' => route('apbdes'),
+            'Berita &amp; Agenda' => route('berita.index'),
+            'Ruang Aspirasi' => route('aspirasi.create'),
+        ] as $label => $alamat) {
+            $this->assertMatchesRegularExpression(
+                '#<a href="'.preg_quote($alamat, '#').'" class="[^"]*min-h-11[^"]*">'.preg_quote($label, '#').'</a>#',
+                $footer,
+                "Tautan {$label} tidak ada atau targetnya kurang dari 44 px",
+            );
+        }
+    }
+
+    public function test_di_hp_identitas_dan_tautan_disembunyikan_dan_kartu_statistik_tetap_di_atas(): void
+    {
+        $footer = $this->footer();
+
+        $this->assertMatchesRegularExpression('#class="hidden [^"]*md:flex[^"]*md:col-span-5"#', $footer, 'Identitas hanya tampil di desktop');
+        $this->assertMatchesRegularExpression('#<nav [^>]*class="hidden [^"]*md:flex[^"]*md:col-span-3"#', $footer, 'Tautan cepat hanya tampil di desktop');
+        $this->assertLessThan(strpos($footer, 'Seluruh hak dilindungi'), strpos($footer, 'Statistik Pengunjung'), 'Kartu di atas hak cipta');
+        $this->assertLessThan(strpos($footer, 'Kebijakan Privasi</a>'), strpos($footer, 'Seluruh hak dilindungi'));
+    }
+
+    public function test_baris_bawah_footer_hak_cipta_kiri_dan_kebijakan_privasi_kanan_di_desktop(): void
+    {
+        $footer = $this->footer();
+
+        $this->assertStringContainsString('md:flex-row md:items-center md:justify-between', $footer);
+        $this->assertStringContainsString('md:border-t md:border-surface/20', $footer, 'Garis tipis pemisah di desktop');
+        $this->assertStringContainsString('&copy; '.now()->year.' Desa Marga Agung. Seluruh hak dilindungi.', $footer);
+    }
+
+    public function test_tanpa_statistik_dua_kolom_lain_melebar_mengisi_ruang(): void
+    {
+        config(['desa.statistik.tampil_publik' => false]);
+
+        $footer = $this->footer();
+
+        $this->assertStringNotContainsString('id="statistik-footer-judul"', $footer);
+        $this->assertStringContainsString('md:col-span-7', $footer);
+        $this->assertStringContainsString('md:col-span-5', $footer);
+        $this->assertStringNotContainsString('md:col-span-4', $footer);
+        $this->assertStringNotContainsString('md:col-span-3', $footer);
+        $this->assertStringContainsString('Kebijakan Privasi', $footer);
     }
 
     public function test_angka_footer_diformat_ribuan(): void
