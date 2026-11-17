@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CatatKunjungan;
 use App\Http\Middleware\HeaderKeamanan;
 use App\Http\Middleware\PastikanPunyaModul;
 use Illuminate\Foundation\Application;
@@ -16,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['modul' => PastikanPunyaModul::class]);
+        // Hitung kunjungan halaman publik (agregat harian; lihat CatatKunjungan).
+        $middleware->web(append: [CatatKunjungan::class]);
         // Izin modul dicek SEBELUM model di-bind ke rute, supaya akun tanpa izin selalu mendapat 403
         // (bukan 404 yang membocorkan ada/tidaknya data).
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: PastikanPunyaModul::class);

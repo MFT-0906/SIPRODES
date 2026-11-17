@@ -74,6 +74,15 @@ return [
         'masa_simpan_bulan' => (int) env('LOG_AKTIVITAS_MASA_SIMPAN_BULAN', 24),
     ],
 
+    // Statistik pengunjung internal: hanya agregat harian per halaman, tanpa cookie, IP, atau pihak ketiga.
+    // Baris yang lebih tua dari masa simpan dihapus oleh perintah statistik:bersihkan (0 = tidak pernah dihapus).
+    'statistik' => [
+        'aktif' => (bool) env('STATISTIK_AKTIF', true),
+        // Tampilkan "Pengunjung hari ini · Total" di footer publik.
+        'tampil_publik' => (bool) env('STATISTIK_PUBLIK', true),
+        'masa_simpan_bulan' => (int) env('STATISTIK_MASA_SIMPAN_BULAN', 24),
+    ],
+
     // Atur ulang kata sandi & pembatasan login (Fase 2).
     // Masuk dashboard dengan Google (opsional). Buat OAuth Client di Google Cloud Console; lihat docs/deploy.md.
     'google' => [

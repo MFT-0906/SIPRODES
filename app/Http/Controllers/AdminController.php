@@ -11,6 +11,7 @@ use App\Models\Berita;
 use App\Models\KelompokTani;
 use App\Models\Komoditas;
 use App\Models\Umkm;
+use App\Support\StatistikPengunjung;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -26,6 +27,7 @@ class AdminController extends Controller
         $bolehBerita = Gate::allows('akses-modul', Modul::Berita);
         $bolehPotensi = Gate::allows('akses-modul', Modul::Potensi);
         $bolehAspirasi = Gate::allows('akses-modul', Modul::Aspirasi);
+        $bolehStatistik = Gate::allows('akses-modul', Modul::Statistik);
 
         return view('pages.admin.dashboard', [
             'terbit' => $bolehBerita ? Berita::query()->terbit()->count() : 0,
@@ -45,6 +47,7 @@ class AdminController extends Controller
                     ])->all()
                 : [],
             'konten' => $bolehBerita ? $this->drafTerakhir() : [],
+            'kunjungan' => $bolehStatistik ? StatistikPengunjung::ringkasan() : null,
         ]);
     }
 

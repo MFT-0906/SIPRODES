@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminMasterController;
 use App\Http\Controllers\AdminPotensiController;
 use App\Http\Controllers\AdminProfilController;
+use App\Http\Controllers\AdminStatistikController;
 use App\Http\Controllers\AdminStrukturController;
 use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\GoogleLoginController;
@@ -104,6 +105,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('/aspirasi', [AdminAspirasiController::class, 'index'])->name('aspirasi.index');
             Route::put('/aspirasi/{id}', [AdminAspirasiController::class, 'status'])->whereNumber('id')->name('aspirasi.status');
+        });
+
+        Route::middleware('modul:statistik')->group(function () {
+            Route::get('/statistik-pengunjung', [AdminStatistikController::class, 'index'])->name('statistik');
         });
 
         Route::middleware('modul:akun')->group(function () {

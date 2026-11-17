@@ -12,6 +12,7 @@ enum Modul: string
     case Profil = 'profil';
     case Apbdes = 'apbdes';
     case Aspirasi = 'aspirasi';
+    case Statistik = 'statistik';
     case Akun = 'akun';
 
     public function label(): string
@@ -22,6 +23,7 @@ enum Modul: string
             self::Profil => 'Profil & Struktur Perangkat',
             self::Apbdes => 'APBDes (ringkasan & PDF)',
             self::Aspirasi => 'Aspirasi Warga',
+            self::Statistik => 'Statistik Pengunjung',
             self::Akun => 'Akun & Hak Akses',
         };
     }
