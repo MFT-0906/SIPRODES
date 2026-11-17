@@ -53,6 +53,27 @@
             @endcan
         </section>
 
+        {{-- Statistik pengunjung: hanya untuk akun yang boleh membuka modul Statistik Pengunjung. --}}
+        @if ($kunjungan)
+            <section aria-labelledby="kunjungan-judul" class="flex flex-col gap-3">
+                <div class="flex items-center justify-between gap-3">
+                    <h2 id="kunjungan-judul" class="type-h3 text-text">Pengunjung situs</h2>
+                    <x-ui.button :href="route('admin.statistik')" variant="ghost" size="s" icon="arrow-right">Lihat statistik</x-ui.button>
+                </div>
+                <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+                    @php
+                        $angka = fn (int $n) => number_format($n, 0, ',', '.');
+                    @endphp
+                    <x-ui.card-stat label="Pengunjung hari ini" :value="$angka($kunjungan['pengunjung_hari_ini'])" source="unik per hari" />
+                    <x-ui.card-stat label="Pengunjung 7 hari" :value="$angka($kunjungan['pengunjung_7_hari'])" source="7 hari terakhir" />
+                    <x-ui.card-stat label="Pengunjung 30 hari" :value="$angka($kunjungan['pengunjung_30_hari'])" source="30 hari terakhir" />
+                    <x-ui.card-stat label="Total pengunjung" :value="$angka($kunjungan['pengunjung_total'])" source="sejak pencatatan dimulai" />
+                    <x-ui.card-stat label="Tayangan hari ini" :value="$angka($kunjungan['tayang_hari_ini'])" source="halaman dibuka" />
+                    <x-ui.card-stat label="Total tayangan" :value="$angka($kunjungan['tayang_total'])" source="sejak pencatatan dimulai" />
+                </div>
+            </section>
+        @endif
+
         <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             @can('akses-modul', Modul::Aspirasi)
             {{-- Aspirasi terbaru: hanya cuplikan; NIK tidak pernah ditampilkan. --}}

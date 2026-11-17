@@ -84,7 +84,7 @@ class Fase11KeamananAkhirTest extends TestCase
         $this->assertGreaterThan(40, count($this->ruteAdmin()));
         $modul = array_unique(array_filter(array_column($this->ruteAdmin(), 1)));
         sort($modul);
-        $this->assertSame(['akun', 'apbdes', 'aspirasi', 'berita', 'potensi', 'profil'], array_values($modul));
+        $this->assertSame(['akun', 'apbdes', 'aspirasi', 'berita', 'potensi', 'profil', 'statistik'], array_values($modul));
     }
 
     public function test_tamu_diarahkan_ke_login_untuk_setiap_rute_admin(): void

@@ -173,6 +173,9 @@ class PublicPageController extends Controller
             'masaSimpanAspirasiBulan' => (int) config('desa.aspirasi.masa_simpan_bulan'),
             'masaSimpanLogBulan' => (int) config('desa.log.masa_simpan_bulan'),
             'masaSesiMenit' => (int) config('session.lifetime'),
+            'statistikAktif' => (bool) config('desa.statistik.aktif'),
+            'statistikPublik' => (bool) config('desa.statistik.aktif') && (bool) config('desa.statistik.tampil_publik'),
+            'masaSimpanStatistikBulan' => (int) config('desa.statistik.masa_simpan_bulan'),
         ]);
     }
 }

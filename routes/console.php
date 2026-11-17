@@ -13,4 +13,5 @@ Schedule::command('aspirasi:anonimkan')->dailyAt('02:00')->onOneServer()->withou
 
 // Pemeliharaan: hapus log lama dan berkas unggahan yatim (lebih dari 24 jam, tidak dirujuk database).
 Schedule::command('log:bersihkan')->monthlyOn(1, '03:00')->onOneServer();
+Schedule::command('statistik:bersihkan')->monthlyOn(1, '03:15')->onOneServer();
 Schedule::command('unggahan:bersihkan --hapus')->weeklyOn(0, '03:30')->onOneServer();

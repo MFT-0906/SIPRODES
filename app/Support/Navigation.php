@@ -66,6 +66,7 @@ class Navigation
             ]],
             ['label' => 'Layanan', 'items' => [
                 ['label' => 'Aspirasi Warga', 'route' => 'admin.aspirasi.index', 'modul' => 'aspirasi', 'match' => ['admin.aspirasi.*'], 'icon' => 'message', 'badge' => 'aspirasi_baru'],
+                ['label' => 'Statistik Pengunjung', 'route' => 'admin.statistik', 'modul' => 'statistik', 'match' => ['admin.statistik'], 'icon' => 'chart'],
             ]],
             ['label' => 'Administrasi · Super Admin', 'items' => [
                 ['label' => 'Akun & Hak Akses', 'route' => 'admin.akun.index', 'modul' => 'akun', 'match' => ['admin.akun.*'], 'icon' => 'shield'],

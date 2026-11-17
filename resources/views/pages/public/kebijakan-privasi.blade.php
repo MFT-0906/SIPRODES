@@ -35,7 +35,24 @@
 
                 <section aria-labelledby="priv-pengunjung" class="flex flex-col gap-3">
                     <h2 id="priv-pengunjung" class="type-h2 text-text">Pengunjung biasa</h2>
-                    <p class="type-body text-muted">Anda dapat membaca halaman publik tanpa mendaftar dan tanpa memberikan data pribadi. Situs ini tidak memakai layanan analitik, iklan, atau pelacak pihak ketiga.</p>
+                    <p class="type-body text-muted">Anda dapat membaca halaman publik tanpa mendaftar dan tanpa memberikan data pribadi. Situs ini tidak memakai iklan maupun layanan pelacak pihak ketiga (seperti Google Analytics).</p>
+                    <h3 class="type-h3 text-text">Penghitungan jumlah kunjungan</h3>
+                    @if ($statistikAktif)
+                        <p class="type-body text-muted">Situs ini menghitung jumlah kunjungan secara internal, tanpa cookie dan tanpa pihak ketiga. Setiap kali halaman publik dibuka, sistem menambah angka tayangan halaman itu pada hari tersebut. Yang disimpan di basis data hanya angka harian per halaman (tanggal, alamat halaman, jumlah tayangan, dan jumlah pengunjung), tanpa data pribadi.</p>
+                        <p class="type-body text-muted">Untuk menghitung pengunjung unik per hari, sistem membuat kode acak (hash) dari alamat IP dan jenis peramban Anda yang diacak bersama tanggal dan kunci rahasia situs. Alamat IP dan jenis peramban tidak disimpan di basis data. Kode itu hanya disimpan sementara di cache dan hilang paling lambat saat hari berganti, sehingga tidak dapat dipakai untuk mengenali Anda dari hari ke hari. Bot, halaman admin, dan berkas aset tidak dihitung.</p>
+                        <p class="type-body text-muted">Angka harian disimpan
+                            @if ($masaSimpanStatistikBulan > 0)
+                                selama {{ $masaSimpanStatistikBulan }} bulan, lalu dihapus otomatis.
+                            @else
+                                tanpa penghapusan otomatis.
+                            @endif
+                            @if ($statistikPublik)
+                                Ringkasan jumlah pengunjung (hari ini, kemarin, dan jumlah keseluruhan) ditampilkan di bagian bawah halaman.
+                            @endif
+                        </p>
+                    @else
+                        <p class="type-body text-muted">Penghitungan jumlah kunjungan saat ini dimatikan, sehingga situs tidak menghitung kunjungan pengunjung.</p>
+                    @endif
                 </section>
 
                 <section aria-labelledby="priv-aspirasi" class="flex flex-col gap-3">
