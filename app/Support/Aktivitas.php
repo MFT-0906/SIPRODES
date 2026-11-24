@@ -26,6 +26,7 @@ class Aktivitas
         'akun.dibuat' => 'Akun dibuat',
         'akun.diubah' => 'Akun diubah',
         'akun.tautan_dikirim' => 'Tautan atur ulang dikirim',
+        'akun.undangan_dikirim' => 'Undangan akun dikirim',
         'berita.dibuat' => 'Berita dibuat',
         'berita.diubah' => 'Berita diubah',
         'berita.diterbitkan' => 'Berita diterbitkan',

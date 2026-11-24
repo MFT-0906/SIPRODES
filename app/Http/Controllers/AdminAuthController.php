@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\LupaKataSandiRequest;
 use App\Http\Requests\Admin\MasukRequest;
 use App\Models\User;
 use App\Support\Aktivitas;
+use App\Support\TautanUndangan;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -86,9 +87,15 @@ class AdminAuthController extends Controller
 
     public function formAturUlang(Request $request, string $token): View
     {
+        $email = (string) $request->query('email', '');
+        $tanda = $request->query('tanda');
+        $undangan = TautanUndangan::sah(is_string($tanda) ? $tanda : null, $email, $token);
+
         return view('pages.admin.atur-ulang-kata-sandi', [
             'token' => $token,
-            'email' => (string) $request->query('email', ''),
+            'email' => $email,
+            'undangan' => $undangan,
+            'tanda' => $undangan ? $tanda : null,
         ]);
     }
 
@@ -97,8 +104,14 @@ class AdminAuthController extends Controller
         $email = $request->string('email')->toString();
         $akunAktif = User::query()->where('email', $email)->where('aktif', true)->exists();
 
+        // Masa berlaku panjang hanya untuk tautan undangan yang bertanda sah; selain itu broker bawaan (60 menit).
+        $tanda = $request->input('tanda');
+        $broker = TautanUndangan::sah(is_string($tanda) ? $tanda : null, $email, $request->string('token')->toString())
+            ? TautanUndangan::BROKER
+            : null;
+
         $status = $akunAktif
-            ? Password::reset(
+            ? Password::broker($broker)->reset(
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function (User $user, string $kataSandi): void {
                     $user->forceFill([

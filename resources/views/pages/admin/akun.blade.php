@@ -40,7 +40,7 @@
                             <x-admin.icon-button icon="edit" :href="route('admin.akun.index', ['ubah' => $a->id])" :label="'Ubah akun: '.$a->name" />
                             <form method="post" action="{{ route('admin.akun.reset', $a) }}">
                                 @csrf
-                                <x-admin.icon-button icon="lock" :submit="true" :label="'Kirim tautan atur ulang kata sandi: '.$a->name" class="text-warning!" />
+                                <x-admin.icon-button icon="lock" :submit="true" :label="($a->terakhir_masuk_at ? 'Kirim tautan atur ulang kata sandi: ' : 'Kirim ulang undangan akun: ').$a->name" class="text-warning!" />
                             </form>
                             @unless (auth()->user()->is($a))
                                 <x-admin.icon-button icon="trash" tone="bahaya" :label="'Hapus akun: '.$a->name" x-on:click="$dispatch('open-modal', 'hapus-akun-{{ $a->id }}')" />
@@ -120,7 +120,7 @@
                 @csrf
                 <input type="hidden" name="_mode" value="baru">
                 <x-ui.field name="nama" id="baru-nama" label="Nama lengkap" required :error="$bukaBaru ? $errors->first('nama') : null" placeholder="Nama perangkat desa" />
-                <x-ui.field name="email" id="baru-email" type="email" label="Email" required :error="$bukaBaru ? $errors->first('email') : null" placeholder="nama@…" help="Tautan membuat kata sandi dikirim ke email ini." />
+                <x-ui.field name="email" id="baru-email" type="email" label="Email" required :error="$bukaBaru ? $errors->first('email') : null" placeholder="nama@…" help="Email undangan untuk membuat kata sandi dikirim ke alamat ini." />
                 <x-ui.field name="username" id="baru-username" label="Username" :error="$bukaBaru ? $errors->first('username') : null" help="Opsional. Huruf, angka, titik, garis bawah, atau tanda hubung." />
                 <fieldset>
                     <legend class="type-label text-text">Peran</legend>
@@ -141,7 +141,7 @@
                         @endforeach
                     </div>
                 </fieldset>
-                <x-ui.alert tone="info">Kata sandi tidak diisi admin. Pengguna baru menerima tautan untuk membuat kata sandinya sendiri.</x-ui.alert>
+                <x-ui.alert tone="info">Kata sandi tidak diisi admin. Pengguna baru menerima email undangan berisi tautan untuk membuat kata sandinya sendiri (berlaku {{ \App\Support\TautanUndangan::masaBerlakuJam() }} jam).</x-ui.alert>
             </form>
             <x-slot:footer>
                 <x-ui.button variant="secondary" x-on:click="$dispatch('close-modal', 'akun-baru')">Batal</x-ui.button>

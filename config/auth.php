@@ -99,6 +99,14 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+
+        // Tautan undangan akun baru: tabel token sama dengan "users", masa berlaku lebih panjang (jam).
+        'undangan' => [
+            'provider' => 'users',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => ((int) env('AKUN_UNDANGAN_JAM', 72)) * 60,
+            'throttle' => 60,
+        ],
     ],
 
     /*

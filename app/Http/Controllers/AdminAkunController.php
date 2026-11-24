@@ -7,7 +7,9 @@ use App\Enums\Peran;
 use App\Http\Requests\Admin\SimpanAkunRequest;
 use App\Models\LogAktivitas;
 use App\Models\User;
+use App\Notifications\UndanganAkun;
 use App\Support\Aktivitas;
+use App\Support\TautanUndangan;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,11 +56,13 @@ class AdminAkunController extends Controller
             return $user;
         });
 
-        Password::sendResetLink(['email' => $user->email]);
-
         Aktivitas::catat('akun.dibuat', $user, $user->email.' · peran '.$user->peran->label().$this->ringkasModul($user));
 
-        return redirect()->route('admin.akun.index')->with('toast', 'Akun dibuat. Pengguna akan menerima tautan untuk membuat kata sandi.');
+        if ($this->kirimUndangan($user) !== Password::RESET_THROTTLED) {
+            Aktivitas::catat('akun.undangan_dikirim', $user, $user->email);
+        }
+
+        return redirect()->route('admin.akun.index')->with('toast', 'Akun dibuat. Pengguna menerima email undangan untuk membuat kata sandi.');
     }
 
     public function update(SimpanAkunRequest $request, User $user): RedirectResponse
@@ -109,14 +113,32 @@ class AdminAkunController extends Controller
             return redirect()->route('admin.akun.index')->with('toast', 'Akun nonaktif tidak dapat dikirimi tautan. Aktifkan akun lebih dulu.');
         }
 
-        $status = Password::sendResetLink(['email' => $user->email]);
-        if ($status !== Password::RESET_THROTTLED) {
-            Aktivitas::catat('akun.tautan_dikirim', $user, $user->email);
+        // Pengguna yang belum pernah masuk masih menunggu undangan; yang sudah pernah masuk menerima email atur ulang biasa.
+        $undangan = $user->terakhir_masuk_at === null;
+        $status = $undangan
+            ? $this->kirimUndangan($user)
+            : Password::sendResetLink(['email' => $user->email]);
+
+        if ($status === Password::RESET_THROTTLED) {
+            return redirect()->route('admin.akun.index')->with('toast', 'Tautan baru sudah dikirim barusan. Coba lagi dalam satu menit.');
         }
 
-        return redirect()->route('admin.akun.index')->with('toast', $status === Password::RESET_THROTTLED
-            ? 'Tautan baru sudah dikirim barusan. Coba lagi dalam satu menit.'
+        Aktivitas::catat($undangan ? 'akun.undangan_dikirim' : 'akun.tautan_dikirim', $user, $user->email);
+
+        return redirect()->route('admin.akun.index')->with('toast', $undangan
+            ? 'Undangan dikirim ulang. Pengguna menerima email untuk membuat kata sandi.'
             : 'Tautan atur ulang kata sandi dikirim ke pengguna.');
+    }
+
+    /**
+     * Mengirim email undangan (broker "undangan", masa berlaku lebih panjang). Token tidak pernah dicatat.
+     */
+    private function kirimUndangan(User $user): string
+    {
+        return Password::broker(TautanUndangan::BROKER)->sendResetLink(
+            ['email' => $user->email],
+            fn (User $penerima, string $token) => $penerima->notify(new UndanganAkun($token)),
+        );
     }
 
     /**
