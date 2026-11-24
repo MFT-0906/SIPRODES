@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\Modul;
 use App\Enums\Peran;
 use App\Models\User;
+use App\Notifications\UndanganAkun;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -138,7 +139,8 @@ class Fase3OtorisasiTest extends TestCase
         $this->assertTrue($baru->aktif);
         $this->assertSame('staf.baru', $baru->username);
         $this->assertEqualsCanonicalizing(['berita', 'potensi'], $baru->modulAkses->map(fn ($m) => $m->modul->value)->all());
-        Notification::assertSentTo($baru, ResetPassword::class);
+        Notification::assertSentTo($baru, UndanganAkun::class);
+        Notification::assertNotSentTo($baru, ResetPassword::class);
     }
 
     public function test_super_admin_baru_tidak_menyimpan_penugasan_modul(): void
@@ -237,8 +239,8 @@ class Fase3OtorisasiTest extends TestCase
     {
         Notification::fake();
         $this->actingAs($this->superAdmin());
-        $aktif = User::factory()->create();
-        $off = User::factory()->nonaktif()->create();
+        $aktif = User::factory()->create(['terakhir_masuk_at' => now()->subDay()]);
+        $off = User::factory()->nonaktif()->create(['terakhir_masuk_at' => now()->subDay()]);
 
         $this->post(route('admin.akun.reset', $aktif))->assertRedirect()->assertSessionHas('toast', 'Tautan atur ulang kata sandi dikirim ke pengguna.');
         $this->post(route('admin.akun.reset', $off))->assertRedirect();

@@ -262,9 +262,9 @@ class Fase10KeamananTest extends TestCase
         $this->put(route('admin.akun.update', $staf), ['nama' => 'Staf', 'email' => 'staf@desa.test', 'peran' => 'staf', 'modul' => ['apbdes'], 'aktif' => '1']);
         $this->put(route('admin.akun.update', $staf), ['nama' => 'Staf', 'email' => 'staf@desa.test', 'peran' => 'super_admin', 'aktif' => '1']);
         $this->put(route('admin.akun.update', $staf), ['nama' => 'Staf', 'email' => 'staf@desa.test', 'peran' => 'super_admin']);
-        $this->post(route('admin.akun.reset', User::factory()->create()));
+        $this->post(route('admin.akun.reset', User::factory()->create(['terakhir_masuk_at' => now()->subDay()])));
 
-        $this->assertSame(['akun.dibuat', 'akun.diubah', 'akun.diubah', 'akun.diubah', 'akun.tautan_dikirim'], $this->aksi());
+        $this->assertSame(['akun.dibuat', 'akun.undangan_dikirim', 'akun.diubah', 'akun.diubah', 'akun.diubah', 'akun.tautan_dikirim'], $this->aksi());
         $diubah = LogAktivitas::where('aksi', 'akun.diubah')->orderBy('id')->pluck('keterangan');
         $this->assertStringContainsString('modul [berita] → [apbdes]', $diubah[0]);
         $this->assertStringContainsString('peran Staf → Super Admin', $diubah[1]);
