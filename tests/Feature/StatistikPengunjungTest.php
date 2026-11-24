@@ -236,10 +236,10 @@ class StatistikPengunjungTest extends TestCase
         $this->kunjungi('/');
 
         $this->actingAs(User::factory()->denganModul([Modul::Statistik])->create());
-        $this->get(route('admin.dashboard'))->assertOk()->assertSee('Pengunjung hari ini')->assertSee('Total tayangan');
+        $this->get(route('admin.dashboard'))->assertOk()->assertSee('Pengunjung situs')->assertSee('Grafik pengunjung 14 hari terakhir');
 
         $this->actingAs(User::factory()->denganModul([Modul::Berita])->create());
-        $this->get(route('admin.dashboard'))->assertOk()->assertDontSee('Pengunjung hari ini');
+        $this->get(route('admin.dashboard'))->assertOk()->assertDontSee('Pengunjung situs')->assertDontSee('Grafik pengunjung');
     }
 
     public function test_menu_statistik_hanya_tampil_untuk_yang_berhak(): void
