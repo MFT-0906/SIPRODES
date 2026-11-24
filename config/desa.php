@@ -25,6 +25,14 @@ return [
         'wilayah' => 'Kec. Srumbung, Kab. Magelang, Jawa Tengah',
     ],
 
+    // Logo resmi pemerintah daerah yang ditampilkan di samping nama desa (header publik, footer, halaman
+    // masuk, dan dashboard). Letakkan berkas resminya di public/{berkas}. Bila berkas tidak ada, identitas
+    // tampil seperti semula sebagai tulisan dengan garis aksen.
+    'logo' => [
+        'berkas' => env('DESA_LOGO', 'images/logo-lampung-selatan.png'),
+        'alt' => env('DESA_LOGO_ALT', 'Logo Kabupaten Lampung Selatan'),
+    ],
+
     // Wilayah administrasi untuk header, footer, dan halaman kontak.
     'wilayah' => [
         'sebutan' => 'Desa',

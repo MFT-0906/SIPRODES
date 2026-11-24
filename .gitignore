@@ -25,3 +25,6 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Logo resmi pemerintah daerah diunggah langsung di server, bukan bagian dari repo
+/public/images/logo-lampung-selatan.*
