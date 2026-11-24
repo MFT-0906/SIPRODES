@@ -4,7 +4,8 @@
 
 @section('content')
     <div class="flex w-full flex-col gap-5 rounded-[20px] border border-border bg-surface p-6 shadow-[0_16px_40px_rgb(15_51_33/0.08)] sm:p-10">
-        <x-public.logo tone="terang" class="self-start" />
+        {{-- Di desktop identitas sudah tampil di panel kiri. --}}
+        <x-public.logo tone="terang" class="self-start lg:hidden" />
 
         <div class="flex flex-col gap-1.5">
             <h1 class="type-h2 text-text">Masuk ke Dashboard</h1>
@@ -44,12 +45,12 @@
             @csrf
             <x-ui.field
                 name="login" label="Email atau username" required
-                placeholder="nama@margaagung.desa.id" autocomplete="username" autofocus
+                placeholder="contoh: nama@gmail.com" autocomplete="username" autofocus
             />
             <x-ui.field
                 name="password" type="password" label="Kata sandi" required
                 autocomplete="current-password"
-                help="Akun terkunci sementara setelah beberapa kali gagal masuk."
+                :help="session('gagal_masuk') ? 'Demi keamanan, akun dikunci sementara setelah beberapa kali gagal masuk.' : null"
             />
 
             <div class="flex items-center justify-between gap-3">
@@ -62,9 +63,9 @@
 
         <p class="flex items-center gap-1.5 type-label-sm text-muted">
             <x-ui.icon name="lock" class="size-3.5 shrink-0" />
-            Koneksi aman · lupa kata sandi dibantu Super Admin
+            Koneksi aman · tautan atur ulang dikirim ke email Anda
         </p>
     </div>
 
-    <a href="{{ route('home') }}" class="inline-flex min-h-11 items-center rounded-control type-label text-primary hover:underline">← Kembali ke situs publik</a>
+    <a href="{{ route('home') }}" class="inline-flex min-h-11 items-center rounded-control type-label text-primary hover:underline lg:hidden">← Kembali ke situs publik</a>
 @endsection

@@ -3,15 +3,16 @@
 @section('title', 'Lupa kata sandi')
 
 @section('content')
-    <div class="flex w-full flex-col gap-[18px] rounded-[20px] border border-border bg-surface p-6 sm:p-10">
-        <x-public.logo tone="terang" class="self-start" />
+    <div class="flex w-full flex-col gap-[18px] rounded-[20px] border border-border bg-surface p-6 shadow-[0_16px_40px_rgb(15_51_33/0.08)] sm:p-10">
+        {{-- Di desktop identitas sudah tampil di panel kiri. --}}
+        <x-public.logo tone="terang" class="self-start lg:hidden" />
 
         <h1 class="type-h2 text-text">Lupa kata sandi?</h1>
         <p class="type-body-sm text-muted">Masukkan email akun Anda. Jika terdaftar, kami kirim tautan atur ulang kata sandi. Bila tidak menerima email, hubungi Super Admin desa.</p>
 
         <form method="post" action="{{ route('admin.password.email') }}" class="flex flex-col gap-[18px]" novalidate>
             @csrf
-            <x-ui.field name="email" type="email" label="Email" required placeholder="nama@…" autocomplete="email" />
+            <x-ui.field name="email" type="email" label="Email" required placeholder="contoh: nama@gmail.com" autocomplete="email" />
             <x-ui.button type="submit" icon="mail" class="w-full">Kirim tautan atur ulang</x-ui.button>
         </form>
 

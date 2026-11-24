@@ -3,8 +3,9 @@
 @section('title', $undangan ? 'Buat kata sandi' : 'Buat kata sandi baru')
 
 @section('content')
-    <div class="flex w-full flex-col gap-[18px] rounded-[20px] border border-border bg-surface p-6 sm:p-10">
-        <x-public.logo tone="terang" class="self-start" />
+    <div class="flex w-full flex-col gap-[18px] rounded-[20px] border border-border bg-surface p-6 shadow-[0_16px_40px_rgb(15_51_33/0.08)] sm:p-10">
+        {{-- Di desktop identitas sudah tampil di panel kiri. --}}
+        <x-public.logo tone="terang" class="self-start lg:hidden" />
 
         <h1 class="type-h2 text-text">{{ $undangan ? 'Buat kata sandi' : 'Buat kata sandi baru' }}</h1>
         <p class="type-body-sm text-muted">Gunakan minimal {{ config('desa.auth.kata_sandi_min') }} karakter dan jangan sama dengan email Anda.</p>
