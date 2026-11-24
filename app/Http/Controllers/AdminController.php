@@ -11,6 +11,7 @@ use App\Models\Berita;
 use App\Models\KelompokTani;
 use App\Models\Komoditas;
 use App\Models\Umkm;
+use App\Support\KelengkapanSitus;
 use App\Support\StatistikPengunjung;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
@@ -48,6 +49,12 @@ class AdminController extends Controller
                 : [],
             'konten' => $bolehBerita ? $this->drafTerakhir() : [],
             'kunjungan' => $bolehStatistik ? StatistikPengunjung::ringkasan() : null,
+            // Grafik kecil 14 hari terakhir di kartu pengunjung.
+            'harian' => $bolehStatistik ? array_slice(StatistikPengunjung::harian30(), -14) : [],
+            // Daftar periksa data resmi, hanya butir dari modul yang boleh dibuka akun ini.
+            'kelengkapan' => collect(KelengkapanSitus::daftar())
+                ->filter(fn (array $butir) => Gate::allows('akses-modul', $butir['modul']))
+                ->values()->all(),
         ]);
     }
 
