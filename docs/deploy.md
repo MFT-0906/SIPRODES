@@ -215,6 +215,18 @@ php artisan desa:foto-hero
 
 Perintah ini membuat versi WebP 800/1600/2400 px (agar HP mengunduh foto kecil), `og-desa.jpg` 1200×630 untuk pratinjau tautan di WhatsApp/Facebook, dan catatan `hero-desa.json`. Bila potongan pratinjau kurang pas, atur titik fokusnya, misalnya `--fokus-x=0.5 --fokus-y=0.35 --cakupan=0.8`. Bila perintah ini belum dijalankan, situs otomatis memakai foto utama saja (tidak pernah menampilkan varian foto lama).
 
+### Logo pemerintah daerah (header, footer, halaman masuk, dashboard)
+
+Logo **tidak disertakan di repo**. Gunakan berkas resmi dari Pemerintah Kabupaten Lampung Selatan
+(minta ke kantor desa/kecamatan atau unduh dari situs resmi pemkab), sebaiknya PNG berlatar transparan
+setinggi minimal 176 px (atau SVG).
+
+1. Unggah berkas ke `public/images/logo-lampung-selatan.png` (File Manager cPanel → `siprodes-git/public/images`).
+2. Tidak perlu perintah apa pun: logo langsung tampil di depan nama desa. Tanpa berkas, identitas tampil seperti semula (tulisan dengan garis aksen kuning).
+3. Nama berkas atau teks alternatif lain bisa diatur di `.env`: `DESA_LOGO=images/nama-berkas.png` dan `DESA_LOGO_ALT="Logo Kabupaten Lampung Selatan"`, lalu `php artisan config:cache`.
+
+Berkas ini tidak dilacak git, jadi aman dari `git pull`; simpan salinannya bersama cadangan lain.
+
 ## 7a. Mesin pencari
 
 - Peta situs: `/sitemap.xml` (halaman publik + berita terbit). `robots.txt` dibuat aplikasi dan menunjuk ke sitemap sesuai `APP_URL`; jangan membuat berkas `public/robots.txt`.
