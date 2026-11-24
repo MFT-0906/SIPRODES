@@ -11,6 +11,7 @@
     'id' => null,
     'counter' => null, // batas karakter: menampilkan hitungan "n/batas" pada teks bantuan dan memasang maxlength
     'clientValidated' => false, // true: butuh lingkup Alpine dengan `err` (mis. formAspirasi) untuk pesan galat dari klien
+    'bisaDilihat' => true, // khusus type=password: tombol tampilkan/sembunyikan kata sandi
 ])
 
 @php
@@ -28,6 +29,7 @@
             ? 'border-danger shadow-[0_0_0_1px_var(--color-danger)]'
             : 'border-border focus:border-primary focus:shadow-[0_0_0_1px_var(--color-primary),0_0_0_4px_rgb(27_94_32/0.18)]');
     $key = \Illuminate\Support\Js::from($name);
+    $intip = $type === 'password' && $bisaDilihat && ! $multiline;
 @endphp
 
 <div
@@ -50,6 +52,10 @@
             {{ $attributes->class([$control, 'min-h-30 resize-y max-lg:resize-none']) }}
         >{{ $value }}</textarea>
     @else
+        @if ($intip)
+            {{-- Tombol tampilkan kata sandi: input tetap type=password sampai pengguna memilih melihatnya. --}}
+            <div class="relative" x-data="{ lihat: false }">
+        @endif
         <input
             id="{{ $id }}" name="{{ $name }}" type="{{ $type }}"
             @if (! is_null($value)) value="{{ $value }}" @endif
@@ -58,8 +64,22 @@
             @if ($error) aria-invalid="true" @endif
             @if ($clientValidated) x-bind:aria-invalid="err[{{ $key }}] || {{ $error ? 'true' : 'false' }} ? 'true' : null" x-bind:class="err[{{ $key }}] ? 'border-danger! shadow-[0_0_0_1px_var(--color-danger)]!' : ''" @endif
             @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
-            {{ $attributes->class([$control, 'min-h-11']) }}
+            @if ($intip) x-bind:type="lihat ? 'text' : 'password'" @endif
+            {{ $attributes->class([$control, 'min-h-11', 'pr-12' => $intip]) }}
         >
+        @if ($intip)
+                <button
+                    type="button" x-on:click="lihat = !lihat"
+                    x-bind:aria-pressed="lihat ? 'true' : 'false'" aria-pressed="false"
+                    x-bind:aria-label="lihat ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'" aria-label="Tampilkan kata sandi"
+                    aria-controls="{{ $id }}"
+                    class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-control text-muted transition-colors hover:text-primary focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+                >
+                    <x-ui.icon name="eye" class="size-5" x-show="!lihat" />
+                    <x-ui.icon name="eye-off" class="size-5" x-show="lihat" x-cloak />
+                </button>
+            </div>
+        @endif
     @endif
 
     @if ($error)
